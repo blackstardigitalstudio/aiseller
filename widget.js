@@ -9,7 +9,9 @@
   window.__AISELLER__ = true;
 
   var APP = new URL(script.src);
-  var base = APP.origin;                                     // dominio della nostra app
+  // base = cartella che contiene widget.js (funziona su Cloudflare Pages, sottocartelle o dominio custom)
+  var base = script.src.replace(/\/widget\.js(\?.*)?$/i, "");
+  if (!base || base === script.src) base = APP.origin;       // fallback
   var cfg = script.getAttribute("data-config") || "";        // URL config del cliente
   if (cfg && !/^https?:\/\//i.test(cfg)) cfg = base + (cfg[0] === "/" ? "" : "/") + cfg;
   var color = script.getAttribute("data-color") || "#6c4cff";
