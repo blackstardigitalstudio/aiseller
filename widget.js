@@ -16,14 +16,17 @@
   if (cfg && !/^https?:\/\//i.test(cfg)) cfg = base + (cfg[0] === "/" ? "" : "/") + cfg;
   // AUTO-RILEVAMENTO CLIENTE dal dominio → snippet UNIVERSALE (una riga uguale per tutti, non cambia MAI).
   // Per un nuovo cliente: aggiungo una riga qui sotto e basta — il sito del cliente non si tocca.
+  // [match dominio, id config, colore, (opz.) regex percorso dove ATTIVARE il bot]
   var HOSTMAP = [
-    ["blackstardigitalstudio", "blackstar",  "#a68732"],
-    ["gasproject",             "gasproject", "#0099b8"],
-    ["ilraviolo",              "ilraviolo",  "#e8b84f"],
-    ["mariowine",              "mariowine",  "#7b1e3b"]
+    ["blackstardigitalstudio", "blackstar",  "#a68732", null],
+    ["gasproject",             "gasproject", "#0099b8", null],
+    ["ilraviolo",              "ilraviolo",  "#e8b84f", /\/bottega/i],   // Il Raviolo: SOLO sezione /bottega
+    ["mariowine",              "mariowine",  "#7b1e3b", null]
   ];
   var hostHit = null, _h = (location.hostname || "").toLowerCase();
   for (var hi = 0; hi < HOSTMAP.length; hi++) { if (_h.indexOf(HOSTMAP[hi][0]) >= 0) { hostHit = HOSTMAP[hi]; break; } }
+  // cliente attivo solo su certe sezioni? fuori da lì il widget NON parte (niente pallina)
+  if (hostHit && hostHit[3] && !hostHit[3].test(location.pathname || "")) return;
   if (!cfg && hostHit) cfg = base + "/clients/" + hostHit[1] + ".json";   // config dedotta dal dominio
   var color = script.getAttribute("data-color") || (hostHit ? hostHit[2] : "#6c4cff");
   var label = script.getAttribute("data-label") || "Parla con noi";

@@ -1,0 +1,30 @@
+name: Sync Il Raviolo catalog
+
+# Ogni 3 ore (e a mano se serve) rilegge il catalogo da Supabase, aggiorna clients/ilraviolo.json
+# e committa. Il commit fa partire il deploy su Cloudflare. Niente Vercel, niente Supabase a runtime.
+on:
+  schedule:
+    - cron: "0 */3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Rigenera config dal catalogo Supabase
+        run: node scripts/build-ilraviolo.mjs
+        env:
+          ILRAVIOLO_SUPABASE_KEY: ${{ secrets.ILRAVIOLO_SUPABASE_KEY }}
+      - name: Commit se cambiato (→ fa partire il deploy)
+        run: |
+          git config user.name "AI Seller Bot"
+          git config user.email "bot@blackstardigitalstudio.com"
+          git add clients/ilraviolo.json
+          git diff --cached --quiet || (git commit -m "auto-sync catalogo Il Raviolo" && git push)
