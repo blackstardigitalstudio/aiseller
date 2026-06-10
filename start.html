@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>AI Seller · Start — Black Star</title>
+<link rel="icon" href="assets/mascot.svg" />
+<style>
+  :root{--gold:#c9a84c;--gold-d:#a68732;--ink:#eef1f6;--muted:#9aa3b5;--card:#161b27;--line:rgba(255,255,255,.08)}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);
+    background:radial-gradient(1200px 600px at 50% -10%,#1c2336,#0b0e16 70%)}
+  .wrap{max-width:760px;margin:0 auto;padding:40px 20px 70px}
+  header{text-align:center;margin-bottom:8px}
+  .logo{font-size:.8rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:800}
+  h1{font-size:2rem;margin:.25em 0 .1em}
+  .sub{color:var(--muted);margin:0}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:26px}
+  @media(max-width:560px){.grid{grid-template-columns:1fr}}
+  a.card{display:block;text-decoration:none;color:var(--ink);background:var(--card);border:1px solid var(--line);
+    border-radius:16px;padding:20px;transition:transform .12s ease,border-color .12s ease,box-shadow .12s}
+  a.card:hover{transform:translateY(-3px);border-color:var(--gold);box-shadow:0 14px 34px rgba(0,0,0,.4)}
+  .card .ico{font-size:1.8rem}
+  .card h2{margin:8px 0 4px;font-size:1.15rem}
+  .card p{margin:0;color:var(--muted);font-size:.88rem;line-height:1.4}
+  .card.primary{background:linear-gradient(135deg,#1d2740,#141a28);border-color:var(--gold-d)}
+  .tag{display:inline-block;background:rgba(201,168,76,.15);color:var(--gold);font-size:.68rem;font-weight:800;
+    padding:3px 8px;border-radius:20px;letter-spacing:.04em;margin-bottom:6px}
+  .links{margin-top:26px}
+  .links h3{font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin:0 0 8px}
+  .lrow{display:flex;align-items:center;gap:8px;background:#0e131d;border:1px solid var(--line);border-radius:10px;
+    padding:9px 12px;margin-bottom:8px;font-family:ui-monospace,monospace;font-size:.78rem;color:#bcd}
+  .lrow span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .lrow b{color:var(--gold);font-family:system-ui;font-weight:700;min-width:78px;font-size:.8rem}
+  .lrow button{background:var(--gold-d);color:#1a1407;border:none;border-radius:7px;padding:5px 11px;font-weight:800;font-size:.72rem;cursor:pointer}
+  footer{text-align:center;color:#6b7488;margin-top:34px;font-size:.82rem}
+  .pin{background:#11161f;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:22px;color:var(--muted);font-size:.85rem;line-height:1.5}
+  .pin b{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">★ Black Star · AI Seller</div>
+    <h1>Pannello di partenza</h1>
+    <p class="sub">Tutto quello che ti serve, a un click.</p>
+  </header>
+
+  <div class="grid">
+    <a class="card primary" href="studio.html">
+      <div class="ico">🛠️</div>
+      <span class="tag">CREA &amp; PUBBLICA</span>
+      <h2>Studio</h2>
+      <p>Analizza un sito, genera il venditore, carica il personaggio e <b>pubblica in 1 click</b>.</p>
+    </a>
+    <a class="card" href="installa.html">
+      <div class="ico">📖</div>
+      <span class="tag">GUIDA</span>
+      <h2>Istruzioni installazione</h2>
+      <p>Dove incollare la riga: HTML, WordPress, Shopify, Wix, GTM… Da mandare al cliente.</p>
+    </a>
+    <a class="card" href="/?widget=1&config=https%3A%2F%2Faiseller-blackstar.vercel.app%2Fclients%2Fgasproject.json">
+      <div class="ico">🔧</div>
+      <span class="tag">CLIENTE LIVE</span>
+      <h2>GAS Project</h2>
+      <p>Anteprima del venditore di GAS (autofficina racing).</p>
+    </a>
+    <a class="card" href="/?widget=1&config=https%3A%2F%2Faiseller-blackstar.vercel.app%2Fclients%2Fblackstar.json">
+      <div class="ico">⭐</div>
+      <span class="tag">VETRINA</span>
+      <h2>Black Star</h2>
+      <p>Anteprima del venditore della tua agenzia.</p>
+    </a>
+  </div>
+
+  <div class="links">
+    <h3>Link da copiare</h3>
+    <div class="lrow"><b>Studio</b><span id="l1">https://aiseller-blackstar.vercel.app/studio.html</span><button onclick="cp('l1',this)">copia</button></div>
+    <div class="lrow"><b>Istruzioni</b><span id="l2">https://aiseller-blackstar.vercel.app/installa.html</span><button onclick="cp('l2',this)">copia</button></div>
+    <div class="lrow"><b>Questo hub</b><span id="l3">https://aiseller-blackstar.vercel.app/start.html</span><button onclick="cp('l3',this)">copia</button></div>
+  </div>
+
+  <div class="pin">
+    📌 <b>Per averlo sempre davanti:</b> apri questa pagina e premi <b>Ctrl+D</b> per salvarla nei preferiti, oppure trascina l'icona del lucchetto/indirizzo sulla barra dei preferiti. Su mobile: menu → «Aggiungi a schermata Home». C'è anche una scorciatoia sul tuo <b>Desktop</b>: «AI Seller».
+  </div>
+
+  <footer>★ Blackstar Digital Studio · AI Seller — 🇮🇹 Made in Italy</footer>
+</div>
+<script>
+  function cp(id,btn){ var t=document.getElementById(id).textContent.trim(); navigator.clipboard.writeText(t); var o=btn.textContent; btn.textContent="✓"; setTimeout(function(){btn.textContent=o;},1200); }
+</script>
+</body>
+</html>

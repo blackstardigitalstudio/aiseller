@@ -1,0 +1,6 @@
+.claude
+kayamans-demo.zip
+*.zip
+.env
+.env.*
+.vercel

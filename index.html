@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Kayaman's Farm — CBD & Parafernalia · Smoke Shop Boutique</title>
+  <meta name="description" content="Kayaman's Farm — boutique smoke shop & CBD. Chatbot budtender con consejos personalizados. Made in Italy." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=ABeeZee:ital@0;1&family=Alata&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" href="assets/mascot.svg" />
+  <link rel="stylesheet" href="styles.css?v=79" />
+  <!-- ANTI-FLASH: in modalità widget nascondi SUBITO lo storefront/age-gate (prima del render) finché non arriva la config del cliente → niente lampo di Kaya -->
+  <script>try{if(/[?&]widget=1/.test(location.search)){document.documentElement.className+=" is-widget";}}catch(e){}</script>
+  <style>
+    html.is-widget,html.is-widget body{background:transparent !important}
+    html.is-widget body::before{display:none !important;background:transparent !important}
+    html.is-widget #site,html.is-widget #ageGate,html.is-widget .chat-launcher,html.is-widget .promo-bar,html.is-widget #mobileBar{display:none !important;visibility:hidden !important}
+  </style>
+</head>
+<body>
+
+  <!-- ====== AGE GATE 18+ ====== -->
+  <div id="ageGate" class="age-gate">
+    <div class="age-card">
+      <img src="assets/seller-face.webp" alt="Kaya" class="age-mascot" />
+      <div class="age-lang">
+        <button data-lang="es" class="active">ES</button>
+        <button data-lang="en">EN</button>
+        <button data-lang="it">IT</button>
+      </div>
+      <div class="age-leaf">🌿 18+</div>
+      <h1 id="ageTitle">¿Eres mayor de 18?</h1>
+      <p id="ageMsg">Este es un espacio solo para mayores de 18 años. Confirma tu edad para continuar.</p>
+      <div class="age-actions">
+        <button id="ageYes" class="btn btn-primary">Sí, tengo 18+</button>
+        <button id="ageNo" class="btn btn-ghost">No, soy menor</button>
+      </div>
+      <p id="ageDenied" class="age-denied" hidden>Lo sentimos, debes ser mayor de 18 para entrar.</p>
+      <div class="age-made"><span class="it-flag"><img src="assets/italy-flag.svg" alt="Italia" /> Made in Italy</span></div>
+    </div>
+  </div>
+
+  <!-- ====== SITE ====== -->
+  <div id="site" class="site" hidden>
+    <!-- promo strip -->
+    <div class="promo-bar" id="promoBar">
+      <b id="promoOffer">−10% con KAYA10</b>
+      <span id="promoText">🚚 Envío gratis desde 60€</span>
+      <span><span id="promoEndsLabel">termina en</span> <span class="promo-cd" id="promoCd">15:00</span></span>
+      <button class="promo-close" id="promoClose" aria-label="cerrar">✕</button>
+    </div>
+
+    <!-- utility top bar -->
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-info">
+          <span id="tbShip">🚚 Envío gratis desde 60€ en Canarias</span>
+          <span id="tbHours">🕗 L-V 12:00–19:00</span>
+          <span id="tbPhone">☎ 611 101 375</span>
+        </div>
+        <div class="topbar-acc">
+          <a href="#" id="tbLogin">Acceder</a>
+          <span class="sep">·</span>
+          <a href="#" id="tbRegister">Registrarse</a>
+          <div class="lang-switch" id="langSwitch">
+            <button data-lang="es" class="active">ES</button>
+            <button data-lang="en">EN</button>
+            <button data-lang="it">IT</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- main header -->
+    <header class="header">
+      <button class="hamburger" id="hamburger" aria-label="menu">☰</button>
+      <div class="brand">
+        <span class="brand-leaf">🌿</span>
+        <span class="brand-stack">
+          <span class="brand-name">Kayaman's Farm</span>
+          <span class="brand-script" id="brandScript">Tienda Online</span>
+        </span>
+      </div>
+      <form class="search" id="searchForm">
+        <input id="searchInput" type="search" autocomplete="off" placeholder="Buscar productos…" />
+        <button type="submit" aria-label="buscar">🔍</button>
+      </form>
+      <div class="header-right">
+        <a href="#" class="hr-acc" id="hrAccount" title="Cuenta">👤</a>
+        <button class="cart-btn" id="cartBtn">
+          🛒 <span class="cart-label" id="cartLabel">Carrito</span> <span class="cart-count" id="cartCount">0</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- primary nav (categories) -->
+    <nav class="navbar"><div class="navbar-inner" id="nav"></div></nav>
+
+    <!-- hero banner -->
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <span class="hero-eyebrow" id="heroEyebrow">La boutique que los fumadores necesitaban</span>
+          <h1 class="hero-script" id="heroScript">Bienvenido a Kayaman's Farm</h1>
+          <div class="hero-rating" id="heroRating"></div>
+          <p class="hero-sub" id="heroSub">CBD y parafernalia premium, seleccionados a mano en Las Palmas.</p>
+          <div class="hero-ctas">
+            <button class="btn btn-primary hero-cta" id="heroCta">Comprar ahora</button>
+            <button class="btn btn-ghost" id="heroCta2">💬 Hablar con Kaya</button>
+          </div>
+          <div class="hero-trust" id="heroTrust">
+            <span>⭐ 4.9/5</span><span>🚚 Envío gratis +60€</span><span>🔒 Embalaje discreto</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- striscia di fiducia -->
+    <div class="trust-strip" id="trustStrip"></div>
+
+    <!-- category tiles -->
+    <section class="cat-section">
+      <h2 class="sec-title" id="catShopTitle">Comprar por categoría</h2>
+      <div class="cat-tiles" id="catTiles"></div>
+    </section>
+
+    <!-- product rows -->
+    <section class="prod-row">
+      <div class="row-head"><h2 class="sec-title" id="secDestacados">Destacados</h2></div>
+      <div class="grid" id="rowDestacados"></div>
+    </section>
+    <section class="prod-row alt">
+      <div class="row-head"><h2 class="sec-title" id="secNovedades">Novedades</h2></div>
+      <div class="grid" id="rowNovedades"></div>
+    </section>
+    <section class="prod-row">
+      <div class="row-head"><h2 class="sec-title sec-sale" id="secOfertas">Ofertas</h2></div>
+      <div class="grid" id="rowOfertas"></div>
+    </section>
+
+    <!-- full shop -->
+    <main class="shop" id="shopMain">
+      <h2 class="sec-title" id="shopTitle">La Tienda</h2>
+      <p class="shop-lead" id="shopLead">Selección curada · precios en € · solo +18</p>
+      <div class="filters" id="filters"></div>
+      <div class="grid" id="grid"></div>
+    </main>
+
+    <!-- recensioni / testimonianze -->
+    <section class="reviews">
+      <div class="reviews-head">
+        <h2 class="sec-title" id="reviewsTitle">Lo que dicen nuestros clientes</h2>
+        <p class="reviews-sub" id="reviewsSub">4.9/5 · más de 2.300 reseñas verificadas</p>
+      </div>
+      <div class="reviews-grid" id="reviewsGrid"></div>
+    </section>
+
+    <!-- newsletter / cattura email -->
+    <section class="newsletter">
+      <div class="nl-inner">
+        <div class="nl-copy">
+          <h2 class="sec-title" id="nlTitle">Únete al club y llévate −10%</h2>
+          <p id="nlSub">Ofertas, novedades y trucos de experto. Sin spam, prometido.</p>
+        </div>
+        <form class="nl-form" id="nlForm">
+          <input id="nlEmail" type="email" required placeholder="Tu email" />
+          <button type="submit" class="btn btn-primary" id="nlCta">Quiero mi −10%</button>
+        </form>
+        <div class="nl-thanks" id="nlThanks" hidden></div>
+      </div>
+    </section>
+
+    <!-- footer -->
+    <footer class="footer">
+      <div class="footer-cols">
+        <div class="fcol">
+          <h4 id="footTienda">La Tienda</h4>
+          <p id="footAddr">Calle Pascal 26, Las Palmas de Gran Canaria</p>
+          <p id="footHours">Horario: L-V 12:00–19:00</p>
+          <p>☎ 611 101 375</p>
+          <p id="footEmail">info@kayamansfarm.com</p>
+        </div>
+        <div class="fcol">
+          <h4 id="footLinks">Información</h4>
+          <ul id="footLinksList"></ul>
+        </div>
+        <div class="fcol">
+          <h4 id="footPay">Pago seguro</h4>
+          <div class="pay-icons">💳 Visa · Mastercard · 🅿️ PayPal · Bizum</div>
+          <div class="footer-made"><span class="it-flag" style="color:var(--gold)"><img src="assets/italy-flag.svg" alt="Italia" /> Made in Italy</span></div>
+        </div>
+      </div>
+      <div class="footer-bottom">© Kayaman's Farm · Demo chatbot · Solo +18 🔞</div>
+    </footer>
+  </div>
+
+  <!-- ====== BARRA STICKY MOBILE (checkout sempre a portata) ====== -->
+  <div id="mobileBar" class="mobile-bar" hidden>
+    <div class="mb-info">
+      <span class="mb-count" id="mbCount">0</span>
+      <span class="mb-total" id="mbTotal">0,00 €</span>
+    </div>
+    <button class="btn btn-primary mb-cta" id="mbCta">Finalizar compra</button>
+  </div>
+
+  <!-- ====== CART DRAWER ====== -->
+  <div id="cartDrawer" class="drawer" hidden>
+    <div class="drawer-head">
+      <strong id="cartTitle">Carrito</strong>
+      <button id="cartClose" class="icon-btn">✕</button>
+    </div>
+    <div id="cartItems" class="drawer-body"></div>
+    <div class="drawer-foot">
+      <div class="cart-total"><span id="totalLabel">Total</span> <strong id="cartTotal">0,00 €</strong></div>
+      <button id="checkoutBtn" class="btn btn-primary full">Finalizar compra</button>
+    </div>
+  </div>
+  <div id="overlay" class="overlay" hidden></div>
+
+  <!-- ====== EXIT-INTENT POPUP ====== -->
+  <div id="exitPopup" class="exit-popup" hidden>
+    <div class="exit-card">
+      <button id="exitClose" class="icon-btn exit-close">✕</button>
+      <div class="exit-emblem">−10%</div>
+      <h2 id="exitTitle">¡Espera! 🌿</h2>
+      <p id="exitBody">Antes de irte: usa el código KAYA10 y llévate un 10% en tu primer pedido.</p>
+      <div class="exit-code">KAYA10</div>
+      <div class="exit-timer"><span id="exitExpires">Caduca en</span> <strong id="exitCountdown">05:00</strong></div>
+      <button id="exitCta" class="btn btn-primary full">Quiero mi 10%</button>
+    </div>
+  </div>
+
+  <!-- ====== IDLE: ELFO CHE SI SIEDE E SI ACCENDE UNA SIGARETTA ====== -->
+  <div id="elfSmoke" class="elf-smoke" hidden aria-hidden="true">
+    <img class="elf-3d" src="assets/seller.webp" alt="Kaya" />
+    <div class="smoke" hidden><i></i><i></i><i></i><i></i></div>
+    <svg class="elf-sit" viewBox="0 0 150 188" width="150" height="188">
+      <defs>
+        <linearGradient id="skin2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6c89a"/><stop offset="1" stop-color="#e0a877"/></linearGradient>
+        <linearGradient id="beanie2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2f7d32"/><stop offset=".5" stop-color="#fbb102"/><stop offset="1" stop-color="#ab2e31"/></linearGradient>
+      </defs>
+      <!-- dreads dietro -->
+      <g fill="#3a2a1c">
+        <path d="M56 58 q-16 30 -9 62 l11 -2 q-7 -30 7 -58 z"/>
+        <path d="M96 56 q17 30 10 62 l-11 -2 q7 -30 -8 -58 z"/>
+      </g>
+      <g fill="#fbb102"><circle cx="52" cy="108" r="4"/><circle cx="103" cy="108" r="4"/></g>
+      <!-- gambe a penzoloni -->
+      <rect x="61" y="112" width="14" height="58" rx="7" fill="#3b3a38"/>
+      <rect x="79" y="112" width="14" height="58" rx="7" fill="#48463f"/>
+      <ellipse cx="66" cy="172" rx="10" ry="6" fill="#241d18"/>
+      <ellipse cx="86" cy="172" rx="10" ry="6" fill="#241d18"/>
+      <!-- corpo maglia rossa -->
+      <path d="M54 82 q23 -11 44 0 q7 22 3 40 q-25 9 -50 0 q-4 -20 3 -40 z" fill="#ab2e31"/>
+      <path d="M54 82 q23 -11 44 0 q4 12 3 22 q-26 8 -50 0 q-1 -12 3 -22 z" fill="#8f2528" opacity=".4"/>
+      <!-- braccio sinistro sul ginocchio -->
+      <path d="M57 94 q-11 13 -3 30 l9 -4 q-6 -12 3 -22 z" fill="#ab2e31"/>
+      <circle cx="60" cy="121" r="7" fill="url(#skin2)"/>
+      <!-- collo -->
+      <rect x="69" y="64" width="15" height="18" rx="5" fill="url(#skin2)"/>
+      <!-- orecchio a punta -->
+      <path d="M55 50 q-12 -3 -14 -16 q10 2 19 11 z" fill="url(#skin2)"/>
+      <circle cx="52" cy="48" r="6" fill="none" stroke="#fbb102" stroke-width="3"/>
+      <!-- testa -->
+      <circle cx="76" cy="48" r="27" fill="url(#skin2)"/>
+      <!-- viso (rilassato) -->
+      <path d="M67 44 q6 -3 12 0" stroke="#2a1d12" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M84 44 q5 -2 9 1" stroke="#2a1d12" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <circle cx="73" cy="50" r="3.2" fill="#2a1d12"/>
+      <circle cx="88" cy="50" r="3.2" fill="#2a1d12"/>
+      <ellipse cx="66" cy="58" rx="6" ry="3.5" fill="#e07a55" opacity=".35"/>
+      <!-- bocca + sigaretta -->
+      <path d="M72 62 q7 3 14 0" stroke="#5e2c1f" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <!-- braccio destro alzato verso la bocca -->
+      <path d="M94 86 q18 -6 24 -26 l-8 -3 q-5 16 -22 21 z" fill="#ab2e31"/>
+      <circle cx="103" cy="60" r="7" fill="url(#skin2)"/>
+      <!-- sigaretta -->
+      <g transform="rotate(-20 102 58)">
+        <rect x="100" y="56" width="30" height="5" rx="2.5" fill="#f4efe3" stroke="#d9d2c2" stroke-width=".6"/>
+        <rect x="100" y="56" width="7" height="5" rx="2.5" fill="#e8b04a"/>
+      </g>
+      <circle class="ember" cx="129" cy="47" r="3.4" fill="#ff6a2c"/>
+      <!-- fiammella accendino (sparisce dopo) -->
+      <path class="flame" d="M129 47 q-4 -9 0 -16 q4 7 0 16 z" fill="#ffb02e"/>
+      <path class="flame" d="M129 45 q-2 -5 0 -9 q2 4 0 9 z" fill="#ff6a2c"/>
+      <!-- beanie rasta -->
+      <path d="M49 48 q0 -36 27 -36 q27 0 27 36 q-27 -15 -54 0 z" fill="url(#beanie2)"/>
+      <path d="M48 46 q28 -13 56 0 q0 9 -28 9 q-28 0 -28 -9 z" fill="#1e5e22"/>
+      <g stroke="#15441a" stroke-width="2" opacity=".6"><path d="M60 38 v16 M70 35 v20 M82 35 v20 M92 38 v16"/></g>
+      <ellipse cx="76" cy="14" rx="7" ry="5" fill="#fbb102"/>
+    </svg>
+  </div>
+
+  <!-- fumetto del compagno -->
+  <div id="elfBubble" class="elf-bubble" hidden></div>
+
+  <!-- ====== CHAT WIDGET ====== -->
+  <div id="chatLauncher" class="chat-launcher" hidden>
+    <img src="assets/seller-face.webp" alt="Kaya" loading="lazy" decoding="async" />
+    <span class="chat-badge" id="chatBadge" hidden>1</span>
+    <span class="chat-pulse"></span>
+  </div>
+
+  <div id="chatPanel" class="chat-panel" hidden>
+    <div class="chat-seller-wrap">
+      <span class="seller-smoke"><i></i><i></i><i></i></span>
+      <img class="chat-seller" src="assets/seller.webp" alt="Kaya, il venditore" loading="lazy" decoding="async" />
+      <img class="chat-seller-blink" src="assets/seller-blink.webp" alt="" aria-hidden="true" decoding="async" />
+    </div>
+    <div class="chat-pointer" hidden aria-hidden="true">
+      <img class="cp-frame cp-ext" src="assets/seller-point.webp" alt="" decoding="async" />
+      <img class="cp-frame cp-bent" src="assets/seller-point-back.webp" alt="" decoding="async" />
+      <img class="cp-frame cp-thumb" src="assets/seller-thumb.webp" alt="" decoding="async" />
+    </div>
+    <div class="pointer-bubble" hidden></div>
+    <div class="chat-inner">
+      <div class="chat-head">
+        <div class="chat-id">
+          <strong id="chatTitle">Kaya · budtender</strong>
+          <span class="chat-status"><i class="dot"></i> <span id="chatOnline">en línea</span></span>
+        </div>
+        <button id="chatMin" class="icon-btn" title="Minimizar">—</button>
+      </div>
+      <div id="chatBody" class="chat-body"></div>
+      <div id="chatProg" class="prof-prog" hidden><span id="chatProgLabel"></span><span class="pp-track"><span class="pp-fill" id="chatProgFill" style="width:0%"></span></span></div>
+      <div id="chatQuick" class="chat-quick"></div>
+      <form id="chatForm" class="chat-input">
+        <input id="chatInput" type="text" autocomplete="off" placeholder="Escribe lo que buscas..." />
+        <button type="submit" class="chat-send" id="chatSend">➤</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="data/data.js?v=79"></script>
+  <script src="config.js?v=79"></script>
+  <script src="app.js?v=79"></script>
+</body>
+</html>

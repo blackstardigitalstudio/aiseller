@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Come installare AI Seller · Guida rapida — Black Star</title>
+<style>
+  :root{--brand:#7c5cff;--ink:#1c1830;--muted:#6b6580;--line:#e7e3f3;--bg:#0f0c1d;--card:#fff}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:linear-gradient(180deg,#13102a,#1c1840);min-height:100vh}
+  .wrap{max-width:860px;margin:0 auto;padding:28px 18px 80px}
+  header{text-align:center;color:#fff;padding:26px 0 10px}
+  header .kick{color:#b9a9ff;font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.78rem}
+  header h1{font-size:2rem;margin:.2em 0 .15em}
+  header p{color:#cfc8ec;margin:0 auto;max-width:60ch}
+  .snippet{background:#0c0a18;border:1px solid #322a55;border-radius:14px;padding:14px 86px 14px 16px;color:#d9f5e8;font-family:ui-monospace,monospace;font-size:.82rem;position:relative;white-space:pre-wrap;word-break:break-all;margin:14px 0}
+  .snippet button{position:absolute;top:10px;right:10px;background:var(--brand);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:.74rem;font-weight:700;cursor:pointer}
+  .card{background:var(--card);border-radius:16px;padding:20px 22px;margin:14px 0;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+  .card h2{margin:0 0 8px;font-size:1.18rem;display:flex;align-items:center;gap:10px}
+  .badge{background:#efeaff;color:var(--brand);font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:20px}
+  ol{margin:8px 0 0;padding-left:20px} li{margin:6px 0;line-height:1.5}
+  code{background:#f1eefb;color:#5b3fd6;padding:1px 6px;border-radius:6px;font-size:.88em}
+  .tip{background:#fff7e8;border-left:4px solid #e0a93a;border-radius:8px;padding:12px 14px;color:#6e5520;font-size:.9rem;margin-top:12px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .mini{background:#f7f5ff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:.9rem}
+  .mini b{color:var(--brand)}
+  footer{text-align:center;color:#9a93c4;margin-top:30px;font-size:.85rem}
+  a{color:#b9a9ff}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kick">AI Seller by Black Star</div>
+    <h1>Installazione in 2 minuti</h1>
+    <p>Aggiungere il venditore AI al tuo sito è <b>una sola riga di codice</b>. Cambia solo <b>dove</b> incollarla a seconda della piattaforma. Qui sotto trovi il punto esatto per ciascuna.</p>
+  </header>
+
+  <div class="card">
+    <h2>① La riga da incollare</h2>
+    <p>È quella che lo <b>Studio</b> ti genera per ogni cliente (bottone «💾 Salva cliente & codice d'imbarco»). Ha questa forma:</p>
+    <div class="snippet"><button onclick="cp(this)">copia</button>&lt;script src="https://kayamansfarm-demo.vercel.app/widget.js"
+        data-config="https://kayamansfarm-demo.vercel.app/clients/NOME-CLIENTE.json"
+        data-color="#e2231a" defer&gt;&lt;/script&gt;</div>
+    <div class="tip">📍 <b>Regola d'oro:</b> incollala una volta sola nel <b>footer / template globale</b> del sito, subito prima di <code>&lt;/body&gt;</code> → appare su <b>tutte le pagine</b>, automaticamente.</div>
+  </div>
+
+  <div class="card">
+    <h2>🌐 Sito in HTML <span class="badge">manuale</span></h2>
+    <ol>
+      <li>Apri il file del <b>template comune</b> (di solito <code>footer.html</code> o il fondo di ogni pagina).</li>
+      <li>Incolla la riga <b>subito prima</b> di <code>&lt;/body&gt;</code>.</li>
+      <li>Salva e ricarica online. Fatto.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>🟦 WordPress <span class="badge">il più diffuso</span></h2>
+    <p><b>Modo consigliato (senza toccare codice):</b></p>
+    <ol>
+      <li>Installa il plugin gratuito <b>WPCode</b> (oppure «Insert Headers and Footers»).</li>
+      <li>Vai su <b>WPCode → Add Snippet → Custom HTML</b>.</li>
+      <li>Incolla la riga, imposta posizione <b>«Footer» / «Before &lt;/body&gt;»</b>, modalità <b>Auto-insert</b>.</li>
+      <li><b>Save &amp; Activate</b>. Esce su tutto il sito.</li>
+    </ol>
+    <p style="margin-top:10px"><b>In alternativa (tema):</b> Aspetto → Editor file del tema → <code>footer.php</code>, incolla prima di <code>&lt;/body&gt;</code> (meglio su un <i>child theme</i>).</p>
+  </div>
+
+  <div class="card">
+    <h2>🛒 Shopify</h2>
+    <ol>
+      <li><b>Online Store → Themes</b> → sul tema attivo: <b>⋯ → Edit code</b>.</li>
+      <li>Apri <code>theme.liquid</code>.</li>
+      <li>Incolla la riga <b>subito prima</b> di <code>&lt;/body&gt;</code> → <b>Save</b>.</li>
+    </ol>
+    <p style="margin-top:8px;color:var(--muted)">Appare su tutto lo store (home, prodotti, collezioni, checkout escluso).</p>
+  </div>
+
+  <div class="card">
+    <h2>🟣 Wix · 🟧 Squarespace · 🔵 Webflow</h2>
+    <div class="grid">
+      <div class="mini"><b>Wix</b><br>Settings → <b>Custom Code</b> → + Add → incolla → posizione <b>«Body - end»</b> → <b>All pages</b> → Apply.</div>
+      <div class="mini"><b>Squarespace</b><br>Settings → Advanced → <b>Code Injection</b> → campo <b>«Footer»</b> → incolla → Save.</div>
+      <div class="mini"><b>Webflow</b><br>Project Settings → <b>Custom Code</b> → <b>«Footer Code»</b> → incolla → Save → <b>Publish</b>.</div>
+      <div class="mini"><b>Altri (Joomla, Prestashop…)</b><br>Cerca «footer» / «codice personalizzato» / «before body» nel pannello e incolla lì.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🏷️ Google Tag Manager <span class="badge">universale</span></h2>
+    <p>Se il sito usa GTM, funziona <b>ovunque</b> senza toccare il tema:</p>
+    <ol>
+      <li>In GTM: <b>Tag → New → Tag Configuration → Custom HTML</b>.</li>
+      <li>Incolla la riga.</li>
+      <li><b>Triggering → All Pages</b>.</li>
+      <li><b>Save → Submit → Publish</b>.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>📍 Posizione &amp; convivenza con altri bottoni</h2>
+    <p>Se il sito ha <b>già</b> WhatsApp o Chiamata flottanti, la pallina <b>li rileva e si mette sopra da sola</b>. Puoi anche regolare a mano:</p>
+    <ul style="line-height:1.6">
+      <li><code>data-position="left"</code> → la sposta sull'altro lato (separazione netta)</li>
+      <li><code>data-bottom="100"</code> → la alza di X px</li>
+      <li><code>data-avoid="off"</code> → disattiva lo spostamento automatico</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>✅ Verifica finale</h2>
+    <ol>
+      <li>Apri il sito (in incognito). La <b>pallina col personaggio</b> compare in basso a destra.</li>
+      <li>Non la vedi? Fai un <b>hard refresh</b> (Ctrl/Cmd+Shift+R): è quasi sempre la cache.</li>
+      <li>Cliccala: si apre la chat. 🎉</li>
+    </ol>
+  </div>
+
+  <footer>AI Seller · guida d'installazione — Blackstar Digital Studio · 🇮🇹 Made in Italy</footer>
+</div>
+<script>
+  function cp(btn){
+    var t = btn.parentNode.textContent.replace(/^copia/, "").trim();
+    navigator.clipboard.writeText(t); var o = btn.textContent; btn.textContent = "copiato ✓";
+    setTimeout(function(){ btn.textContent = o; }, 1500);
+  }
+</script>
+</body>
+</html>

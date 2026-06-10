@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mario Wine Shop — sito di prova (widget AI Seller)</title>
+<style>
+  body{margin:0;font-family:Georgia,serif;color:#3a2a22;background:#faf6f0}
+  .top{background:#5a1020;color:#fff;padding:16px 24px;font-size:1.4rem;letter-spacing:1px}
+  .hero{padding:60px 24px;text-align:center;background:linear-gradient(#f3e9dd,#faf6f0)}
+  .hero h1{font-size:2.4rem;margin:0 0 10px}
+  .hero p{color:#7a6a5a;max-width:60ch;margin:0 auto}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px;max-width:1000px;margin:30px auto;padding:0 24px}
+  .card{background:#fff;border:1px solid #ece2d6;border-radius:10px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,.05)}
+  .card h3{margin:0 0 6px;font-size:1.05rem}
+  .card .p{color:#5a1020;font-weight:bold}
+  .note{max-width:760px;margin:20px auto 80px;padding:16px 24px;background:#fff4e0;border-left:4px solid #c9971f;border-radius:8px;color:#6b5520}
+  footer{background:#2a1014;color:#caa;text-align:center;padding:24px;font-size:.85rem}
+</style>
+</head>
+<body>
+  <div class="top">🍷 MARIO WINE SHOP</div>
+  <div class="hero">
+    <h1>Vini italiani selezionati</h1>
+    <p>Questo è un <b>finto sito cliente</b>. In basso a destra c'è il venditore AI: l'abbiamo aggiunto con <b>una sola riga di codice</b>, senza toccare nient'altro.</p>
+  </div>
+  <div class="grid">
+    <div class="card"><h3>Chianti Classico DOCG</h3><div class="p">€14,90</div></div>
+    <div class="card"><h3>Barolo Riserva 2018</h3><div class="p">€39,00</div></div>
+    <div class="card"><h3>Prosecco Extra Dry</h3><div class="p">€9,50</div></div>
+    <div class="card"><h3>Franciacorta Brut</h3><div class="p">€22,00</div></div>
+    <div class="card"><h3>Vermentino di Sardegna</h3><div class="p">€11,00</div></div>
+    <div class="card"><h3>Set 6 Calici Cristallo</h3><div class="p">€34,90</div></div>
+  </div>
+  <div class="note">👉 Clicca la <b>bollina viola</b> in basso a destra: parte il venditore AI con <b>i prodotti di questo negozio</b>. Stesso motore della demo Kayaman, contenuti completamente diversi — caricati da una config esterna.</div>
+  <footer>Mario Wine Shop · sito dimostrativo — il venditore è <b>AI Seller by Black Star</b></footer>
+
+  <!-- ===== L'UNICA RIGA CHE IL CLIENTE AGGIUNGE ===== -->
+  <script src="widget.js" data-config="demo-config.json" data-color="#7a1730" defer></script>
+</body>
+</html>

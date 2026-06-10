@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>AI Seller · Studio — crea il tuo venditore in 30 secondi</title>
+<link href="https://fonts.googleapis.com/css2?family=Alata&family=ABeeZee&family=Dancing+Script:wght@700&display=swap" rel="stylesheet" />
+<style>
+  :root{--ink:#1d2230;--paper:#fff;--bg:#0f1320;--line:#e7e3ec;--brand:#6c4cff;--brand2:#00c2a8;--gold:#f0b429;--muted:#8b8798;--text:#3a3a44}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'ABeeZee',system-ui,sans-serif;color:var(--text);background:#0f1320;
+    background-image:radial-gradient(90% 60% at 80% -10%,#2a2350 0%,rgba(42,35,80,0) 60%),radial-gradient(80% 50% at 0% 0%,#14324a 0%,rgba(20,50,74,0) 55%);min-height:100vh}
+  input[type=text],input[type=url]{font-size:16px}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 20px 80px}
+  header.hero{text-align:center;color:#fff;padding:60px 16px 30px}
+  header .kick{font-family:'Dancing Script',cursive;font-size:1.7rem;color:var(--gold)}
+  header h1{font-family:'Alata',sans-serif;font-size:clamp(1.8rem,1.2rem+3vw,2.9rem);margin:.2em 0;line-height:1.1}
+  header p{color:#c7c3d6;max-width:60ch;margin:0 auto;font-size:1.05rem}
+  .box{background:var(--paper);border-radius:20px;box-shadow:0 30px 70px rgba(0,0,0,.35);padding:26px;margin-top:18px}
+  .urlbar{display:flex;gap:10px;flex-wrap:wrap}
+  .urlbar input{flex:1;min-width:240px;border:2px solid var(--line);border-radius:14px;padding:15px 16px;outline:none}
+  .urlbar input:focus{border-color:var(--brand)}
+  .btn{border:none;border-radius:14px;padding:15px 22px;font-family:'Alata',sans-serif;font-size:1rem;cursor:pointer;transition:transform .15s,box-shadow .15s;color:#fff;background:linear-gradient(135deg,var(--brand),#8b6cff);box-shadow:0 10px 24px rgba(108,76,255,.4)}
+  .btn:hover{transform:translateY(-1px)}
+  .btn:disabled{opacity:.6;cursor:wait;transform:none}
+  .btn.green{background:linear-gradient(135deg,#00c2a8,#1fd6a0);box-shadow:0 10px 24px rgba(0,194,168,.4)}
+  .btn.ghost{background:#f2f0f7;color:var(--ink);box-shadow:none}
+  .hint{color:var(--muted);font-size:.85rem;margin-top:10px}
+  .ex{color:var(--brand);cursor:pointer;text-decoration:underline}
+  .status{margin-top:16px;font-size:.95rem}
+  .spinner{display:inline-block;width:16px;height:16px;border:2px solid #ccc;border-top-color:var(--brand);border-radius:50%;animation:spin .7s linear infinite;vertical-align:-3px;margin-right:8px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .summary{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin:6px 0 14px}
+  .pill{background:#f2f0f7;border-radius:999px;padding:6px 14px;font-size:.85rem;color:var(--ink)}
+  .pill b{color:var(--brand)}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 4px}
+  .chip{background:#eef6f4;color:#0a7a68;border-radius:999px;padding:4px 11px;font-size:.78rem}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:14px;max-height:420px;overflow:auto;padding:4px}
+  .p{border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;position:relative;background:#fff;transition:border-color .15s,transform .15s}
+  .p:hover{transform:translateY(-2px)}
+  .p.boost{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold)}
+  .p .img{height:96px;background:#f4f2f8 center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:30px;color:#cabfe0}
+  .p .b{padding:9px 10px}
+  .p .nm{font-size:.82rem;font-weight:bold;color:var(--ink);line-height:1.2;max-height:2.4em;overflow:hidden}
+  .p .pr{color:var(--brand);font-weight:bold;margin-top:4px}
+  .p .star{position:absolute;top:6px;right:6px;background:var(--gold);color:#3a2c00;border-radius:999px;font-size:.7rem;padding:2px 7px;font-weight:bold;opacity:0;transition:.15s}
+  .p.boost .star{opacity:1}
+  .uploads{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+  .upcell{display:flex;flex-direction:column;gap:6px;cursor:pointer;font-size:.8rem;color:var(--ink);font-weight:bold;text-align:center}
+  .thumb{aspect-ratio:1;border:2px dashed #c9c4dd;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:#b3aecb;background:#faf9ff center/contain no-repeat;transition:.15s}
+  .thumb.has{border-style:solid;border-color:var(--brand);background-color:#fff}
+  .upcell:hover .thumb{border-color:var(--brand)}
+  @media(max-width:520px){.uploads{grid-template-columns:1fr 1fr}}
+  .flipToggle{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:.86rem;color:var(--ink);cursor:pointer}
+  .flipToggle input{width:16px;height:16px;cursor:pointer}
+  .logorow{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-top:10px}
+  .chip.logopos{cursor:pointer;user-select:none}
+  .chip.logopos.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px;align-items:center}
+  .lbl{margin:16px 0 4px;font-weight:bold;color:var(--ink);font-size:.86rem}
+  code{background:rgba(0,0,0,.06);padding:1px 6px;border-radius:6px;font-size:.85em}
+  .embed{margin-top:18px;background:#0f1320;color:#cfe;border-radius:14px;padding:16px;font-family:ui-monospace,monospace;font-size:.82rem;overflow:auto;white-space:pre-wrap;word-break:break-all;position:relative}
+  .embed button{position:absolute;top:10px;right:10px;font-size:.72rem;padding:5px 10px;border-radius:8px}
+  h3{font-family:'Alata',sans-serif;color:var(--ink);margin:22px 0 6px}
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:30px 0 0}
+  .step{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:16px;color:#dcd9ea}
+  .step b{color:#fff;font-family:'Alata',sans-serif}
+  footer{text-align:center;color:#9a96ad;margin-top:40px;font-size:.85rem}
+  .flag{display:inline-flex;width:20px;height:13px;border-radius:2px;overflow:hidden;vertical-align:-2px;margin-right:5px}
+  .flag i{flex:1}.g{background:#009246}.w{background:#fff}.r{background:#ce2b37}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="kick">AI Seller Studio</div>
+    <h1>Trasforma il tuo sito in un venditore esperto<br>in 30 secondi</h1>
+    <p>Incolla il link del tuo negozio. Leggiamo i tuoi prodotti, costruiamo un venditore con neuromarketing e te lo facciamo provare subito. Zero lavoro manuale.</p>
+  </header>
+
+  <div class="box">
+    <div class="urlbar">
+      <input id="url" type="url" placeholder="https://il-tuo-negozio.com" autocomplete="off" />
+      <button id="go" class="btn">⚡ Analizza il negozio</button>
+    </div>
+    <div class="hint">Funziona con Shopify, WooCommerce e siti con schema.org. Prova un esempio:
+      <span class="ex" data-u="sweeddreamscbds.com">sweeddreamscbds.com</span></div>
+    <div id="status" class="status"></div>
+    <div id="result"></div>
+  </div>
+
+  <div class="steps">
+    <div class="step"><b>1 · Analizza</b><br>Leggiamo automaticamente prodotti, prezzi, foto e categorie dal tuo sito.</div>
+    <div class="step"><b>2 · Spingi</b><br>Clicca i prodotti che vuoi promuovere di più: il venditore li metterà in primo piano.</div>
+    <div class="step"><b>3 · Pubblica</b><br>Copi una riga di codice e il venditore AI è live sul tuo sito. Premium: AI vera + analytics.</div>
+  </div>
+
+  <footer>
+    <span class="flag"><i class="g"></i><i class="w"></i><i class="r"></i></span> Made in Italy · AI Seller — motore di vendita white-label
+  </footer>
+</div>
+
+<script>
+  const $ = s => document.querySelector(s);
+  let DATA = null, boosted = new Set(), CHAR = {}, charFlip = false, LOGO = null, logoPos = {x:0.5,y:0.30,scale:0.26}, ALIGNED = null, ACCENT = "", _logoFit = null;
+
+  function setStatus(html){ $("#status").innerHTML = html; }
+  function emoji(){ return "🛍️"; }
+
+  async function analyze(u){
+    const url = (u || $("#url").value).trim();
+    if(!url){ setStatus("Inserisci un URL 🙂"); return; }
+    $("#go").disabled = true; $("#result").innerHTML = ""; boosted = new Set(); CHAR = {}; charFlip = false; LOGO = null; logoPos = {x:0.5,y:0.30,scale:0.26}; ALIGNED = null; ACCENT = ""; _logoFit = null;
+    setStatus('<span class="spinner"></span> Leggo il negozio… (prodotti, prezzi, foto, categorie)');
+    try{
+      const r = await fetch("/api/scrape?url=" + encodeURIComponent(url));
+      const d = await r.json();
+      if(!d.ok){ setStatus("⚠️ " + (d.error || "Non riesco a leggere questo sito.")); $("#go").disabled=false; return; }
+      DATA = d; render(d);
+      setStatus("✅ Trovati <b>" + d.count + "</b> prodotti su <b>" + (d.brand||d.host) + "</b> ("+d.platform+").");
+    }catch(e){ setStatus("⚠️ Errore di rete: " + e.message); }
+    $("#go").disabled = false;
+  }
+
+  function render(d){
+    const cats = (d.categories||[]).map(c => '<span class="chip">'+esc(c)+'</span>').join("");
+    const lead = d.mode === "lead" || !(d.products && d.products.length);
+    let body = '<div class="summary">'+
+      '<span class="pill">🏪 <b>'+esc(d.brand||d.host)+'</b></span>'+
+      '<span class="pill">'+(lead?'🛠️ <b>Servizi</b> · modalità Lead':'📦 <b>'+d.count+'</b> prodotti')+'</span>'+
+      (cats?'<span class="pill">🗂️ <b>'+d.categories.length+'</b> categorie</span>':'')+'</div>'+
+      (cats?'<div class="chips">'+cats+'</div>':'');
+    if(d.products && d.products.length){
+      body += '<h3>I tuoi prodotti — clicca quelli da <b>spingere</b> ⭐</h3><div class="grid">'+d.products.map((p,i)=>productCard(p,i)).join("")+'</div>';
+    } else {
+      const serv = (d.headings||[]).slice(0,8).map(h=>'<span class="chip">'+esc(h)+'</span>').join("");
+      body += '<h3>Sito di servizi → modalità <b>Lead</b> (prenotazione)</h3>'+(serv?'<div class="chips">'+serv+'</div>':'');
+    }
+    // 🗣️ TONO DI SETTORE: come parlerà il venditore
+    const a = detectArchetype(d), tn = toneFor(a);
+    body += '<h3>🗣️ Tono di voce <span style="color:var(--brand)">'+a.emoji+' '+esc(a.name)+'</span></h3>'+
+      '<div class="hint">Il venditore parlerà in modo <b>'+esc(tn.label)+'</b>, chiederà il nome al cliente e reagirà con frasi su misura del settore. Tutto automatico.</div>'+
+      '<div class="chips"><span class="chip">👋 "'+esc(fillTone(tn.greet, d.brand||d.host).it)+'"</span></div>';
+    // 🎨 COLORE DEL BRAND: scelto da te (entra nel prompt E nella chat) — niente più colori indovinati
+    if(!ACCENT) ACCENT = d.accent || d.themeColor || "#6c4cff";
+    const detected = (d.colors && d.colors.length) ? d.colors : ['#2e7d32','#1565c0','#00897b','#e2231a','#f9a825','#6c4cff'];
+    body += '<h3>🎨 Colore del brand <span style="color:var(--muted);font-weight:normal">'+((d.colors&&d.colors.length)?'· rilevati dalla pagina':'')+'</span></h3>'+
+      '<div class="hint">Letti <b>in automatico dal tuo sito</b> (entrano nel <b>prompt del personaggio</b> e nella <b>chat</b>). Clicca uno dei colori rilevati o scegline uno tu.</div>'+
+      '<div class="logorow" style="align-items:center">'+
+        '<input type="color" id="accentPick" value="'+esc(ACCENT)+'" style="width:54px;height:40px;border:none;border-radius:10px;cursor:pointer;background:none">'+
+        '<input type="text" id="accentHex" value="'+esc(ACCENT)+'" style="width:110px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-family:ui-monospace,monospace">'+
+        '<div class="chips" id="accentSwatches">'+
+          detected.map(c=>'<span class="chip sw" data-c="'+esc(c)+'" style="background:'+esc(c)+';color:#fff;border-color:'+esc(c)+'">'+esc(c)+'</span>').join("")+
+        '</div>'+
+      '</div>';
+    // 🎭 PERSONAGGIO: prompt generati su misura
+    const fb = fileBase(d);
+    body += '<h3>🎭 Il tuo personaggio — prompt pronti <span style="color:var(--brand)">'+a.emoji+' '+esc(a.name)+'</span></h3>'+
+      '<div class="hint">Genera queste 3 immagini su ChatGPT (chiedi <b>sfondo trasparente PNG</b>), poi le carichi. Già su misura per il tuo brand e i tuoi colori.</div>'+
+      '<div id="promptWrap">'+promptBoxesHTML(d, a, fb)+'</div>';
+    // 📤 UPLOAD delle immagini generate
+    body += '<h3>📤 Carica le immagini del personaggio</h3>'+
+      '<div class="hint">Le <b>prime 2</b> (Riposo + Indica steso) fanno già <b>muovere e puntare</b> il personaggio. La <b>3ª</b> (braccio ritratto) aggiunge lo <b>scatto del braccio</b> del "colpetto". Le allineo io così non "salta". Lascia vuoto = solo chat.</div>'+
+      '<div class="uploads">'+upBox('rest','1 · Riposo')+upBox('point','2 · Indica steso')+upBox('pointBack','3 · Braccio ritratto')+'</div>'+
+      '<label class="flipToggle"><input type="checkbox" id="flipChk"> ↔ Indica dal lato sbagliato? <b>Inverti il verso</b></label>';
+    // 🏷️ LOGO del brand sul personaggio (applicato da noi = perfetto, niente scritte sbagliate dell'AI)
+    body += '<h3>🏷️ Logo del brand sul personaggio <span style="color:var(--muted);font-weight:normal">(opzionale)</span></h3>'+
+      '<div class="hint">Carica il TUO logo (PNG trasparente): lo applico io in automatico sul personaggio, in <b>tutte le pose</b>. Così è <b>perfetto</b> — niente scritte storte generate dall\'AI.</div>'+
+      '<div class="logorow">'+
+        '<label class="upcell" style="max-width:130px"><span>Logo PNG</span><div class="thumb" id="th_logo">＋</div><input type="file" id="up_logo" accept="image/png,image/webp,image/svg+xml" hidden></label>'+
+        '<div id="logoCtrl" style="display:none;flex:1;min-width:200px">'+
+          '<div class="lbl">Posizione rapida</div><div class="chips" id="logoPosChips">'+
+            ['Petto|0.5|0.30','Cuore (sx)|0.40|0.30','Pancia|0.5|0.46','Alto/Cappello|0.5|0.12'].map((p,i)=>{var s=p.split("|");return '<span class="chip logopos'+(i===0?" on":"")+'" data-x="'+s[1]+'" data-y="'+s[2]+'">'+s[0]+'</span>';}).join("")+'</div>'+
+          '<div class="lbl">Dimensione</div><input type="range" id="logoSize" min="10" max="48" value="26" style="width:100%">'+
+          '<canvas id="logoPrev" width="150" height="220" style="margin-top:10px;border:1px solid #e6e1f0;border-radius:12px;background:#faf9ff;max-width:100%;cursor:move;touch-action:none"></canvas>'+
+          '<div class="hint" id="logoHint" style="margin-top:4px">✋ <b>Trascina il logo</b> nell\'anteprima per metterlo esatto (o usa i pulsanti rapidi). Carica prima le immagini del personaggio.</div>'+
+        '</div>'+
+      '</div>';
+    body += '<div class="actions">'+
+        '<button class="btn green" id="gen">🚀 Genera il venditore & Anteprima</button>'+
+        '<button class="btn ghost" id="snip">🚀 Pubblica cliente (Salva)</button>'+
+      '</div><div id="embedBox"></div>';
+    $("#result").innerHTML = body;
+    $("#gen").onclick = generate;
+    $("#snip").onclick = showEmbed;
+    document.querySelectorAll(".p").forEach(el => el.onclick = () => {
+      const i = +el.dataset.i; if(boosted.has(i)){boosted.delete(i);el.classList.remove("boost");} else {boosted.add(i);el.classList.add("boost");}
+    });
+    document.querySelectorAll(".promptcopy").forEach(b => b.onclick = () => { navigator.clipboard.writeText(b.dataset.t); b.textContent="copiato ✓"; setTimeout(()=>b.textContent="copia",1500); });
+    const ap = $("#accentPick"); if(ap) ap.oninput = () => setAccent(ap.value);
+    const ah = $("#accentHex"); if(ah) ah.onchange = () => setAccent(ah.value);
+    document.querySelectorAll(".sw").forEach(s => s.onclick = () => setAccent(s.dataset.c));
+    const fc = $("#flipChk"); if(fc) fc.onchange = () => { charFlip = fc.checked; };
+    ['rest','point','pointBack'].forEach(k => {
+      const inp = $("#up_"+k); if(!inp) return;
+      inp.onchange = async () => {
+        const f = inp.files && inp.files[0]; if(!f) return;
+        try{
+          CHAR[k] = await fileToDataURL(f);
+          ALIGNED = null;   // invalida la cache: il personaggio è cambiato
+          const th = $("#th_"+k); if(th){ th.style.backgroundImage = "url('"+CHAR[k]+"')"; th.classList.add("has"); th.textContent=""; }
+          if(LOGO) renderLogoPreview();
+        }catch(e){ alert("Immagine non valida"); }
+      };
+    });
+    // logo
+    const li = $("#up_logo");
+    if(li) li.onchange = async () => {
+      const f = li.files && li.files[0]; if(!f) return;
+      try{ LOGO = await fileToDataURL(f);
+        const th = $("#th_logo"); if(th){ th.style.backgroundImage="url('"+LOGO+"')"; th.classList.add("has"); th.textContent=""; }
+        const c = $("#logoCtrl"); if(c) c.style.display="block";
+        renderLogoPreview();
+      }catch(e){ alert("Logo non valido"); }
+    };
+    document.querySelectorAll(".logopos").forEach(ch => ch.onclick = () => {
+      document.querySelectorAll(".logopos").forEach(x=>x.classList.remove("on")); ch.classList.add("on");
+      logoPos.x = parseFloat(ch.dataset.x); logoPos.y = parseFloat(ch.dataset.y); renderLogoPreview();
+    });
+    const ls = $("#logoSize"); if(ls) ls.oninput = () => { logoPos.scale = parseInt(ls.value,10)/100; renderLogoPreview(); };
+    // ✋ trascina il logo direttamente sull'anteprima per la posizione esatta
+    const prev = $("#logoPrev");
+    if(prev){
+      let drag = false;
+      const place = (e) => {
+        if(!_logoFit) return;
+        const r = prev.getBoundingClientRect();
+        const cx = (e.clientX - r.left) * (prev.width / r.width);
+        const cy = (e.clientY - r.top) * (prev.height / r.height);
+        logoPos.x = Math.max(0, Math.min(1, (cx - _logoFit.bx) / _logoFit.bw));
+        logoPos.y = Math.max(0, Math.min(1, (cy - _logoFit.by) / _logoFit.bh));
+        document.querySelectorAll(".logopos").forEach(x => x.classList.remove("on"));
+        renderLogoPreview();
+      };
+      prev.addEventListener("pointerdown", e => { drag = true; try{ prev.setPointerCapture(e.pointerId); }catch(_){} place(e); });
+      prev.addEventListener("pointermove", e => { if(drag) place(e); });
+      prev.addEventListener("pointerup", () => { drag = false; });
+      prev.addEventListener("pointercancel", () => { drag = false; });
+    }
+  }
+  // anteprima: personaggio (riposo) + logo nella posizione/scala scelte
+  async function renderLogoPreview(){
+    const cv = $("#logoPrev"), hint = $("#logoHint"); if(!cv) return;
+    const ctx = cv.getContext("2d"); ctx.clearRect(0,0,cv.width,cv.height);
+    if(!CHAR.rest && !CHAR.point){ _logoFit=null; if(hint) hint.textContent="Carica prima le immagini del personaggio per vedere l'anteprima."; return; }
+    if(hint) hint.innerHTML="✋ <b>Trascina il logo</b> nell'anteprima per posizionarlo esatto (o usa i pulsanti rapidi).";
+    if(!ALIGNED) ALIGNED = await alignFrames(CHAR);
+    if(!ALIGNED) return;
+    const base = await loadImg(ALIGNED.rest||ALIGNED.point);
+    // contain del personaggio nel canvas
+    const s = Math.min(cv.width/base.width, cv.height/base.height);
+    const bw = base.width*s, bh = base.height*s, bx=(cv.width-bw)/2, by=cv.height-bh;
+    _logoFit = { bx, by, bw, bh };                    // area della figura: serve a mappare il trascinamento
+    ctx.drawImage(base, bx, by, bw, bh);
+    if(LOGO){
+      const lg = await loadImg(LOGO);
+      const lw = logoPos.scale*bw, lh = lw*(lg.height/lg.width);
+      const lx = bx+logoPos.x*bw-lw/2, ly = by+logoPos.y*bh-lh/2;
+      ctx.drawImage(lg, lx, ly, lw, lh);
+      // riquadro tratteggiato attorno al logo (per capire che si può spostare)
+      ctx.save(); ctx.strokeStyle="rgba(124,92,255,.9)"; ctx.setLineDash([4,3]); ctx.lineWidth=1.5; ctx.strokeRect(lx, ly, lw, lh); ctx.restore();
+    }
+  }
+  // applica il logo su tutte le pose del personaggio (rest/point/pointBack) — perfetto, non generato dall'AI
+  async function compositeLogo(al){
+    if(!LOGO || !al) return al;
+    const lg = await loadImg(LOGO);
+    for(const k of ["rest","point","pointBack"]){
+      if(!al[k]) continue;
+      const im = await loadImg(al[k]);
+      const cv = document.createElement("canvas"); cv.width=al.w; cv.height=al.h;
+      const ctx = cv.getContext("2d"); ctx.drawImage(im,0,0);
+      const lw = logoPos.scale*al.w, lh = lw*(lg.height/lg.width);
+      ctx.drawImage(lg, logoPos.x*al.w-lw/2, logoPos.y*al.h-lh/2, lw, lh);
+      al[k] = cv.toDataURL("image/png");
+    }
+    return al;
+  }
+  function upBox(key, label){
+    return '<label class="upcell"><span>'+esc(label)+'</span>'+
+      '<div class="thumb" id="th_'+key+'">＋</div>'+
+      '<input type="file" accept="image/png,image/webp,image/jpeg" id="up_'+key+'" hidden></label>';
+  }
+  function fileToDataURL(file){
+    return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(file); });
+  }
+  function loadImg(src){ return new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=src; }); }
+  // Allinea i fotogrammi sui PIEDI in una tela comune → nessuno "scatto" al cambio posa
+  async function alignFrames(frames){
+    const keys = Object.keys(frames).filter(k=>frames[k]);
+    if(!keys.length) return null;
+    const H = 540; // altezza figura target
+    const m = {};
+    for(const k of keys){
+      const im = await loadImg(frames[k]);
+      const cw = im.naturalWidth, ch = im.naturalHeight;
+      const cv = document.createElement("canvas"); cv.width=cw; cv.height=ch;
+      const cx = cv.getContext("2d"); cx.drawImage(im,0,0);
+      let minX=cw, minY=ch, maxX=0, maxY=0, has=false;
+      try{
+        const dt = cx.getImageData(0,0,cw,ch).data;
+        for(let y=0;y<ch;y++) for(let x=0;x<cw;x++){ if(dt[(y*cw+x)*4+3]>24){ has=true; if(x<minX)minX=x; if(x>maxX)maxX=x; if(y<minY)minY=y; if(y>maxY)maxY=y; } }
+      }catch(e){ has=false; } // CORS-safe: data URL non blocca
+      if(!has){ minX=0; minY=0; maxX=cw-1; maxY=ch-1; }
+      const bw=maxX-minX+1, bh=maxY-minY+1;
+      // centro dei "piedi": baricentro X nella fascia inferiore 12%
+      let footX=minX+bw/2;
+      try{
+        const dt = cx.getImageData(minX, maxY-Math.max(2,bh*0.12)|0, bw, Math.max(2,bh*0.12)|0).data;
+        let sx=0,n=0,fw=bw; for(let i=0;i<dt.length;i+=4){ if(dt[i+3]>24){ const px=(i/4)%fw; sx+=px; n++; } }
+        if(n) footX = minX + sx/n;
+      }catch(e){}
+      m[k]={ im, minX, minY, bw, bh, footX };
+    }
+    // scala tutto a H; allinea piedi (footX) e fondo (maxY)
+    let leftMax=0, rightMax=0;
+    for(const k of keys){ const o=m[k]; const s=H/o.bh; o.s=s; o.fx=(o.footX-o.minX)*s; o.w=o.bw*s; leftMax=Math.max(leftMax,o.fx); rightMax=Math.max(rightMax,o.w-o.fx); }
+    const W = Math.ceil(leftMax+rightMax), CH = H;
+    const out = {};
+    for(const k of keys){
+      const o=m[k]; const cv=document.createElement("canvas"); cv.width=W; cv.height=CH;
+      const cx=cv.getContext("2d");
+      const dx = leftMax - o.fx, dy = CH - H;
+      cx.drawImage(o.im, o.minX, o.minY, o.bw, o.bh, dx, dy, o.w, H);
+      out[k] = cv.toDataURL("image/png");
+    }
+    out.w = W; out.h = CH;
+    // 🙂 AVATAR (viso): ritaglio quadrato sulla testa del frame di riposo → per la pallina chiusa
+    try{
+      const o = m["rest"] || m[keys[0]];
+      const side = Math.max(24, Math.min(o.bw, Math.round(o.bh*0.5)));
+      const fx = Math.max(0, Math.round(o.footX - side/2)), fy = Math.max(0, o.minY);
+      const fc = document.createElement("canvas"); fc.width=256; fc.height=256;
+      fc.getContext("2d").drawImage(o.im, fx, fy, side, side, 0, 0, 256, 256);
+      out.face = fc.toDataURL("image/png");
+    }catch(e){}
+    return out;
+  }
+  function fileBase(d){ return ((d.host||"brand").replace(/\..*/,"").replace(/[^a-z0-9]/gi,"").slice(0,16))||"brand"; }
+  function promptBox(label, text){
+    return '<div style="margin:10px 0"><div style="font-size:.82rem;font-weight:bold;color:var(--ink);margin-bottom:4px">'+esc(label)+'</div>'+
+      '<div class="embed" style="white-space:pre-wrap;padding-right:70px">'+
+      '<button class="btn ghost promptcopy" data-t="'+esc(text)+'">copia</button>'+esc(text)+'</div></div>';
+  }
+  function promptBoxesHTML(d, a, fb){
+    const pr = buildCharacterPrompts(d, a);
+    return promptBox('1 · Riposo → '+fb+'-rest.png', pr.rest)+
+      promptBox('2 · Indica, braccio steso → '+fb+'-point.png', pr.point)+
+      promptBox('3 · Braccio ritratto — 2° frame del movimento → '+fb+'-point-back.png', pr.pointBack);
+  }
+  function refreshPrompts(){
+    const wrap = $("#promptWrap"); if(!wrap || !DATA) return;
+    wrap.innerHTML = promptBoxesHTML(DATA, detectArchetype(DATA), fileBase(DATA));
+    wrap.querySelectorAll(".promptcopy").forEach(b => b.onclick = () => { navigator.clipboard.writeText(b.dataset.t); b.textContent="copiato ✓"; setTimeout(()=>b.textContent="copia",1500); });
+  }
+  function setAccent(v){
+    v = (v||"").trim(); if(v && v[0] !== "#") v = "#"+v;
+    if(!/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(v)) return;
+    ACCENT = v;
+    const p=$("#accentPick"), h=$("#accentHex"); if(p)p.value=v; if(h)h.value=v;
+    refreshPrompts();   // i prompt si aggiornano col colore scelto
+  }
+  var ARCHETYPES = [
+    { k:/officin|meccanic|autofficin|\bauto\b|\bcar\b|garage|gommist|motor|veicol|carrozzeri|moto\b/i, name:"meccanico", desc:"un meccanico giovane e simpatico in tuta da officina racing, con una chiave inglese in mano", emoji:"🔧" },
+    { k:/vino|wine|enotec|cantina|sommelier|bottigli|spumant/i, name:"sommelier", desc:"un sommelier elegante con grembiule, che regge un calice di vino", emoji:"🍷" },
+    { k:/cbd|cannab|\bgrow\b|smoke|canap|hemp/i, name:"personaggio relax", desc:"un personaggio rilassato e amichevole dalla vibe naturale, con una piccola fogliolina o un dettaglio botanico e un sorriso disteso", emoji:"🌿" },
+    { k:/raviol|tortellin|tagliatell|pastific|pastaio|pasta\s*fresc|gnocch|salumeri|salumi|embutido|norciner|formaggi|bottega|alimentari|delicatess|drogheria|\bdeli\b|gastronom/i, name:"pastaio", desc:"un pastaio/bottegaio italiano caloroso e sorridente, con grembiule da bottega e maniche rimboccate, che regge un VASSOIO DI PASTA FRESCA RIPIENA (ravioli/tortellini) oppure un MATTARELLO di legno; aria artigianale, genuina e accogliente, da gastronomia italiana di qualità. NIENTE fili, corde, spaghetti sciolti o oggetti filiformi in mano.", emoji:"🍝" },
+    { k:/ristorant|pizz|\bfood\b|cucin|\bchef\b|trattoria|osteria|burger|sushi/i, name:"chef", desc:"uno chef sorridente con cappello da cuoco e grembiule", emoji:"👨‍🍳" },
+    { k:/parrucchier|estetic|\bbeauty\b|capell|\bnail\b|\bspa\b|bellezz|barber/i, name:"beauty expert", desc:"un/una beauty expert dal look curato e alla moda, con forbici e pettine in mano e un grembiule da salone elegante", emoji:"💇" },
+    { k:/palestr|fitness|\bgym\b|personal train|crossfit|allenament/i, name:"personal trainer", desc:"un personal trainer energico in tenuta sportiva", emoji:"💪" },
+    { k:/moda|fashion|abbigliament|boutique|scarp|sneaker|clothing/i, name:"stylist", desc:"uno/una stylist alla moda con outfit trendy, occhiali di tendenza e un metro da sarto al collo", emoji:"👗" },
+    { k:/immobil|real ?estate|agenzia immob|compravendit|locazion/i, name:"agente immobiliare", desc:"un agente immobiliare professionale ed elegante in giacca, con un mazzo di chiavi in mano", emoji:"🏠" },
+    { k:/dentist|medic|clinic|odontoiatr|fisio|salute|farmac|studio medico/i, name:"assistente sanitario", desc:"un assistente in camice, rassicurante e professionale", emoji:"🩺" },
+    { k:/viagg|travel|tour|hotel|\bbnb\b|vacanz|booking|resort|agriturism/i, name:"concierge", desc:"un concierge di viaggio sorridente in divisa elegante, con cappellino da concierge e una piccola valigia accanto", emoji:"🧳" },
+    { k:/digital|software|\btech\b|\bapp\b|web agency|digital studio|\bsaas\b|marketing|startup|ux|automazion/i, name:"assistente tech", desc:"un assistente moderno e smart dal look tech minimale, con occhiali eleganti e cuffie/headset al collo", emoji:"💻" }
+  ];
+  function detectArchetype(d){
+    var hay = ((d.title||"")+" "+(d.description||"")+" "+(d.headings||[]).join(" ")+" "+(d.categories||[]).join(" ")).toLowerCase();
+    for(var i=0;i<ARCHETYPES.length;i++){ if(ARCHETYPES[i].k.test(hay)) return ARCHETYPES[i]; }
+    return { name:"assistente amichevole", desc:"una mascotte amichevole e professionale dal look moderno", emoji:"🙂" };
+  }
+  // 🗣️ TONO DI SETTORE: come parla il venditore (ruolo, saluto, reazioni "ti ho ascoltato") — {B}=brand
+  var GENERIC_TONE = {
+    label:"caldo e amichevole",
+    role:{it:"il tuo assistente",es:"tu asistente",en:"your assistant"},
+    greet:{it:"Ciao e benvenuto da {B}! 👋 Raccontami cosa cerchi e ti do una mano a trovarlo 😊",es:"¡Hola y bienvenido a {B}! 👋 Cuéntame qué buscas y te echo una mano 😊",en:"Hi and welcome to {B}! 👋 Tell me what you're after and I'll lend a hand 😊"},
+    acks:{it:["Ottima scelta 😊","Perfetto, ci siamo 👍","Capito al volo 😉","Mi piace 🙌"],es:["Buena elección 😊","Perfecto, vamos 👍","Lo pillo 😉","Me gusta 🙌"],en:["Great choice 😊","Perfect, let's go 👍","Got it 😉","Love it 🙌"]},
+    teasers:{it:["👋 Posso aiutarti?","Hai una domanda? Sono qui 😊","Ti serve una mano? 🙌"],es:["👋 ¿Te ayudo?","¿Tienes una duda? Estoy aquí 😊","¿Necesitas una mano? 🙌"],en:["👋 Need a hand?","Got a question? I'm here 😊","Want some help? 🙌"]}
+  };
+  var TONES = {
+    "meccanico":{ label:"diretto e rassicurante",
+      role:{it:"il tuo meccanico di fiducia",es:"tu mecánico de confianza",en:"your trusted mechanic"},
+      greet:{it:"Ciao! 👋 Sono l'assistente di {B}. Dimmi pure cos'ha la tua auto o moto — niente paura, è il nostro pane quotidiano 🔧",es:"¡Hola! 👋 Soy el asistente de {B}. Cuéntame qué le pasa a tu coche o moto — sin miedo, es nuestro pan de cada día 🔧",en:"Hi! 👋 I'm {B}'s assistant. Tell me what's up with your car or bike — no fear, it's our daily bread 🔧"},
+      acks:{it:["Capito, ci pensiamo noi 🔧","Tranquillo, si sistema 👍","Ah, classico — visto mille volte 😏","Ok, ho già un'idea 🛠️"],es:["Entendido, nos encargamos 🔧","Tranquilo, se arregla 👍","Ah, clásico — visto mil veces 😏","Vale, ya tengo una idea 🛠️"],en:["Got it, we'll handle it 🔧","No worries, it's fixable 👍","Ah, classic — seen it a thousand times 😏","Okay, I've got an idea 🛠️"]},
+      teasers:{it:["🔧 Problemi con l'auto? Chiedimi pure","Spia accesa? Ti dico subito cos'è","Vuoi un preventivo veloce? 😉"],es:["🔧 ¿Problemas con el coche? Pregúntame","¿Testigo encendido? Te digo qué es","¿Un presupuesto rápido? 😉"],en:["🔧 Car trouble? Just ask me","Warning light? I'll tell you what it is","Want a quick quote? 😉"]} },
+    "sommelier":{ label:"elegante e appassionato",
+      role:{it:"il tuo sommelier",es:"tu sommelier",en:"your sommelier"},
+      greet:{it:"Benvenuto da {B} 🍷 Raccontami i tuoi gusti e l'occasione, e ti guido al calice perfetto 😊",es:"Bienvenido a {B} 🍷 Cuéntame tus gustos y la ocasión, y te guío a la copa perfecta 😊",en:"Welcome to {B} 🍷 Tell me your taste and the occasion, and I'll guide you to the perfect glass 😊"},
+      acks:{it:["Ottimo palato 😏","Che bella scelta 🍷","Mmm, intrigante…","Capisco i tuoi gusti 👌"],es:["Buen paladar 😏","Qué buena elección 🍷","Mmm, intrigante…","Entiendo tus gustos 👌"],en:["Fine palate 😏","Lovely choice 🍷","Mmm, intriguing…","I get your taste 👌"]} },
+    "personaggio relax":{ label:"rilassato e naturale",
+      role:{it:"il tuo consulente del benessere",es:"tu consejero de bienestar",en:"your wellness guide"},
+      greet:{it:"Ehi, benvenuto da {B} 🌿 Dimmi come ti senti o cosa cerchi, e troviamo insieme la cosa giusta 😌",es:"Ey, bienvenido a {B} 🌿 Dime cómo te sientes o qué buscas, y encontramos juntos lo ideal 😌",en:"Hey, welcome to {B} 🌿 Tell me how you feel or what you need, and we'll find the right thing together 😌"},
+      acks:{it:["Ti capisco bene 🌿","Tranquillo, ci pensiamo noi 😌","Bella vibe 🙌","Ottimo, respira 😊"],es:["Te entiendo bien 🌿","Tranquilo, lo vemos 😌","Buena vibra 🙌","Genial, respira 😊"],en:["I feel you 🌿","Easy, we've got this 😌","Good vibe 🙌","Nice, breathe 😊"]} },
+    "chef":{ label:"caloroso e goloso",
+      role:{it:"il tuo oste di fiducia",es:"tu anfitrión",en:"your host"},
+      greet:{it:"Benvenuto da {B}! 👨‍🍳 Hai fame di qualcosa in particolare? Dimmi e ti consiglio il meglio 😋",es:"¡Bienvenido a {B}! 👨‍🍳 ¿Te apetece algo en especial? Dime y te aconsejo lo mejor 😋",en:"Welcome to {B}! 👨‍🍳 Craving something special? Tell me and I'll recommend the best 😋"},
+      acks:{it:["Mmm, ottima idea 😋","Acquolina! 🤤","Che gusto 🙌","Ti capisco, gola chiama 😏"],es:["Mmm, buena idea 😋","¡Se me hace agua la boca! 🤤","Qué rico 🙌","Te entiendo, llama la gula 😏"],en:["Mmm, great idea 😋","Mouth-watering! 🤤","So tasty 🙌","I get it, cravings calling 😏"]} },
+    "beauty expert":{ label:"curato e amichevole",
+      role:{it:"la tua beauty expert",es:"tu beauty expert",en:"your beauty expert"},
+      greet:{it:"Ciao, benvenuta da {B} 💇 Dimmi cosa desideri e ti consiglio il trattamento giusto per te ✨",es:"Hola, bienvenida a {B} 💇 Dime qué deseas y te aconsejo el tratamiento ideal para ti ✨",en:"Hi, welcome to {B} 💇 Tell me what you'd love and I'll suggest the right treatment for you ✨"},
+      acks:{it:["Che bella scelta ✨","Ti sta benissimo 😍","Ottimo gusto 🙌","Capito, ci pensiamo noi 💕"],es:["Qué buena elección ✨","Te queda genial 😍","Buen gusto 🙌","Entendido, lo vemos 💕"],en:["Lovely choice ✨","It suits you 😍","Great taste 🙌","Got it, we've got you 💕"]} }
+  };
+  function toneFor(a){ return TONES[a.name] || GENERIC_TONE; }
+  function fillTone(o, B){ var r={}; for(var k in o){ r[k]=String(o[k]).replace(/\{B\}/g,B); } return r; }
+  function buildCharacterPrompts(d, a){
+    var brand = d.brand||d.host;
+    var acc = ACCENT || d.accent || d.themeColor || "";
+    var pal = (d.colors && d.colors.length) ? d.colors.slice(0,4) : (acc?[acc]:[]);
+    var refs = pal.length ? (" COLORI DI RIFERIMENTO PRESI DAL SITO UFFICIALE: "+pal.join(", ")+" — usa esattamente questi colori sulla figura, restando fedele all'estetica del sito.") : " Usa una palette coerente col brand.";
+    var racingLook = /meccanic|trainer|personal|sport|fitness|palestr/i.test(a.name||"");   // tuta/piping racing SOLO per officina e sportivi
+    var mood = d.dark
+      ? (" L'estetica del sito è DARK e premium: vesti il personaggio in tono col suo ruolo ma con abbigliamento prevalentemente SCURO (nero/antracite/blu notte), con dettagli e BAGLIORI luminosi nei colori di riferimento del brand, illuminazione cinematografica e curata, look premium e moderno. NON usare colori a tinta unita chiara/accesa."
+          + (racingLook ? " Linee/piping al neon lungo l'abbigliamento e dettagli metallici/cromati (stile racing/sportivo)." : ""))
+      : (" Estetica pulita e luminosa: "+(acc?("usa "+acc+" come accento principale"):"usa i colori del brand")+" su una base chiara, look fresco e amichevole.");
+    var world = " Caratterizzalo con accessori e dettagli TIPICI del mondo del brand (es. occhiali, copricapo, cuffie, strumenti o capi del mestiere) e dagli un VOLTO ed ESPRESSIONE coerenti col carattere del cliente, così che sembri 'di casa' sul suo sito. Evita cliché fuori contesto: l'abbigliamento dev'essere quello giusto per questo settore, non un costume generico.";
+    var color = mood + refs;
+    var base = "Personaggio 3D in stile Pixar/cartoon, in SINTONIA con il sito ufficiale del brand: "+a.desc+', mascotte ufficiale di "'+brand+'".'+world+color+" Sfondo TRASPARENTE (PNG), niente ombra, render 3D pulito, corpo intero ben centrato nell'inquadratura."
+      + " IMPORTANTISSIMO: NON scrivere NESSUN testo, NESSUNA lettera, NESSUNA scritta e NESSUN logo da nessuna parte. Lascia la maglia/tuta sul petto completamente PULITA e LISCIA, una superficie vuota e uniforme (il logo lo aggiungiamo noi dopo). Niente badge con scritte, niente etichette.";
+    return {
+      rest: base+" Posa RILASSATA e frontale, sorriso aperto e accogliente.",
+      point: "Genera la STESSA IDENTICA figura 3D di questo personaggio: stesso volto, stesso outfit, stessa inquadratura, stessa dimensione e identica posizione del corpo e dei piedi, sfondo trasparente senza ombra. UNICA differenza: il BRACCIO DESTRO è TESO verso DESTRA (il lato destro dell'inquadratura) e INDICA con l'indice puntato verso destra, come se mostrasse un prodotto lì accanto.",
+      pointBack: "(2° FOTOGRAMMA del movimento: usa come riferimento l'immagine 'Indica steso'.) Genera lo STESSO IDENTICO personaggio: stesso volto, outfit, colori, inquadratura, dimensione, posizione di corpo, piedi e dell'ALTRO braccio (quello fermo); sfondo trasparente senza ombra. UNICA differenza: prendi ESATTAMENTE il braccio che nell'immagine è GIÀ TESO e INDICA (quello allungato verso il lato dell'inquadratura) e piegalo un po' di più, ritraendolo verso il petto (gomito flesso), tenendo l'indice puntato nella STESSA direzione di prima. ❗ Muovi SOLO quel braccio: NON toccare l'altro braccio, né testa, busto, gambe. Deve sembrare lo STESSO braccio che si ritrae, non l'altro."
+    };
+  }
+  function productCard(p,i){
+    const bg = p.image ? 'style="background-image:url(\''+esc(p.image)+'\')"' : '';
+    return '<div class="p" data-i="'+i+'"><div class="star">⭐ Spingi</div>'+
+      '<div class="img" '+bg+'>'+(p.image?'':emoji())+'</div>'+
+      '<div class="b"><div class="nm">'+esc(p.name)+'</div><div class="pr">'+(p.price!=null?('€'+p.price):'')+'</div></div></div>';
+  }
+
+  // 🧰 TASSONOMIA SERVIZI per settore: categorie REALI e sensate (niente titoli-slogan a caso)
+  var SERVICE_SETS = {
+    "meccanico": { q:{it:"Cosa ti serve oggi per la tua auto o moto? 🔧",es:"¿Qué necesitas hoy para tu coche o moto? 🔧",en:"What do you need today for your car or bike? 🔧"},
+      items:[
+        { cat:"Diagnosi", label:{it:"Spia accesa / diagnosi",es:"Testigo / diagnosis",en:"Warning light / diagnosis"}, keys:["diagnos","spia","centralin","errore","ecu","obd","guast"] },
+        { cat:"Tagliando", label:{it:"Tagliando / manutenzione",es:"Revisión / mantenimiento",en:"Service / maintenance"}, keys:["tagliand","manutenz","olio","revision","distribuz"] },
+        { cat:"Freni", label:{it:"Freni / frizione",es:"Frenos / embrague",en:"Brakes / clutch"}, keys:["fren","frizion","pastigl","disc"] },
+        { cat:"Gomme", label:{it:"Gomme / assetto",es:"Neumáticos / alineación",en:"Tyres / alignment"}, keys:["gomm","pneumatic","ruote","assett","equilibr","convergenz"] },
+        { cat:"ADAS", label:{it:"Taratura ADAS",es:"Calibración ADAS",en:"ADAS calibration"}, keys:["adas","telecamer","radar","parabrezza","sensor"] },
+        { cat:"Clima", label:{it:"Aria condizionata / ricarica A/C",es:"Aire acondicionado",en:"A/C recharge"}, keys:["clima","condizion","aria condizion","a/c"] },
+        { cat:"Elettrauto", label:{it:"Elettrauto / batteria",es:"Electricidad / batería",en:"Auto-electrics / battery"}, keys:["elettraut","batteri","elettric","alternator","avviament"] },
+        { cat:"Sportive", label:{it:"Preparazioni sportive",es:"Preparación deportiva",en:"Performance tuning"}, keys:["sportiv","racing","preparazion","potenza","rimap","elaboraz"] },
+        { cat:"GPL", label:{it:"Impianti GPL / metano",es:"GLP / gas",en:"LPG / CNG"}, keys:["gpl","metano"] },
+        { cat:"Moto", label:{it:"Moto / scooter",es:"Moto / scooter",en:"Motorbike / scooter"}, keys:["moto","scooter","\\bbike\\b"] }
+      ] },
+    "beauty expert": { q:{it:"Cosa desideri oggi? ✨",es:"¿Qué deseas hoy? ✨",en:"What would you love today? ✨"},
+      items:[
+        { cat:"Taglio", label:{it:"Taglio & piega",es:"Corte & peinado",en:"Cut & styling"}, keys:["taglio","piega","capell","peinad","corte","cabello","hair"] },
+        { cat:"Colore", label:{it:"Colore & meches",es:"Color & mechas",en:"Colour & highlights"}, keys:["color","mech","tint","balayage","colour"] },
+        { cat:"Viso", label:{it:"Trattamenti viso",es:"Tratamientos faciales",en:"Facial treatments"}, keys:["viso","facial","pelle","skin","pulizia"] },
+        { cat:"Unghie", label:{it:"Manicure & unghie",es:"Manicura & uñas",en:"Manicure & nails"}, keys:["unghi","nail","manicure","uñas","gel"] },
+        { cat:"Make-up", label:{it:"Make-up",es:"Maquillaje",en:"Make-up"}, keys:["make","trucco","maquill"] },
+        { cat:"Epilazione", label:{it:"Epilazione",es:"Depilación",en:"Hair removal"}, keys:["epilaz","cerett","depilac","wax"] }
+      ] },
+    "personal trainer": { q:{it:"Qual è il tuo obiettivo? 💪",es:"¿Cuál es tu objetivo? 💪",en:"What's your goal? 💪"},
+      items:[
+        { cat:"Prova", label:{it:"Prova gratuita",es:"Clase de prueba",en:"Free trial"}, keys:["prova","prueba","trial","gratu","free"] },
+        { cat:"Personal", label:{it:"Personal training",es:"Entrenamiento personal",en:"Personal training"}, keys:["personal","one to one","1to1","privat"] },
+        { cat:"Corsi", label:{it:"Corsi & classi",es:"Clases",en:"Classes"}, keys:["corso","clase","class","gruppo","group"] },
+        { cat:"Dimagrire", label:{it:"Dimagrimento",es:"Pérdida de peso",en:"Weight loss"}, keys:["dimagr","peso","perder","weight","brucia"] },
+        { cat:"Massa", label:{it:"Massa & forza",es:"Masa & fuerza",en:"Muscle & strength"}, keys:["massa","fuerza","forza","strength","muscol"] },
+        { cat:"Schede", label:{it:"Schede & nutrizione",es:"Planes & nutrición",en:"Plans & nutrition"}, keys:["scheda","nutriz","dieta","plan","alimentaz"] }
+      ] },
+    "chef":{ q:{it:"Cosa ti va? 😋",es:"¿Qué te apetece? 😋",en:"What are you in the mood for? 😋"},
+      items:[
+        { cat:"Prenota", label:{it:"Prenota un tavolo",es:"Reservar mesa",en:"Book a table"}, keys:["prenot","tavolo","reserv","table","book"] },
+        { cat:"Menu", label:{it:"Vedi il menù",es:"Ver el menú",en:"See the menu"}, keys:["menu","menù","carta","piatti","dish"] },
+        { cat:"Eventi", label:{it:"Eventi & cerimonie",es:"Eventos & celebraciones",en:"Events & celebrations"}, keys:["event","cerimon","banchett","catering","festa","celebrac"] },
+        { cat:"Asporto", label:{it:"Asporto / Delivery",es:"Para llevar / Delivery",en:"Takeaway / Delivery"}, keys:["asporto","delivery","domicilio","takeaway","llevar"] }
+      ] },
+    "agente immobiliare":{ q:{it:"Come posso aiutarti con la casa? 🏠",es:"¿Cómo te ayudo con la vivienda? 🏠",en:"How can I help with property? 🏠"},
+      items:[
+        { cat:"Comprare", label:{it:"Comprare casa",es:"Comprar",en:"Buy"}, keys:["comprar","acquist","compra","buy"] },
+        { cat:"Vendere", label:{it:"Vendere casa",es:"Vender",en:"Sell"}, keys:["vender","vendita","sell"] },
+        { cat:"Affittare", label:{it:"Affittare",es:"Alquilar",en:"Rent"}, keys:["affitt","alquil","rent","locazion"] },
+        { cat:"Valutazione", label:{it:"Valutazione gratuita",es:"Tasación gratuita",en:"Free valuation"}, keys:["valutaz","tasacion","valoracion","stima","appraisal"] }
+      ] },
+    "assistente sanitario":{ q:{it:"Di cosa hai bisogno? 🩺",es:"¿Qué necesitas? 🩺",en:"What do you need? 🩺"},
+      items:[
+        { cat:"PrimaVisita", label:{it:"Prima visita",es:"Primera visita",en:"First visit"}, keys:["prima visita","primera","first visit","consult","visita"] },
+        { cat:"Igiene", label:{it:"Igiene / Pulizia",es:"Higiene / Limpieza",en:"Hygiene / Cleaning"}, keys:["igiene","pulizia","limpieza","hygiene","cleaning","sbianc"] },
+        { cat:"Urgenza", label:{it:"Urgenza / Dolore",es:"Urgencia / Dolor",en:"Emergency / Pain"}, keys:["urgenz","dolor","emergenc","urgency","pain","male"] },
+        { cat:"Trattamento", label:{it:"Trattamento / Cura",es:"Tratamiento",en:"Treatment"}, keys:["trattament","tratamiento","treatment","cura","terap","impiant"] }
+      ] },
+    "concierge":{ q:{it:"Come posso aiutarti? 🧳",es:"¿Cómo te ayudo? 🧳",en:"How can I help? 🧳"},
+      items:[
+        { cat:"Camere", label:{it:"Disponibilità & camere",es:"Disponibilidad & habitaciones",en:"Availability & rooms"}, keys:["camer","habitacion","room","disponibil","prenot","book"] },
+        { cat:"Esperienze", label:{it:"Esperienze & tour",es:"Experiencias & tours",en:"Experiences & tours"}, keys:["tour","esperienz","experienc","excursion","attivit","activit"] },
+        { cat:"Transfer", label:{it:"Transfer / Navetta",es:"Traslado / Transfer",en:"Transfer / Shuttle"}, keys:["transfer","navetta","traslado","shuttle","aeroport"] },
+        { cat:"Servizi", label:{it:"Ristorante & servizi",es:"Restaurante & servicios",en:"Restaurant & services"}, keys:["ristorant","restaurant","spa","servizi","colazion","breakfast"] }
+      ] }
+  };
+  // genera i SERVIZI per la modalità Lead: prima dalla tassonomia di settore, altrimenti dai titoli puliti
+  function leadServices(d, a){
+    const set = SERVICE_SETS[a && a.name];
+    const hay = ((d.title||"")+" "+(d.description||"")+" "+(d.headings||[]).join(" ")+" "+(d.categories||[]).join(" ")).toLowerCase();
+    if(set){
+      const scored = set.items.map(s => ({ s, hit: s.keys.some(k => new RegExp(k).test(hay)) }));
+      let chosen = scored.filter(x=>x.hit).map(x=>x.s);                       // ciò che il sito menziona davvero
+      if(chosen.length < 4) scored.forEach(x => { if(!x.hit && chosen.length < 6) chosen.push(x.s); }); // completa con i tipici del settore
+      return chosen.slice(0,7).map((s,i)=>({ id:7000+i, name:s.label.it, label:s.label, category:s.cat, keys:s.keys,
+        price:0, currency:"EUR", description:"", imageUrl:"", badge:i===0?"Più richiesto":"", stock:99 }));
+    }
+    return leadFromHeadings(d);
+  }
+  // fallback: titoli della pagina, ma SOLO quelli che sembrano servizi (niente domande/slogan)
+  function leadFromHeadings(d){
+    const skip = /(^|\b)(home|chi siamo|about|contatt|contact|menu|cookie|privacy|newsletter|seguici|orari|dove siamo|recension|benvenut|scopri|perch[ée]|tutto quello|hai (un|questo|bisogno)|chiama|prenota|©)/i;
+    const seen=new Set(), serv=[];
+    (d.headings||[]).forEach(h=>{ const t=(h||"").trim(); const key=t.toLowerCase();
+      if(t.length<4||t.length>40||t.includes("?")||/[.!]$/.test(t)||skip.test(t)||seen.has(key)) return; seen.add(key); serv.push(t); });
+    return serv.slice(0,7).map((name,i)=>({ id:7000+i, name, category:name.slice(0,22), price:0, currency:"EUR",
+      description:"", imageUrl:"", badge: i===0?"Più richiesto":"", stock:99 }));
+  }
+  async function buildConfig(){
+    const d = DATA, lead = d.mode==="lead" || !(d.products && d.products.length);
+    const brand = d.brand||d.host;
+    const accent = ACCENT || d.themeColor || "#6c4cff";
+    const a = detectArchetype(d);
+    const cfg = { brand, host: d.host, accent };
+    if(LOGO) cfg.logo = LOGO;   // logo del brand → anche come filigrana di sfondo nella chat
+    // personaggio: immagini caricate → allineate (+ logo del brand applicato), oppure false (solo chat)
+    let aligned = await alignFrames(CHAR);
+    if(aligned && LOGO) aligned = await compositeLogo(aligned);
+    cfg.character = aligned ? { rest:aligned.rest||aligned.point, point:aligned.point||aligned.rest,
+      pointBack:aligned.pointBack||aligned.point||aligned.rest, thumb:aligned.point||aligned.rest,
+      blink:aligned.rest||aligned.point, face:aligned.face||aligned.rest, finger:0.27, flip:charFlip, w:aligned.w, h:aligned.h } : false;
+    if(lead){
+      cfg.mode = "lead";
+      const prods = (d.products && d.products.length) ? [] : leadServices(d, a);
+      cfg.products = prods;
+      const cats = [...new Set(prods.map(p=>p.category))];
+      const labelFor = c => { const pp = prods.find(p=>p.category===c); return (pp && pp.label) ? pp.label : {it:c,es:c,en:c}; };
+      const catLabels = {}; cats.forEach(c=> catLabels[c] = labelFor(c));
+      cfg.catLabels = catLabels;
+      const set = SERVICE_SETS[a.name];
+      const leadQ = (set && set.q) || {it:"Cosa ti serve oggi? 😊",es:"¿Qué necesitas hoy? 😊",en:"What do you need today? 😊"};
+      cfg.profiling = [{ intent:"category", q: leadQ,
+        options: cats.slice(0,7).map(c=> Object.assign({val:c}, labelFor(c))) }];
+      const wa = (d.whatsapp||"").replace(/[^0-9]/g,"");
+      cfg.lead = { whatsapp: wa, phone: d.phone||"", bookText:"Ciao "+brand+"! Vorrei prenotare per: ",
+        cta:{it:"Prenota su WhatsApp",es:"Reservar por WhatsApp",en:"Book on WhatsApp"} };
+    } else {
+      cfg.mode = "shop";
+      cfg.products = d.products.map((p,i)=>({ id:9000+i, name:p.name, category:p.category, price:p.price||0, currency:"EUR",
+        description:p.desc||"", imageUrl:p.image||"", badge: boosted.has(i)?"⭐ Top":"", stock:20 }));
+      const cats = d.categories||[];
+      const catLabels={}; cats.forEach(c=>catLabels[c]={es:c,en:c,it:c}); cfg.catLabels=catLabels;
+      cfg.categoryOptions = cats.slice(0,5).map(c=>({es:c,en:c,it:c,val:c}));
+    }
+    // 🗣️ TONO DI SETTORE + NOME: voce su misura del business (saluto, ruolo, reazioni) e nome cliente
+    const tone = toneFor(a);
+    cfg.persona = { name: brand, role: tone.role };
+    cfg.greeting = fillTone(tone.greet, brand);
+    cfg.acks = tone.acks;
+    cfg.teasers = tone.teasers || GENERIC_TONE.teasers;   // richiami della pallina chiusa (fidelizzazione)
+    cfg.askName = true;
+    cfg.dark = !!d.dark;                                   // tema chat = tema del sito (scuro/chiaro)
+    cfg.bg = d.bg || "";                                   // colore di sfondo del sito → superficie della chat
+    return cfg;
+  }
+  async function generate(){
+    const btn = $("#gen"); if(btn){ btn.disabled=true; btn.textContent="⏳ Preparo il venditore…"; }
+    try{
+      const cfg = await buildConfig();
+      localStorage.setItem("AISELLER_PREVIEW", JSON.stringify(cfg));
+      window.open("/?widget=1&preview=1", "_blank");
+    }catch(e){ alert("Errore in generazione: "+e.message); }
+    if(btn){ btn.disabled=false; btn.textContent="🚀 Genera il venditore & Anteprima"; }
+  }
+  function downloadJSON(name, obj){
+    const blob = new Blob([JSON.stringify(obj,null,2)], {type:"application/json"});
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href), 1500);
+  }
+  function appOrigin(){ return /localhost|127\.0\.0\.1/.test(location.origin) ? "https://kayamansfarm-demo.vercel.app" : location.origin; }
+  async function showEmbed(){
+    const btn = $("#snip"); if(btn){ btn.disabled=true; btn.textContent="🚀 Pubblico…"; }
+    try{
+      const cfg = await buildConfig();
+      const slug = fileBase(DATA);
+      const origin = appOrigin();
+      // 1) PROVA a pubblicare in automatico (storage) → URL live diretto
+      let url = null, published = false;
+      try{
+        const r = await fetch(origin + "/api/save", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ id: slug, config: cfg }) });
+        const j = await r.json();
+        if(j && j.ok && j.url){ url = j.url; published = true; }
+      }catch(e){}
+      // 2) FALLBACK: storage non ancora attivo → scarica il file (pubblicazione manuale)
+      if(!published){ downloadJSON("config-"+slug+".json", cfg); url = origin + "/clients/" + slug + ".json"; }
+      const accent = cfg.accent || "#6c4cff";
+      const code = '<!-- AI Seller by Black Star · '+esc(cfg.brand)+' -->\n'+
+        '<script src="'+origin+'/widget.js" data-config="'+url+'" data-color="'+accent+'" defer><\/script>';
+      const test = origin + "/?widget=1&config=" + encodeURIComponent(url);
+      const row = (t, val, isLink) => '<div class="lbl">'+t+'</div><div class="embed">'+
+        '<button class="btn ghost cpx" data-t="'+esc(val)+'">copia</button>'+
+        (isLink ? '<a href="'+esc(val)+'" target="_blank" rel="noopener" style="color:#9fe;word-break:break-all">'+esc(val)+'</a>' : esc(val))+'</div>';
+      $("#embedBox").innerHTML =
+        '<h3>'+(published?'✅ Cliente PUBBLICATO':'💾 Cliente salvato')+': <span style="color:var(--brand)">'+esc(cfg.brand)+'</span></h3>'+
+        (published
+          ? '<div class="tip" style="background:#e8f9ee;border-left:4px solid #29a35a;padding:12px 14px;border-radius:8px;color:#175c34;font-size:.9rem;margin-top:8px">🚀 <b>Pubblicato in automatico — è già LIVE!</b> Niente file da spostare. Incolla solo la riga <b>"Codice d\'imbarco"</b> sul sito del cliente (prima di <code>&lt;/body&gt;</code>) e funziona.</div>'
+          : '<div class="tip" style="background:#fff7e8;border-left:4px solid #e0a93a;padding:12px 14px;border-radius:8px;color:#6e5520;font-size:.9rem;margin-top:8px">⚠️ <b>Storage non ancora attivo</b> → ho scaricato <b>config-'+esc(slug)+'.json</b> (da mettere in <code>/clients/</code> o mandarmi). Attiva lo storage Vercel Blob e la prossima volta pubblica da solo.</div>')+
+        row('🔗 URL della configurazione', url, true)+
+        row('📋 Codice d\'imbarco — l\'UNICA riga da mettere sul sito', code, false)+
+        row('▶️ Link di prova diretto', test, true);
+      document.querySelectorAll(".cpx").forEach(b => b.onclick = () => { navigator.clipboard.writeText(b.dataset.t); b.textContent="copiato ✓"; setTimeout(()=>b.textContent="copia",1500); });
+    }catch(e){ alert("Errore nel salvataggio: "+e.message); }
+    if(btn){ btn.disabled=false; btn.textContent="🚀 Pubblica cliente (Salva)"; }
+  }
+  function esc(s){ return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+  $("#go").onclick = () => analyze();
+  $("#url").addEventListener("keydown", e => { if(e.key==="Enter") analyze(); });
+  document.querySelectorAll(".ex").forEach(el => el.onclick = () => { $("#url").value = el.dataset.u; analyze(el.dataset.u); });
+</script>
+</body>
+</html>

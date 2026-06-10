@@ -1,0 +1,8 @@
+{
+  "routes": [
+    { "src": "/assets/(.*)", "headers": { "cache-control": "public, max-age=31536000, immutable" }, "continue": true },
+    { "src": "/clients/(.*)", "headers": { "access-control-allow-origin": "*", "cache-control": "public, max-age=120" }, "continue": true },
+    { "handle": "filesystem" },
+    { "src": "/.*", "dest": "/index.html" }
+  ]
+}

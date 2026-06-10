@@ -1,0 +1,593 @@
+/* Kayaman's Farm — demo chatbot. Made in Italy.
+   REDESIGN mobile-first, white-dominant boutique (fedele al sito ufficiale Flatsome).
+   Palette reale come ACCENTO: rosso #ab2e31 · oro #fbb102 · sage #839669 · leaf #00a901 · olive #5d5020. */
+:root{
+  /* colore — FEDELE al sito reale: rosa cipria header, verde salvia top-bar, oro/olio titoli */
+  --pink:#f4d8da; --pink-2:#fff1ed; --pink-d:#ecc6c9;
+  --topbar:#94a57d; --sage:#839669; --sage-soft:#eef1ea; --sage-d:#5f7350;
+  --olive:#5d5020; --gold:#a8915f; --gold-h:#bfa46b; --gold-d:#4a3f1e;
+  --red:#ab2e31; --red-d:#8f2528; --leaf:#3a7d34;
+  --ink:#2b2b2b; --text:#4f4f4f; --muted:#8a857c; --line:#ece7df;
+  --paper:#fff; --cream:#fbfafa; --wash:#f6f3f0;
+  --gold-wash:#fdf3ea;
+  /* TEMA CHAT (override per tenant/widget; default = look Kayaman) */
+  --chat-paper:#fdf4f1; --chat-head:#f8e6e2; --chat-accent:#839669; --chat-accent-2:#a8915f;
+  /* type fluido */
+  --fs-display:clamp(2.4rem,1.6rem + 4vw,4.3rem);
+  --fs-h1:clamp(1.7rem,1.4rem + 2vw,2.6rem);
+  --fs-h2:clamp(1.3rem,1.15rem + 1vw,1.7rem);
+  --fs-h3:clamp(1.02rem,0.98rem + 0.4vw,1.18rem);
+  --fs-price:clamp(1.1rem,1rem + 0.5vw,1.3rem);
+  --fs-body:clamp(0.95rem,0.9rem + 0.2vw,1rem);
+  --fs-sm:clamp(0.8rem,0.78rem + 0.1vw,0.875rem);
+  --fs-eyebrow:0.69rem;
+  /* spazio / raggi / moto */
+  --gutter:clamp(1rem,0.5rem + 3vw,2.5rem);
+  --section-y:clamp(2.5rem,1.5rem + 5vw,5.5rem);
+  --gap:clamp(0.75rem,0.5rem + 1.5vw,1.25rem);
+  --r-xs:6px; --r-sm:10px; --r-md:14px; --r-lg:20px; --r-pill:999px;
+  --ease-out:cubic-bezier(.22,.61,.36,1); --ease-spring:cubic-bezier(.34,1.56,.64,1);
+  --dur-fast:120ms; --dur:220ms; --dur-slow:350ms;
+  --shadow:0 8px 24px rgba(42,42,40,.08);
+  --shadow-lg:0 24px 60px rgba(42,42,40,.18);
+  --font-body:'ABeeZee','Lato',system-ui,sans-serif;
+  --font-head:'Alata',sans-serif;
+  --font-script:'Dancing Script',cursive;
+  font-family:var(--font-body);
+}
+*{box-sizing:border-box}
+/* iOS: gli input di testo < 16px fanno ZOOMARE la pagina al focus → tutto sembra "non responsive". Forziamo 16px. */
+input[type="text"],input[type="search"],input[type="email"],input:not([type]),textarea{font-size:16px}
+[hidden]{display:none!important}   /* l'attributo hidden deve sempre vincere sulle classi display:flex */
+html,body{margin:0;padding:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
+/* sfondo sito = il wallpaper rosa del cliente. NIENTE background-attachment:fixed (rotto su iOS): uso un layer fisso ::before */
+body{background:#ecd2cd;color:var(--text);line-height:1.55;font-size:var(--fs-body);font-family:var(--font-body);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:#ecd2cd url('assets/bg.png') center center/cover no-repeat;pointer-events:none}
+h1,h2,h3,h4,.brand-name,.sec-title{font-family:var(--font-head);color:var(--ink);line-height:1.15}
+button{font-family:inherit;cursor:pointer}
+img{max-width:100%;display:block}
+a{color:inherit}
+
+.btn{border:none;border-radius:var(--r-pill);padding:13px 22px;font-weight:600;font-size:var(--fs-body);transition:transform var(--dur-fast),box-shadow var(--dur-fast),background var(--dur-fast)}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--gold);color:var(--gold-d);box-shadow:0 6px 18px rgba(251,177,2,.35)}
+.btn-primary:hover{background:var(--gold-h);box-shadow:0 10px 26px rgba(251,177,2,.5)}
+.btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn-ghost:hover{border-color:var(--sage)}
+.btn.full{width:100%}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+/* eccezione: il personaggio resta VIVO anche con reduced-motion */
+@media(prefers-reduced-motion:reduce){
+  .chat-seller-wrap{animation:sellerFloat 3.2s ease-in-out infinite!important}
+  .seller-smoke i{animation:sPuff 2.8s ease-out infinite!important}
+  .seller-smoke i:nth-child(2){animation-delay:.9s!important}
+  .seller-smoke i:nth-child(3){animation-delay:1.8s!important}
+}
+
+/* ===== AGE GATE ===== */
+.age-gate{position:fixed;inset:0;background:rgba(255,255,255,.55);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px}
+.age-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);padding:clamp(26px,5vw,38px) clamp(22px,4vw,32px);max-width:420px;width:100%;text-align:center;box-shadow:var(--shadow-lg);position:relative;animation:pop var(--dur-slow) var(--ease-spring)}
+.age-mascot{width:104px;height:104px;margin:-78px auto 0;filter:drop-shadow(0 8px 18px rgba(42,42,40,.18))}
+.age-lang{position:absolute;top:14px;right:14px;display:flex;gap:2px;background:var(--wash);border-radius:var(--r-sm);padding:2px}
+.age-lang button,.lang-switch button{border:none;background:transparent;color:var(--muted);font-weight:700;font-size:12px;padding:5px 9px;border-radius:7px;transition:var(--dur-fast)}
+.age-lang button.active,.lang-switch button.active{background:var(--sage);color:#fff}
+.age-leaf{display:inline-block;border:1.5px solid var(--sage);color:var(--sage-d);font-weight:700;padding:4px 14px;border-radius:var(--r-pill);margin:14px 0 8px;font-size:13px}
+.age-card h1{font-size:var(--fs-h1);margin:6px 0}
+.age-card p{color:var(--muted);margin:8px 0 22px;font-size:var(--fs-sm)}
+.age-actions{display:flex;flex-direction:column;gap:10px}
+.age-denied{color:var(--red);font-weight:600;margin-top:16px}
+.age-made{margin-top:18px}
+
+/* ===== PROMO BAR ===== */
+.promo-bar{background:var(--gold-wash);color:var(--ink);text-align:center;font-size:var(--fs-sm);font-weight:600;padding:8px var(--gutter);display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid #f0e4c4;position:relative}
+.promo-bar b{background:var(--gold);color:var(--gold-d);padding:2px 10px;border-radius:var(--r-pill);font-size:.92em}
+.promo-bar .promo-cd{font-variant-numeric:tabular-nums;color:var(--red);font-weight:700}
+.promo-close{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:none;background:transparent;color:var(--muted);font-size:16px;width:26px;height:26px;border-radius:6px;line-height:1}
+.promo-close:hover{background:rgba(0,0,0,.06)}
+
+/* ===== HEADER ===== */
+.header{position:relative;z-index:40;background:var(--pink);border-bottom:1px solid var(--pink-d);display:flex;align-items:center;gap:14px;padding:14px var(--gutter);flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:8px;font-weight:800;font-size:clamp(1.05rem,1rem + .6vw,1.25rem)}
+.brand-leaf{font-size:1.3em}
+.brand .it-flag{margin-left:6px;padding-left:10px;border-left:1px solid var(--line)}
+.it-flag{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600}
+.it-flag img{width:22px;height:auto;border-radius:2px}
+.hamburger{display:none;border:1px solid var(--gold);background:transparent;color:var(--gold-d);width:42px;height:42px;border-radius:8px;font-size:18px;align-items:center;justify-content:center}
+.header-right{display:flex;align-items:center;gap:10px;margin-left:auto}
+.lang-switch{display:flex;gap:2px;background:var(--wash);border-radius:var(--r-sm);padding:2px}
+.cart-btn{border:1px solid var(--gold);background:transparent;color:var(--gold-d);border-radius:8px;padding:8px 12px;font-weight:400;display:flex;align-items:center;gap:7px;font-size:var(--fs-sm);transition:var(--dur-fast)}
+.cart-btn:hover{background:rgba(255,255,255,.5)}
+.cart-count{background:var(--olive);color:#fff;border-radius:var(--r-pill);min-width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;padding:0 5px}
+
+/* ===== HERO ===== */
+.hero{background:linear-gradient(180deg,var(--paper),var(--cream));padding:var(--section-y) var(--gutter);position:relative;overflow:hidden}
+.hero-inner{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:1fr;align-items:center;gap:clamp(1rem,3vw,3rem)}
+.hero-copy{text-align:left}
+.hero-eyebrow{font-size:var(--fs-eyebrow);font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--olive)}
+.hero-sub{font-size:var(--fs-h3);color:var(--muted);max-width:46ch;margin:0 0 24px}
+.hero-cta{font-size:var(--fs-body);padding:15px 30px}
+.hero-trust{margin-top:22px;font-size:var(--fs-sm);color:var(--muted);display:flex;gap:18px;flex-wrap:wrap}
+.hero-trust span{display:inline-flex;align-items:center;gap:6px}
+.hero-visual{display:flex;justify-content:center;align-items:center}
+.hero-mascot{width:min(360px,80%);filter:drop-shadow(0 18px 40px rgba(42,42,40,.22));animation:floaty 5s var(--ease-out) infinite}
+
+/* ===== SHOP ===== */
+.shop{max-width:1120px;margin:0 auto;padding:var(--section-y) var(--gutter)}
+.shop-lead{color:var(--muted);font-size:var(--fs-sm);margin:0 0 20px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.filters button{border:1.5px solid var(--line);background:var(--paper);color:var(--ink);padding:8px 15px;border-radius:var(--r-pill);font-weight:600;font-size:var(--fs-sm);transition:var(--dur-fast)}
+.filters button:hover{border-color:var(--sage)}
+.filters button.active{background:var(--sage);color:#fff;border-color:var(--sage)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(150px,42vw,240px),1fr));gap:var(--gap)}
+/* card MINIMAL come l'originale: foto su bianco, nome centrato, prezzo, link AÑADIR */
+.card{background:transparent;border:none;border-radius:0;overflow:visible;display:flex;flex-direction:column;text-align:center;transition:transform var(--dur)}
+.card:hover{transform:translateY(-3px)}
+.card-img{aspect-ratio:1/1;background:#fff center/contain no-repeat;display:flex;align-items:center;justify-content:center;font-size:clamp(34px,9vw,52px);position:relative;overflow:hidden;padding:8px}
+.card-badge{position:absolute;top:6px;left:6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:3px 8px;border-radius:var(--r-pill)}
+.badge-Bestseller{background:var(--sage);color:#fff}
+.badge-Nuevo{background:#fff;color:var(--olive);border:1px solid var(--olive)}
+.badge-Oferta{background:var(--red);color:#fff}
+.card-stock{position:absolute;bottom:6px;right:6px;font-size:10px;font-weight:700;background:rgba(171,46,49,.92);color:#fff;padding:3px 8px;border-radius:var(--r-pill)}
+.card-body{padding:12px 8px;display:flex;flex-direction:column;flex:1;align-items:center}
+.card-cat,.card-desc,.card-urgency{display:none}
+.card-name{font-weight:400;font-size:var(--fs-sm);font-family:var(--font-body);margin:2px 0 6px;color:var(--text);line-height:1.35}
+.card-rating{display:flex;align-items:center;justify-content:center;gap:4px;font-size:11px;margin:0 0 8px}
+.card-rating b,.card-rating .rev{display:none}
+.card-foot{display:flex;flex-direction:column;align-items:center;gap:9px;margin-top:auto}
+.card-price{display:flex;align-items:baseline;gap:6px;justify-content:center;flex-wrap:wrap}
+.card-price-now{font-weight:400;font-size:var(--fs-price);color:#000;font-family:var(--font-body)}
+.price-was{color:var(--muted);text-decoration:line-through;font-size:.78em}
+.price-save{background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:var(--r-pill)}
+.card .btn{background:none;border:none;box-shadow:none;color:var(--text);text-transform:uppercase;font-size:11.5px;letter-spacing:.06em;font-weight:400;padding:5px 0;border-bottom:1px solid var(--gold);border-radius:0}
+.card .btn:hover{color:var(--olive);background:none;box-shadow:none;transform:none;border-color:var(--olive)}
+
+/* ===== FOOTER ===== */
+.footer{background:var(--ink);color:#cfc8b8;text-align:center;padding:var(--section-y) var(--gutter);font-size:var(--fs-sm)}
+.footer-made{margin-top:8px;display:flex;justify-content:center}
+
+/* ===== CART DRAWER ===== */
+.overlay{position:fixed;inset:0;background:rgba(42,42,40,.4);z-index:60;animation:fade var(--dur)}
+.drawer{position:fixed;top:0;right:0;width:400px;max-width:92vw;height:100%;height:100dvh;background:var(--paper);z-index:70;display:flex;flex-direction:column;box-shadow:var(--shadow-lg);animation:slideIn var(--dur) var(--ease-out)}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:18px;border-bottom:1px solid var(--line);font-size:var(--fs-h2);font-family:var(--font-head);font-weight:600}
+.drawer-body{flex:1;overflow-y:auto;padding:14px 18px}
+.drawer-foot{padding:18px;padding-bottom:max(18px,env(safe-area-inset-bottom));border-top:1px solid var(--line)}
+.cart-total{display:flex;justify-content:space-between;font-size:var(--fs-h2);margin-bottom:12px;font-family:var(--font-head)}
+.cart-total strong{font-weight:700}
+.cart-row{display:flex;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.cart-row .cr-img{width:48px;height:48px;border-radius:var(--r-sm);background:var(--cream) center/cover;flex:none;display:flex;align-items:center;justify-content:center}
+.cart-row .cr-info{flex:1;font-size:var(--fs-sm)}
+.cart-row .cr-name{font-weight:600;color:var(--ink)}
+.cart-row .cr-qty{display:flex;align-items:center;gap:8px;margin-top:4px}
+.cart-row .cr-qty button{width:24px;height:24px;border-radius:var(--r-xs);border:1px solid var(--line);background:var(--paper);font-weight:700;transition:var(--dur-fast)}
+.cart-row .cr-qty button:hover{border-color:var(--sage)}
+.cart-disc{justify-content:space-between}
+.cart-disc .cr-name{color:var(--sage-d)}
+.cr-disc{color:var(--leaf);font-weight:700;font-family:var(--font-head)}
+.cart-empty{color:var(--muted);text-align:center;padding:36px 10px}
+.icon-btn{border:none;background:transparent;font-size:18px;color:var(--ink);width:36px;height:36px;border-radius:var(--r-xs);display:inline-flex;align-items:center;justify-content:center;transition:var(--dur-fast)}
+.icon-btn:hover{background:var(--wash)}
+
+/* free shipping progress */
+.ship-bar{background:var(--cream);border:1px solid var(--line);border-radius:var(--r-md);padding:11px 13px;margin-bottom:14px;font-size:var(--fs-sm)}
+.ship-bar .sb-track{height:8px;background:#f0ece2;border-radius:var(--r-pill);margin-top:8px;overflow:hidden}
+.ship-bar .sb-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--leaf));border-radius:var(--r-pill);transition:width var(--dur) var(--ease-out)}
+.ship-bar.done{color:var(--sage-d);font-weight:600;border-color:var(--sage)}
+.ship-bar.done .sb-fill{animation:pulseLeaf .6s var(--ease-out)}
+
+/* ===== EXIT POPUP ===== */
+.exit-popup{position:fixed;inset:0;background:rgba(42,42,40,.5);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;animation:fade var(--dur-slow)}
+.exit-card{background:var(--paper);border-radius:var(--r-lg);padding:clamp(24px,5vw,32px);max-width:400px;width:100%;text-align:center;box-shadow:var(--shadow-lg);position:relative;animation:pop var(--dur-slow) var(--ease-spring)}
+.exit-close{position:absolute;top:12px;right:12px}
+.exit-emblem{width:84px;height:84px;margin:-66px auto 0;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-h));color:var(--gold-d);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:1.5rem;box-shadow:0 10px 24px rgba(251,177,2,.45);border:4px solid var(--paper)}
+.exit-card h2{font-size:var(--fs-h1);margin:10px 0 6px}
+.exit-card p{color:var(--muted);margin:0 0 16px;font-size:var(--fs-sm)}
+.exit-code{font-family:var(--font-head);font-weight:800;font-size:1.6rem;letter-spacing:3px;background:var(--cream);border:2px dashed var(--gold);color:var(--ink);padding:12px;border-radius:var(--r-md);margin-bottom:14px}
+.exit-timer{font-size:var(--fs-body);margin-bottom:16px;color:var(--red);font-weight:600}
+
+/* ===== CHAT WIDGET ===== */
+.chat-launcher{position:fixed;bottom:max(20px,env(safe-area-inset-bottom));right:20px;width:64px;height:64px;border-radius:50%;background:var(--paper);border:1.5px solid var(--sage);box-shadow:var(--shadow-lg);z-index:90;display:flex;align-items:center;justify-content:center;transition:transform var(--dur)}
+.chat-launcher:hover{transform:scale(1.06)}
+.chat-launcher img{width:54px;height:54px;border-radius:50%}
+.chat-launcher.nudge{animation:nudge .6s var(--ease-spring)}
+.chat-badge{position:absolute;top:-3px;right:-3px;background:var(--gold);color:var(--gold-d);font-size:12px;font-weight:700;min-width:22px;height:22px;border-radius:var(--r-pill);display:flex;align-items:center;justify-content:center;border:2px solid var(--paper)}
+.chat-pulse{position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--sage);animation:pulse 2.4s infinite;pointer-events:none}
+
+.chat-panel{position:fixed;bottom:20px;right:20px;width:384px;max-width:calc(100vw - 24px);height:560px;max-height:calc(100dvh - 130px);z-index:95;display:flex;flex-direction:column;animation:slideUp var(--dur) var(--ease-out)}
+.chat-inner{flex:1;min-height:0;display:flex;flex-direction:column;background:var(--chat-paper);border:1px solid rgba(0,0,0,.06);border-radius:var(--r-lg);box-shadow:var(--shadow-lg);overflow:hidden}
+/* venditore 3D sdraiato SOPRA il box della chat — VIVO */
+/* BOX a misura: il personaggio idle (sdraiato O in piedi, qualsiasi proporzione) entra SEMPRE senza tagli — object-fit:contain ancorato ai piedi */
+.chat-seller-wrap{position:absolute;left:50%;bottom:calc(100% - 40px);width:clamp(132px,40vw,182px);height:clamp(104px,16dvh,138px);z-index:96;pointer-events:none;transform:translateX(-50%);animation:sellerFloat 6s ease-in-out infinite;will-change:transform}
+/* APPOGGIATO sul bordo: solo un respiro/dondolio leggerissimo, niente su/giù (non deve "volare") */
+@keyframes sellerFloat{0%{transform:translateX(-50%) translateY(0) rotate(-.5deg)}50%{transform:translateX(-50%) translateY(-2px) rotate(.55deg)}100%{transform:translateX(-50%) translateY(0) rotate(-.5deg)}}
+.chat-seller{width:100%;height:100%;display:block;object-fit:contain;object-position:bottom;pointer-events:auto;cursor:pointer;transform-origin:55% 92%;transition:transform .28s var(--ease-out)}
+/* overlay "occhi chiusi" sovrapposto: lampeggia = battito di ciglia naturale */
+.chat-seller-blink{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:bottom;pointer-events:none;opacity:0;animation:sellerBlink 6.5s ease-in-out infinite}
+@keyframes sellerBlink{0%,87%,100%{opacity:0}88.5%,90.5%{opacity:1}92%{opacity:0}93.5%,95%{opacity:1}96.5%{opacity:0}}
+.chat-seller:hover{transform:rotate(-2deg) scale(1.04)}
+.chat-seller.react{animation:sellerHop .6s var(--ease-out)}
+@keyframes sellerHop{0%{transform:scale(1) rotate(0)}40%{transform:scale(1.06) rotate(2.5deg)}100%{transform:scale(1) rotate(0)}}
+.chat-seller.talk{animation:sellerTalk .6s ease-in-out}
+@keyframes sellerTalk{0%,100%{transform:rotate(0)}30%{transform:rotate(-2.6deg) scale(1.02)}65%{transform:rotate(1.6deg)}}
+@keyframes sellerWiggle{0%,100%{transform:rotate(0)}30%{transform:rotate(-4deg) scale(1.03)}70%{transform:rotate(4deg) scale(1.03)}}
+/* quando punta: il reclinato sparisce e Kaya si MET TE IN PIEDI di lato */
+.chat-panel.pointing .chat-seller-wrap{opacity:0;transition:opacity .25s ease}
+/* durante il puntamento: i tasti quick-reply si tolgono di mezzo (riappaiono dopo) → il personaggio non li schiaccia mai */
+.chat-panel.pointing .chat-quick{visibility:hidden;pointer-events:none}
+/* fumo animato che sale dal joint (bocca, sinistra-centro dell'immagine) */
+.seller-smoke{position:absolute;left:28%;bottom:65%;top:auto;width:28px;height:64px;z-index:5;pointer-events:none}
+.seller-smoke i{position:absolute;bottom:0;left:50%;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,rgba(138,142,146,.7),rgba(138,142,146,0) 72%);filter:blur(2.5px);opacity:0;animation:sPuff 3.2s ease-out infinite}
+.seller-smoke i:nth-child(2){animation-delay:1.05s;width:15px;height:15px}
+.seller-smoke i:nth-child(3){animation-delay:2.1s;width:9px;height:9px}
+/* fumo: sale, deriva di lato, si gonfia e svanisce (naturale) */
+@keyframes sPuff{0%{transform:translate(-50%,0) scale(.35);opacity:0}18%{opacity:.6}55%{opacity:.42}100%{transform:translate(calc(-50% + 11px),-52px) scale(1.85);opacity:0}}
+/* POSA IN PIEDI CHE PUNTA — rig a 2 FRAME (braccio steso ↔ piegato = tap reale) */
+.chat-pointer{--flip:-1;position:absolute;right:calc(100% - 26px);bottom:2px;height:clamp(116px,17dvh,142px);width:auto;aspect-ratio:374/560;z-index:3;pointer-events:none;transform:scaleX(var(--flip)) translateY(22px) rotate(-2deg);opacity:0;transition:opacity .3s ease,transform .5s var(--ease-spring)}
+.chat-pointer .cp-frame{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:bottom}
+.chat-pointer .cp-bent,.chat-pointer .cp-thumb{opacity:0}
+.chat-pointer.show{opacity:1;transform:scaleX(var(--flip)) translateY(0) rotate(0)}
+/* reazione POLLICE-SU (su aggiunta al carrello): mostra il frame thumb + saltello di gioia */
+.chat-pointer.thumbs .cp-ext,.chat-pointer.thumbs .cp-bent{opacity:0}
+.chat-pointer.thumbs .cp-thumb{opacity:1}
+.chat-pointer.cheer{animation:cpCheer .6s var(--ease-spring)}
+@keyframes cpCheer{0%{transform:scaleX(var(--flip)) translateY(0) scale(1)}40%{transform:scaleX(var(--flip)) translateY(-10px) scale(1.06)}100%{transform:scaleX(var(--flip)) translateY(0) scale(1)}}
+/* NUVOLETTA del personaggio: appare sopra la sua testa e "parla" mentre indica il prodotto */
+.pointer-bubble{position:absolute;z-index:98;max-width:52%;background:#fff;color:#1d2330;border:1px solid rgba(0,0,0,.07);border-radius:16px;border-bottom-left-radius:5px;padding:10px 13px;font-weight:600;font-size:.86rem;line-height:1.32;box-shadow:0 12px 30px rgba(0,0,0,.22);opacity:0;transform:translateY(8px) scale(.85);transform-origin:left bottom;transition:opacity .22s ease,transform .34s var(--ease-spring);pointer-events:none}
+body.chat-dark .pointer-bubble{color:#1d2330}
+.pointer-bubble.show{opacity:1;transform:none;animation:bubbleTalk 2.4s ease-in-out .55s 2}
+.pointer-bubble::after{content:"";position:absolute;left:16px;bottom:-8px;width:15px;height:15px;background:#fff;border-right:1px solid rgba(0,0,0,.07);border-bottom:1px solid rgba(0,0,0,.07);transform:rotate(45deg)}
+@keyframes bubbleTalk{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-2px) rotate(-.8deg)}60%{transform:translateY(-1px) rotate(.6deg)}}
+/* BARRA CARRELLO sempre in primo piano (cross-sell): "Invia il mio ordine (N)" — un tap e parte su WhatsApp */
+.chat-cart{display:block;width:calc(100% - 24px);margin:4px 12px 6px;padding:12px 14px;border:none;border-radius:14px;color:#231a00;font-weight:800;font-size:.96rem;letter-spacing:.2px;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.3);z-index:4}
+.chat-cart[hidden]{display:none}
+.chat-cart b{font-weight:900}
+.chat-cart:hover{filter:brightness(1.05)}
+@keyframes cartBump{0%{transform:scale(1)}40%{transform:scale(1.04)}100%{transform:scale(1)}}
+/* TAP: 4 colpetti NETTI e decisi verso il prodotto (il timing "fantastico" originale) */
+.chat-pointer.jab{animation:pointerJab .7s ease-in-out 4}
+.chat-pointer.jab .cp-ext{animation:fExt .7s steps(1,end) 4}
+.chat-pointer.jab .cp-bent{animation:fBent .7s steps(1,end) 4}
+@keyframes fBent{0%,40%{opacity:1}41%,74%{opacity:0}75%,100%{opacity:1}}   /* piegato: carica + ritorno */
+@keyframes fExt {0%,40%{opacity:0}41%,74%{opacity:1}75%,100%{opacity:0}}   /* steso: il COLPO */
+@keyframes pointerJab{
+  0%,38%{transform:scaleX(var(--flip)) translateX(4px)}      /* carica leggermente indietro */
+  42%{transform:scaleX(var(--flip)) translateX(-9px)}        /* il corpo accompagna il colpo in avanti */
+  74%{transform:scaleX(var(--flip)) translateX(-4px)}
+  90%,100%{transform:scaleX(var(--flip)) translateX(4px)}
+}
+@media(max-width:760px){
+  /* su mobile: in piedi più piccola, all'angolo basso-sinistra della sheet */
+  .chat-pointer{right:auto;left:8px;bottom:60px;height:clamp(104px,17dvh,132px)}
+}
+/* prodotto evidenziato = "la scelta di Kaya" */
+.msg-product.kaya-pick{border:2px solid var(--gold);position:relative;margin-top:8px;animation:pickPulse 1.3s ease 2}
+.msg-product.kaya-pick::before{content:attr(data-pick);position:absolute;top:-11px;left:10px;background:var(--gold);color:#fff;font-size:10px;font-weight:700;padding:2px 9px;border-radius:var(--r-pill);white-space:nowrap}
+@keyframes pickPulse{0%,100%{box-shadow:0 0 0 0 rgba(168,145,95,.0)}50%{box-shadow:0 0 0 6px rgba(168,145,95,.28)}}
+/* mentre Kaya è IN PIEDI e PUNTA: il prodotto risalta come "qualità top" (esaltatore) */
+.msg-product.kaya-target{border-color:var(--gold);animation:targetGlow 1.4s ease-in-out infinite,cardShake .7s ease-out 4}
+@keyframes targetGlow{0%,100%{box-shadow:0 0 0 2px var(--gold),0 8px 20px rgba(168,145,95,.32)}50%{box-shadow:0 0 0 4px var(--gold),0 14px 34px rgba(168,145,95,.6)}}
+/* la scheda incassa il COLPO del dito (urto a ~40%, poi oscillazione che si smorza) */
+@keyframes cardShake{
+  0%,36%{transform:translateX(0) scale(1)}
+  42%{transform:translateX(8px) scale(1.035)}   /* impatto */
+  50%{transform:translateX(-6px) scale(1.012)}
+  58%{transform:translateX(4px) scale(1)}
+  66%{transform:translateX(-2px)}
+  74%,100%{transform:translateX(0)}
+}
+/* il badge "La scelta di Kaya" pulsa: evidenza chiara di QUALE prodotto, anche su mobile */
+.msg-product.kaya-target::before{animation:badgePop 1.1s ease-in-out infinite;transform-origin:left center;z-index:4}
+@keyframes badgePop{0%,100%{transform:scale(1)}50%{transform:scale(1.13)}}
+.msg-product.kaya-target::after{content:"👉";position:absolute;left:-15px;top:50%;font-size:18px;transform:translateY(-50%);animation:targetPoke 1s ease-in-out infinite}
+@keyframes targetPoke{0%,100%{transform:translateY(-50%) translateX(0)}50%{transform:translateY(-50%) translateX(4px)}}
+@media(max-width:760px){.msg-product.kaya-target::after{display:none}}/* su mobile punta la figura+bagliore, niente manina sotto la figura */
+.chat-head{display:flex;align-items:center;gap:10px;padding:13px 14px;background:var(--chat-head);border-bottom:1px solid rgba(0,0,0,.06);position:relative}
+.chat-head::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--sage),var(--gold),var(--red))}
+.chat-avatar{width:42px;height:42px;border-radius:50%;border:1.5px solid var(--line)}
+.chat-id{flex:1;display:flex;flex-direction:column;line-height:1.2}
+.chat-id strong{font-size:var(--fs-h3);font-family:var(--font-head);color:var(--ink)}
+.chat-status{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px}
+.chat-status .dot{width:7px;height:7px;border-radius:50%;background:var(--leaf);display:inline-block}
+.chat-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--chat-paper)}
+/* durante il puntamento: spazio extra SOLO sotto così la card può salire fino al dito (niente vuoto in alto) */
+.chat-body.rig-pointing{padding-bottom:60dvh}
+.msg{max-width:84%;padding:10px 14px;border-radius:var(--r-md);font-size:var(--fs-sm);line-height:1.45;animation:msgIn var(--dur) var(--ease-out);white-space:pre-wrap;word-wrap:break-word}
+.msg.bot{background:var(--paper);border:1px solid var(--line);border-bottom-left-radius:5px;align-self:flex-start}
+.msg.user{background:var(--chat-accent);color:#fff;border-bottom-right-radius:5px;align-self:flex-end}
+.msg.typing{display:flex;gap:4px;align-items:center}
+.msg.typing i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:blink 1.2s infinite}
+.msg.typing i:nth-child(2){animation-delay:.2s}.msg.typing i:nth-child(3){animation-delay:.4s}
+.msg-product{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md);padding:10px;display:flex;gap:10px;align-items:center;max-width:92%;align-self:flex-start;animation:msgIn var(--dur);cursor:pointer}
+.msg-product .mp-img{width:54px;height:54px;border-radius:var(--r-sm);background:var(--cream) center/cover;flex:none;display:flex;align-items:center;justify-content:center;font-size:26px}
+.msg-product .mp-info{flex:1;font-size:var(--fs-sm)}
+.msg-product .mp-name{font-weight:600;font-family:var(--font-head);color:var(--ink)}
+.msg-product .mp-price{color:var(--gold-d);font-weight:700;font-family:var(--font-head)}
+.msg-product .mp-badge{color:var(--chat-accent);font-weight:700;font-size:.8rem;font-family:var(--font-head)}
+.msg-product .mp-add{white-space:nowrap}
+.msg-product .mp-add{background:var(--chat-accent);color:#fff;border:none;border-radius:var(--r-pill);padding:7px 13px;font-weight:700;font-size:var(--fs-sm)}
+.bundle-cta{border:2px solid var(--gold);background:var(--gold-wash);flex-wrap:wrap}
+.bundle-cta .mp-img{background:var(--paper)}
+.bundle-cta .mp-add{flex-basis:100%;margin-top:4px;padding:10px}
+.prof-prog{font-size:11px;color:var(--muted);padding:6px 16px 0;display:flex;align-items:center;gap:8px}
+.prof-prog .pp-track{flex:1;height:5px;background:var(--line);border-radius:var(--r-pill);overflow:hidden}
+.prof-prog .pp-fill{height:100%;background:var(--sage);transition:width var(--dur) var(--ease-out)}
+.chat-quick{display:flex;gap:7px;flex-wrap:wrap;padding:8px 14px}
+/* bottoni di risposta: PIENI e con micro-pulsazione → si capisce che vanno premuti */
+.chat-quick button{background:var(--chat-accent);border:none;color:#fff;border-radius:var(--r-pill);padding:9px 15px;font-weight:700;font-size:var(--fs-sm);box-shadow:0 3px 10px rgba(0,0,0,.14);transition:transform var(--dur-fast),box-shadow var(--dur-fast),filter var(--dur-fast);animation:quickIn .35s var(--ease-out) both,quickNudge 2.6s ease-in-out 1s 2}
+.chat-quick button:hover{filter:brightness(1.06);transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,0,0,.2)}
+.chat-quick button:active{transform:translateY(0) scale(.97)}
+@keyframes quickIn{0%{opacity:0;transform:translateY(6px)}100%{opacity:1;transform:none}}
+@keyframes quickNudge{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.chat-input{display:flex;gap:8px;padding:12px;padding-bottom:max(12px,env(safe-area-inset-bottom));border-top:1px solid rgba(0,0,0,.06);background:var(--chat-head)}
+.chat-input input{flex:1;border:1.5px solid var(--line);border-radius:var(--r-pill);padding:11px 16px;font-size:16px;font-family:inherit;outline:none;transition:var(--dur-fast)}
+.chat-input input:focus{border-color:var(--sage)}
+.chat-send{background:var(--chat-accent);color:#fff;border:none;width:44px;height:44px;border-radius:50%;font-size:16px;flex:none;transition:var(--dur-fast)}
+.chat-send:hover{filter:brightness(1.08)}
+/* ===== TEMA SCURO della chat = tema del sito ospite (si fonde, professionale) ===== */
+body.chat-dark{--paper:#1d2330;--line:rgba(255,255,255,.13);--ink:#eef1f6;--text:#dce1ea;color:#dce1ea}
+body.chat-dark .msg{color:#eef1f6}
+body.chat-dark .msg.bot{background:var(--chat-bubble,#1d2330);border-color:rgba(255,255,255,.10)}
+body.chat-dark .msg-product{background:var(--chat-bubble,#1d2330);border-color:rgba(255,255,255,.10);color:#eef1f6}
+body.chat-dark .chat-head{color:#eef1f6;border-bottom-color:rgba(255,255,255,.08)}
+body.chat-dark .chat-head::before{background:var(--chat-accent)}
+body.chat-dark .chat-title,body.chat-dark #chatTitle,body.chat-dark .chat-head b{color:#fff}
+body.chat-dark .chat-min,body.chat-dark .chat-head button{color:#cfd6e2}
+body.chat-dark .chat-input{border-top-color:rgba(255,255,255,.08)}
+body.chat-dark .chat-input input{background:var(--chat-bubble,#1d2330);color:#eef1f6;border-color:rgba(255,255,255,.16)}
+body.chat-dark .chat-input input::placeholder{color:rgba(255,255,255,.45)}
+body.chat-dark .chat-input input:focus{border-color:var(--chat-accent)}
+body.chat-dark .mp-name{color:#fff}
+body.chat-dark .chat-prog,body.chat-dark .chat-prog-label{color:#aeb6c4}
+/* ===== FILIGRANA: logo del brand sullo sfondo della chat, opacità bassissima (tocco pro) ===== */
+body.has-watermark .chat-inner{position:relative}
+body.has-watermark .chat-inner::before{content:"";position:absolute;inset:0;background:var(--chat-logo) center 43%/60% auto no-repeat;opacity:.09;pointer-events:none;z-index:0}
+body.has-watermark.chat-dark .chat-inner::before{opacity:.13}
+body.has-watermark .chat-head,body.has-watermark .chat-body,body.has-watermark .chat-input{position:relative;z-index:1}
+body.has-watermark .chat-body{background:transparent}
+
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 20px;border-radius:var(--r-pill);font-weight:600;font-size:var(--fs-sm);z-index:300;box-shadow:var(--shadow-lg);animation:toastIn var(--dur-slow);pointer-events:none}
+.toast.sp{pointer-events:none;background:var(--paper);color:var(--text);border:1px solid var(--line);border-left:4px solid var(--leaf);box-shadow:var(--shadow);left:18px;right:auto;transform:none;bottom:18px;max-width:262px;text-align:left;font-weight:500;font-size:var(--fs-sm)}
+.toast.sp b{color:var(--sage-d)}
+
+/* ===== ANIMATIONS ===== */
+@keyframes pop{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+@keyframes slideUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes msgIn{from{transform:translateY(6px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes toastIn{from{transform:translate(-50%,12px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+@keyframes blink{0%,60%,100%{opacity:.3}30%{opacity:1}}
+@keyframes pulse{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.45);opacity:0}}
+@keyframes pulseLeaf{0%{filter:brightness(1)}50%{filter:brightness(1.4)}100%{filter:brightness(1)}}
+@keyframes nudge{0%,100%{transform:rotate(0)}25%{transform:rotate(-9deg) scale(1.05)}75%{transform:rotate(9deg) scale(1.05)}}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+
+/* ===== IDLE: ELFO SEDUTO CHE FUMA (elemento a sé) ===== */
+.elf-smoke{position:fixed;right:4px;bottom:46px;width:116px;height:146px;z-index:91;pointer-events:auto;cursor:pointer;opacity:0;transform:translateY(40px) rotate(6deg);transition:opacity .45s ease,transform .6s var(--ease-spring)}
+.elf-smoke.show{opacity:1;transform:translateY(0) rotate(0)}
+.elf-sit{width:100%;height:100%;transform-origin:50% 88%;animation:elfSway 3.6s ease-in-out infinite}
+.elf-smoke .ember{animation:emberGlow 1.3s ease-in-out infinite}
+.elf-smoke .flame{transform-origin:center bottom;animation:flameOut 1.8s ease-out both}
+.elf-smoke .smoke{position:absolute;top:14%;right:9%;width:22px;height:46px}
+.elf-smoke .smoke i{position:absolute;bottom:0;left:50%;width:9px;height:9px;border-radius:50%;background:rgba(190,190,190,.45);filter:blur(1px);opacity:0;animation:puff 3.4s ease-out infinite}
+.elf-smoke .smoke i:nth-child(2){animation-delay:.9s}
+.elf-smoke .smoke i:nth-child(3){animation-delay:1.8s}
+.elf-smoke .smoke i:nth-child(4){animation-delay:2.6s}
+@keyframes elfSway{0%,100%{transform:rotate(-2.2deg)}50%{transform:rotate(2.2deg)}}
+@keyframes emberGlow{0%,100%{fill:#ff5a1f;r:3.2px}50%{fill:#ffb24a;r:3.8px}}
+@keyframes flameOut{0%{opacity:0;transform:scaleY(.5)}25%{opacity:1;transform:scaleY(1.15)}55%{opacity:1;transform:scaleY(.95)}100%{opacity:0;transform:scaleY(.4)}}
+@keyframes puff{0%{transform:translate(0,0) scale(.5);opacity:0}25%{opacity:.55}100%{transform:translate(-14px,-44px) scale(1.7);opacity:0}}
+@media(max-width:560px){.elf-smoke{width:96px;height:122px;bottom:52px;right:4px}}
+
+/* fumetto del compagno */
+.elf-bubble{position:fixed;right:16px;bottom:96px;max-width:230px;z-index:92;background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--sage);border-radius:var(--r-md) var(--r-md) 6px var(--r-md);padding:11px 14px;font-size:var(--fs-sm);font-weight:600;color:var(--ink);box-shadow:var(--shadow-lg);cursor:pointer;opacity:0;transform:translateY(10px) scale(.96);transform-origin:bottom right;transition:opacity .25s ease,transform .3s var(--ease-spring)}
+.elf-bubble.show{opacity:1;transform:translateY(0) scale(1)}
+.elf-bubble::after{content:"";position:absolute;right:26px;bottom:-9px;width:16px;height:16px;background:var(--paper);border-right:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg)}
+@media(max-width:560px){.elf-bubble{bottom:96px;right:12px;max-width:78vw}}
+@media(prefers-reduced-motion:reduce){.elf-smoke .smoke{display:none}}
+/* angolo: niente grosso personaggio sovrapposto — il compagno è il launcher (volto 3D) + fumetto */
+.elf-smoke{display:none!important}
+
+/* ===== UTILITY TOP BAR (verde salvia, come l'originale) ===== */
+.topbar{background:var(--topbar);color:#fff;font-size:12.5px}
+.topbar-inner{max-width:1180px;margin:0 auto;padding:7px var(--gutter);display:flex;align-items:center;justify-content:center;gap:22px;flex-wrap:wrap}
+.topbar-info{display:flex;gap:22px;flex-wrap:wrap;justify-content:center}
+.topbar-acc{display:flex;align-items:center;gap:10px}
+.topbar-acc a{color:#fff;text-decoration:none;font-weight:400}
+.topbar-acc a:hover{text-decoration:underline}
+.topbar-acc .sep{opacity:.5}
+.topbar .lang-switch{background:rgba(255,255,255,.18);margin-left:6px}
+.topbar .lang-switch button{color:#fff}
+.topbar .lang-switch button.active{background:#fff;color:var(--topbar)}
+
+/* ===== HEADER (rosa cipria, logo centrato, icone oro) ===== */
+.brand-stack{display:flex;flex-direction:column;line-height:1.05;align-items:flex-start}
+.brand-name{font-family:var(--font-head);font-weight:400;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-d);font-size:clamp(1rem,.9rem+.6vw,1.35rem)}
+.brand-script{font-family:var(--font-head);font-weight:400;font-size:.62rem;letter-spacing:.42em;text-transform:uppercase;color:var(--gold);margin-top:3px;align-self:center}
+.brand-leaf{color:var(--gold);font-size:1.1em}
+.search{flex:1;max-width:520px;display:flex;border:1px solid var(--pink-d);border-radius:var(--r-pill);overflow:hidden;background:rgba(255,255,255,.6)}
+.search input{flex:1;border:none;outline:none;padding:10px 18px;font-family:inherit;font-size:16px;background:transparent;color:var(--text)}
+.search button{border:none;background:transparent;padding:0 16px;font-size:15px;cursor:pointer;color:var(--gold-d)}
+.search button:hover{color:var(--olive)}
+.hr-acc{font-size:18px;text-decoration:none;width:42px;height:42px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--gold);border-radius:8px;color:var(--gold-d)}
+.hr-acc:hover{background:rgba(255,255,255,.5)}
+
+/* ===== NAV BAR (rosa chiaro, hamburger come l'originale) ===== */
+.navbar{background:var(--pink-2);border-bottom:1px solid var(--pink-d);position:sticky;top:0;z-index:39}
+.navbar-inner{max-width:1180px;margin:0 auto;padding:0 var(--gutter);display:flex;gap:4px;flex-wrap:wrap}
+.navbar-inner button{border:none;background:transparent;color:var(--gold-d);font-weight:400;font-size:var(--fs-sm);padding:12px 14px;position:relative;letter-spacing:.04em;text-transform:uppercase;transition:var(--dur-fast)}
+.navbar-inner button:hover{color:var(--olive)}
+.navbar-inner button.active{color:var(--olive)}
+.navbar-inner button.active::after,.navbar-inner button:hover::after{content:"";position:absolute;left:14px;right:14px;bottom:0;height:2px;background:var(--gold)}
+
+/* ===== HERO (trasparente: lascia vedere il wallpaper rosa del sito) ===== */
+.hero{background:transparent!important}
+.hero-script{font-family:var(--font-script);font-weight:700;font-size:clamp(2.6rem,1.6rem + 5vw,4.6rem);color:#7a4f48;line-height:1.05;margin:6px 0 12px}
+.hero-eyebrow{color:var(--olive);font-style:italic;font-family:var(--font-body);text-transform:none;letter-spacing:.04em;font-weight:400;font-size:var(--fs-sm)}
+.hero-sub{color:var(--text)!important}
+.hero-trust{color:var(--muted)!important}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap}
+.hero .btn-ghost{color:var(--ink);border-color:rgba(122,79,72,.35);background:rgba(255,255,255,.5)}
+.hero-rating{color:var(--ink)!important}
+
+/* ===== SECTION TITLES (olio, centrati con trattini ai lati, come l'originale) ===== */
+.row-head{justify-content:center!important}
+.sec-title{font-family:var(--font-head);font-weight:400;color:var(--olive);text-transform:uppercase;letter-spacing:.08em;font-size:clamp(1.05rem,.9rem+.6vw,1.5rem);margin:0;display:flex;align-items:center;gap:clamp(12px,4vw,22px);justify-content:center}
+.sec-title::before,.sec-title::after{content:"";height:1px;width:clamp(36px,12vw,150px);background:var(--pink-d)}
+.sec-sale{color:var(--red)}
+.cat-section .sec-title,.reviews .sec-title,.shop .sec-title{justify-content:center}
+.nl-copy .sec-title{color:#fff}
+.nl-copy .sec-title::before,.nl-copy .sec-title::after{background:rgba(255,255,255,.4)}
+
+/* ===== CATEGORY TILES ===== */
+.cat-section{max-width:1180px;margin:0 auto;padding:var(--section-y) var(--gutter) 0}
+.cat-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:var(--gap);margin-top:22px}
+.cat-tile{background:var(--cream);border:1px solid var(--line);border-radius:var(--r-md);padding:22px 14px;text-align:center;cursor:pointer;transition:transform var(--dur),box-shadow var(--dur),border-color var(--dur)}
+.cat-tile:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--sage)}
+.cat-tile .ct-emoji{font-size:34px}
+.cat-tile .ct-name{font-weight:700;font-size:var(--fs-sm);margin-top:8px;color:var(--ink)}
+.cat-tile .ct-count{font-size:11px;color:var(--muted)}
+
+/* ===== PRODUCT ROWS ===== */
+.prod-row{max-width:1180px;margin:0 auto;padding:var(--section-y) var(--gutter) 0}
+.prod-row.alt{background:var(--cream);max-width:none;padding-left:0;padding-right:0}
+.prod-row.alt .row-head,.prod-row.alt .grid{max-width:1180px;margin-left:auto;margin-right:auto;padding-left:var(--gutter);padding-right:var(--gutter)}
+.row-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.shop{padding-top:var(--section-y)}
+
+/* ===== FOOTER (columns) ===== */
+.footer{background:var(--ink);color:#cfc8b8;padding:var(--section-y) var(--gutter) 24px;font-size:var(--fs-sm)}
+.footer-cols{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(1.5rem,4vw,3rem)}
+.fcol h4{color:#fff;font-size:1.05rem;margin:0 0 12px}
+.fcol p{margin:4px 0;color:#bdb6a6}
+.fcol ul{list-style:none;padding:0;margin:0}
+.fcol li{padding:4px 0;color:#bdb6a6;cursor:pointer}
+.fcol li:hover{color:var(--gold)}
+.pay-icons{color:#bdb6a6;line-height:1.8}
+.footer .footer-made{justify-content:flex-start;margin-top:14px}
+.footer-bottom{max-width:1180px;margin:26px auto 0;padding-top:18px;border-top:1px solid rgba(255,255,255,.12);text-align:center;color:#9a9384;font-size:12px}
+
+/* ===== RATING / STELLE ===== */
+.stars{display:inline-flex;letter-spacing:1px;font-size:.95em;line-height:1}
+.stars span{color:#dcd5c4}
+.stars span.on{color:var(--gold)}
+.card-rating{display:flex;align-items:center;gap:5px;font-size:var(--fs-sm);margin:2px 0 8px}
+.card-rating b{color:var(--ink);font-weight:700}
+.card-rating .rev{color:var(--muted);font-size:.85em}
+.card-urgency{font-size:var(--fs-eyebrow);font-weight:700;color:var(--red);margin-bottom:8px;letter-spacing:.02em}
+.mp-rating{display:flex;align-items:center;gap:5px;font-size:11px;margin:2px 0}
+.mp-rating .rev{color:var(--muted)}
+.hero-rating{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--ink);font-size:var(--fs-sm);margin-bottom:8px}
+.hero-rating .stars{font-size:1.05rem}
+.hero-rating .hr-count{color:var(--muted);font-weight:600}
+
+/* ===== TRUST STRIP ===== */
+.trust-strip{background:var(--cream);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.trust-strip{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(14px,4vw,40px);padding:14px var(--gutter)}
+.trust-strip span{font-size:var(--fs-sm);font-weight:600;color:var(--ink);display:inline-flex;align-items:center;gap:6px}
+
+/* ===== REVIEWS ===== */
+.reviews{max-width:1180px;margin:0 auto;padding:var(--section-y) var(--gutter)}
+.reviews-head{text-align:center;margin-bottom:26px}
+.reviews-sub{color:var(--muted);font-size:var(--fs-sm);margin:14px 0 0}
+.reviews .sec-title::after{margin-left:auto;margin-right:auto}
+.reviews-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:var(--gap)}
+.review-card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md);padding:18px}
+.review-card .stars{font-size:1.05rem;margin-bottom:10px}
+.review-card .rv-text{font-size:var(--fs-sm);color:var(--text);line-height:1.55;margin-bottom:14px}
+.review-card .rv-foot{display:flex;align-items:center;gap:8px}
+.review-card .rv-av{width:34px;height:34px;border-radius:50%;background:var(--sage);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-family:var(--font-head)}
+.review-card .rv-name{font-weight:700;color:var(--ink);font-size:var(--fs-sm)}
+.review-card .rv-ver{font-size:11px;color:var(--leaf);font-weight:600}
+
+/* rating in chat (richiesta valutazione) */
+.rate-stars{display:flex;gap:6px;padding:4px 0}
+.rate-stars button{border:none;background:transparent;font-size:26px;color:#dcd5c4;cursor:pointer;transition:transform var(--dur-fast)}
+.rate-stars button:hover,.rate-stars button.hot{color:var(--gold);transform:scale(1.15)}
+
+/* ===== NEWSLETTER ===== */
+.newsletter{background:linear-gradient(120deg,var(--green),#2b3f22);color:#fff;padding:var(--section-y) var(--gutter)}
+.nl-inner{max-width:900px;margin:0 auto;text-align:center}
+.nl-copy .sec-title{color:#fff}
+.nl-copy .sec-title::after{margin:8px auto 0;background:var(--gold)}
+.nl-inner p{color:rgba(255,255,255,.85);margin:14px 0 22px}
+.nl-form{display:flex;gap:10px;max-width:480px;margin:0 auto;flex-wrap:wrap}
+.nl-form input{flex:1;min-width:200px;border:none;border-radius:var(--r-pill);padding:14px 18px;font-size:16px;font-family:inherit;outline:none}
+.nl-thanks{margin-top:16px;font-weight:700;color:var(--gold);font-size:var(--fs-h3)}
+
+/* ===== BARRA STICKY MOBILE ===== */
+.mobile-bar{position:fixed;left:0;right:0;bottom:0;z-index:88;background:var(--paper);border-top:1px solid var(--line);box-shadow:0 -8px 24px rgba(42,42,40,.12);display:none;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;padding-bottom:max(10px,env(safe-area-inset-bottom))}
+.mb-info{display:flex;align-items:center;gap:10px}
+.mb-count{background:var(--sage);color:#fff;font-weight:700;min-width:26px;height:26px;border-radius:var(--r-pill);display:inline-flex;align-items:center;justify-content:center;font-size:14px}
+.mb-total{font-family:var(--font-head);font-weight:700;font-size:1.15rem;color:var(--ink)}
+.mb-cta{padding:12px 22px}
+@media(max-width:640px){
+  .mobile-bar:not([hidden]){display:flex}
+  body.has-bar .chat-launcher{bottom:calc(72px + env(safe-area-inset-bottom))}
+  body.has-bar .elf-bubble{bottom:calc(148px + env(safe-area-inset-bottom))}
+}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:860px){
+  .hero-inner{grid-template-columns:1fr;text-align:center}
+  .hero-copy{text-align:center}
+  .hero-sub{margin-left:auto;margin-right:auto}
+  .hero-trust,.hero-ctas{justify-content:center}
+  .hero-visual{order:-1}
+  .hero-mascot{width:min(220px,58%)}
+}
+@media(max-width:760px){
+  .hamburger{display:inline-flex}
+  .header{flex-wrap:wrap}
+  .search{order:5;flex-basis:100%;max-width:none}
+  .navbar{display:none;position:static}
+  .navbar.open{display:block}
+  .navbar-inner{flex-direction:column;padding:6px var(--gutter)}
+  .navbar-inner button{text-align:left;width:100%;padding:12px 12px;border-radius:var(--r-sm)}
+  .navbar-inner button.active{background:var(--sage-soft)}
+  .navbar-inner button.active::after,.navbar-inner button:hover::after{display:none}
+  .topbar-info{display:none}
+  .header-right{margin-left:0}
+  .cart-btn .cart-label{display:none}
+  .footer-cols{grid-template-columns:1fr;text-align:center}
+  .footer .footer-made{justify-content:center}
+}
+@media(max-width:560px){
+  .grid{grid-template-columns:repeat(auto-fill,minmax(46vw,1fr))}
+  /* bottom-sheet: ~3/4 schermo, sopra resta visibile il sito + il venditore */
+  .chat-panel{bottom:0;left:0;right:0;width:100%;max-width:100%;height:76vh;height:76dvh;max-height:76vh;max-height:76dvh}
+  .chat-inner{border-radius:var(--r-lg) var(--r-lg) 0 0;border:1px solid var(--line);border-bottom:none;box-shadow:0 -12px 40px rgba(42,42,40,.22)}
+  .chat-seller-wrap{display:block;width:clamp(120px,42vw,172px);height:clamp(88px,15dvh,116px);bottom:calc(100% - 42px)}
+  .chat-body{padding-top:0}
+  .toast.sp{left:10px;right:auto;max-width:64vw;bottom:14px}
+  body.has-bar .toast.sp{bottom:78px}
+  .promo-bar{font-size:12px;gap:6px;padding-right:34px}
+  .hero-trust{gap:12px;font-size:.8rem}
+  .cat-tiles{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:380px){
+  .grid{grid-template-columns:1fr}
+  .cat-tiles{grid-template-columns:repeat(2,1fr)}
+}
+
+/* ===== MODALITÀ WIDGET (embed in iframe): solo la chat, sfondo trasparente ===== */
+body.widget-mode{background:transparent!important}
+body.widget-mode::before{display:none!important}
+body.widget-mode #site,body.widget-mode #ageGate,body.widget-mode .chat-launcher,
+body.widget-mode #elfSmoke,body.widget-mode #elfBubble,body.widget-mode .promo-bar,
+body.widget-mode #mobileBar,body.widget-mode #exitPopup,body.widget-mode .toast{display:none!important}
+/* desktop widget: lascia ~120px SOPRA per il personaggio (non più tagliato) */
+body.widget-mode .chat-panel{bottom:12px;right:14px;top:auto;height:calc(100dvh - 120px);max-height:calc(100dvh - 120px)}
+@media(max-width:560px){
+  /* mobile widget: quasi a tutto schermo, ma ~86px in alto per il personaggio */
+  body.widget-mode .chat-panel{bottom:0;right:0;left:0;width:100%;max-width:100%;height:calc(100dvh - 86px);max-height:calc(100dvh - 86px)}
+  body.widget-mode .chat-inner{border-radius:18px 18px 0 0}
+}
+
+/* ===== TENANT SENZA MASCOTTE (character:false): chat pulita, niente personaggio ===== */
+body.no-character .chat-seller-wrap,body.no-character .chat-pointer,
+body.no-character #elfSmoke,body.no-character #elfBubble,body.no-character .age-mascot,
+body.no-character .pointer-bubble{display:none!important}
+body.no-character .msg-product.kaya-target{animation:targetGlow 1.4s ease-in-out infinite}   /* solo bagliore, niente scossa del dito */
+/* senza mascotte il pannello può usare tutto lo spazio (niente margine in alto per la testa) */
+body.no-character.widget-mode .chat-panel{height:calc(100dvh - 16px);max-height:calc(100dvh - 16px)}
+@media(max-width:560px){ body.no-character.widget-mode .chat-panel{height:100dvh;max-height:100dvh} }

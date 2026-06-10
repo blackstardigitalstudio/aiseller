@@ -1,0 +1,33 @@
+{
+  "brand": "Mario Wine Shop",
+  "host": "mariowine.it",
+  "accent": "#7a1730",
+  "character": { "face": "assets/seller-face.webp", "rest": "assets/seller.webp" },
+  "teasers": {
+    "it": ["🍷 Cerchi il vino giusto?", "Per quale occasione? Ti consiglio io 😊", "Vuoi un abbinamento perfetto? Chiedimi"],
+    "es": ["🍷 ¿Buscas el vino ideal?", "¿Para qué ocasión? Yo te aconsejo 😊", "¿Un maridaje perfecto? Pregúntame"],
+    "en": ["🍷 Looking for the right wine?", "For which occasion? I'll guide you 😊", "Want a perfect pairing? Just ask"]
+  },
+  "products": [
+    { "id": 9000, "name": "Chianti Classico DOCG 2021", "category": "Vini Rossi", "price": 14.9, "currency": "EUR", "description": "Rosso toscano corposo, note di ciliegia e spezie.", "imageUrl": "", "badge": "⭐ Top", "stock": 20 },
+    { "id": 9001, "name": "Barolo Riserva 2018", "category": "Vini Rossi", "price": 39.0, "currency": "EUR", "description": "Nebbiolo da invecchiamento, elegante e strutturato.", "imageUrl": "", "badge": "", "stock": 12 },
+    { "id": 9002, "name": "Prosecco Valdobbiadene Extra Dry", "category": "Bollicine", "price": 9.5, "currency": "EUR", "description": "Fresco, fruttato, perlage fine.", "imageUrl": "", "badge": "⭐ Top", "stock": 40 },
+    { "id": 9003, "name": "Franciacorta Brut", "category": "Bollicine", "price": 22.0, "currency": "EUR", "description": "Metodo classico italiano, cremoso ed elegante.", "imageUrl": "", "badge": "", "stock": 18 },
+    { "id": 9004, "name": "Vermentino di Sardegna", "category": "Vini Bianchi", "price": 11.0, "currency": "EUR", "description": "Bianco minerale e sapido, perfetto col pesce.", "imageUrl": "", "badge": "", "stock": 25 },
+    { "id": 9005, "name": "Gewürztraminer Alto Adige", "category": "Vini Bianchi", "price": 16.5, "currency": "EUR", "description": "Aromatico, note di litchi e rosa.", "imageUrl": "", "badge": "", "stock": 15 },
+    { "id": 9006, "name": "Cavatappi Premium in acciaio", "category": "Accessori", "price": 24.0, "currency": "EUR", "description": "Apribottiglie professionale a leva.", "imageUrl": "", "badge": "", "stock": 30 },
+    { "id": 9007, "name": "Set 6 Calici Cristallo", "category": "Accessori", "price": 34.9, "currency": "EUR", "description": "Calici in cristallo per rossi importanti.", "imageUrl": "", "badge": "⭐ Top", "stock": 10 }
+  ],
+  "catLabels": {
+    "Vini Rossi": { "es": "Vinos Tintos", "en": "Red Wines", "it": "Vini Rossi" },
+    "Bollicine": { "es": "Espumosos", "en": "Sparkling", "it": "Bollicine" },
+    "Vini Bianchi": { "es": "Vinos Blancos", "en": "White Wines", "it": "Vini Bianchi" },
+    "Accessori": { "es": "Accesorios", "en": "Accessories", "it": "Accessori" }
+  },
+  "categoryOptions": [
+    { "es": "Vinos Tintos", "en": "Red Wines", "it": "Vini Rossi", "val": "Vini Rossi" },
+    { "es": "Espumosos", "en": "Sparkling", "it": "Bollicine", "val": "Bollicine" },
+    { "es": "Vinos Blancos", "en": "White Wines", "it": "Vini Bianchi", "val": "Vini Bianchi" },
+    { "es": "Accesorios", "en": "Accessories", "it": "Accessori", "val": "Accessori" }
+  ]
+}

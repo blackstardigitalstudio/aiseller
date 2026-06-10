@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Informe di sviluppo · Kayaman's Farm — Budtender AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Alata&family=ABeeZee:ital@0;1&family=Dancing+Script:wght@700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --pink:#f4d8da; --pink-bg:#ecd2cd; --sage:#839669; --gold:#a8915f; --gold-d:#4a3f1e;
+    --olive:#5d5020; --red:#ab2e31; --ink:#2b2b2b; --text:#4a4a48; --muted:#8a857c;
+    --line:#e7ddd6; --paper:#fff; --leaf:#3a7d34;
+    --head:'Alata',sans-serif; --body:'ABeeZee',system-ui,sans-serif; --script:'Dancing Script',cursive;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:var(--body);color:var(--text);line-height:1.6;background:#f3e7e3;
+    background-image:radial-gradient(120% 80% at 100% 0%,#f8e2dc 0%,rgba(248,226,220,0) 50%),radial-gradient(90% 70% at 0% 100%,#f1d6cf 0%,rgba(241,214,207,0) 55%);
+    background-attachment:fixed;-webkit-font-smoothing:antialiased}
+  .doc{max-width:920px;margin:0 auto;padding:0 20px 80px}
+  h1,h2,h3{font-family:var(--head);color:var(--ink);line-height:1.2}
+  a{color:var(--leaf)}
+  .cover{background:linear-gradient(135deg,#1d1712,#322716);color:#fff;border-radius:0 0 28px 28px;padding:54px 40px 44px;box-shadow:0 24px 60px rgba(42,42,40,.22);position:relative;overflow:hidden}
+  .cover::after{content:"🌿";position:absolute;right:-10px;bottom:-20px;font-size:160px;opacity:.06}
+  .cover .kicker{font-family:var(--script);font-size:2rem;color:var(--gold);margin:0 0 6px}
+  .cover h1{color:#fff;font-size:clamp(1.9rem,1.3rem+2.6vw,3rem);margin:0 0 14px}
+  .cover p{color:rgba(255,255,255,.85);max-width:62ch;margin:0 0 22px}
+  .cover .meta{display:flex;flex-wrap:wrap;gap:10px;font-size:.85rem}
+  .cover .meta span{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);padding:6px 12px;border-radius:999px}
+  .lead{font-size:1.12rem;color:var(--ink);background:var(--paper);border-left:5px solid var(--gold);border-radius:12px;padding:20px 24px;margin:34px 0;box-shadow:0 10px 30px rgba(42,42,40,.06)}
+  section{margin:40px 0}
+  h2{font-size:1.5rem;border-bottom:2px solid var(--pink);padding-bottom:8px;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+  h2 .n{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:var(--sage);color:#fff;font-size:1rem;flex:none}
+  h3{font-size:1.12rem;margin:22px 0 6px;color:var(--olive)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:18px 0}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px 18px;box-shadow:0 8px 24px rgba(42,42,40,.05)}
+  .card h3{margin:0 0 6px;color:var(--ink);font-family:var(--head);font-size:1.02rem}
+  .card p{margin:0;font-size:.94rem;color:var(--text)}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:20px 0}
+  .kpi{background:linear-gradient(135deg,#fff,#fdf4f1);border:1px solid var(--line);border-radius:14px;padding:18px;text-align:center}
+  .kpi b{display:block;font-family:var(--head);font-size:1.9rem;color:var(--sage);line-height:1}
+  .kpi span{font-size:.82rem;color:var(--muted);display:block;margin-top:6px}
+  ul.clean{list-style:none;padding:0;margin:12px 0}
+  ul.clean li{padding:8px 0 8px 30px;position:relative;border-bottom:1px dashed var(--line)}
+  ul.clean li::before{content:"✓";position:absolute;left:0;top:8px;color:var(--leaf);font-weight:bold}
+  ul.dot{padding-left:20px;margin:10px 0}
+  ul.dot li{margin:6px 0}
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.92rem;background:var(--paper);border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(42,42,40,.05)}
+  th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line)}
+  th{background:var(--sage);color:#fff;font-family:var(--head);font-weight:400;font-size:.86rem}
+  tr:last-child td{border-bottom:none}
+  .legal{background:#fff8f0;border:1px solid #f0e2cf;border-left:5px solid var(--gold);border-radius:12px;padding:18px 22px}
+  .legal .warn{color:var(--red);font-weight:bold}
+  .flow{counter-reset:step;margin:16px 0}
+  .flow .s{position:relative;padding:14px 0 14px 56px;border-left:2px solid var(--pink);margin-left:18px}
+  .flow .s::before{counter-increment:step;content:counter(step);position:absolute;left:-19px;top:12px;width:36px;height:36px;border-radius:50%;background:var(--gold);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--head)}
+  .flow .s b{color:var(--ink)}
+  .tag{display:inline-block;background:var(--pink);color:var(--olive);border-radius:999px;padding:3px 11px;font-size:.78rem;margin:2px 4px 2px 0}
+  .cta{background:linear-gradient(135deg,#2f5d3a,#244a2e);color:#fff;border-radius:20px;padding:30px 34px;text-align:center;margin:44px 0 0}
+  .cta a{display:inline-block;background:var(--gold);color:#2a230f;text-decoration:none;font-family:var(--head);padding:13px 26px;border-radius:999px;margin-top:14px}
+  footer{text-align:center;color:var(--muted);font-size:.85rem;margin-top:40px;padding-top:20px;border-top:1px solid var(--line)}
+  .made{display:inline-flex;align-items:center;gap:8px;font-weight:bold;color:var(--ink)}
+  .flag{width:22px;height:15px;border-radius:2px;overflow:hidden;display:inline-flex;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+  .flag i{flex:1}.flag .g{background:#009246}.flag .w{background:#fff}.flag .r{background:#ce2b37}
+  @media print{
+    body{background:#fff}
+    .cover{box-shadow:none;border-radius:0}
+    .card,.kpi,table,.lead{box-shadow:none}
+    .cta a{border:1px solid #999}
+    section{break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="doc">
+
+  <header class="cover">
+    <p class="kicker">Kayaman's Farm</p>
+    <h1>Budtender AI · Informe di sviluppo</h1>
+    <p>Un venditore esperto digitale che accoglie, capisce il cliente e vende 24/7 — con neuromarketing dei migliori venditori e un personaggio 3D che guida l'acquisto. Demo completa, multilingua e conforme alla normativa.</p>
+    <div class="meta">
+      <span>📅 Versione demo · Maggio 2026</span>
+      <span>🌍 ES · EN · IT</span>
+      <span>📱 Responsive</span>
+      <span>⚡ Caricamento rapido</span>
+      <span>🔗 Online su Vercel</span>
+    </div>
+  </header>
+
+  <p class="lead">Questo documento riassume <b>cosa è stato sviluppato</b>, <b>come vende</b>, <b>perché è conforme alla legge spagnola sul CBD</b> e <b>quale valore porta</b> alla tienda. Tutto ciò che vedi è già funzionante nella demo live.</p>
+
+  <section>
+    <h2><span class="n">1</span> Sintesi del progetto</h2>
+    <p>Abbiamo costruito un <b>assistente di vendita intelligente</b> ("Kaya") integrato in una vetrina e-commerce fedele al sito reale. Non è un semplice chatbot di FAQ: è un <b>venditore</b> che profila chi ha davanti, propone i prodotti giusti, costruisce il bisogno, fa cross-sell e chiude la vendita — restando sempre nei limiti di legge.</p>
+    <div class="kpis">
+      <div class="kpi"><b>37</b><span>prodotti a catalogo</span></div>
+      <div class="kpi"><b>20</b><span>referenze CBD</span></div>
+      <div class="kpi"><b>3</b><span>lingue (auto)</span></div>
+      <div class="kpi"><b>24/7</b><span>venditore sempre attivo</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">2</span> Il personaggio · "Kaya"</h2>
+    <p>Il cuore esperienziale: un <b>personaggio 3D</b> in stile Pixar che fa da venditore ufficiale e <b>interagisce davvero</b>, non è un'immagine ferma.</p>
+    <div class="grid">
+      <div class="card"><h3>🛋️ Sdraiato sul box</h3><p>Quando apri la chat, Kaya è disteso sopra la finestra: respira, fuma (fumo animato dal joint) e <b>sbatte le ciglia</b>.</p></div>
+      <div class="card"><h3>🧍 Si alza e indica</h3><p>Quando consiglia, si mette in piedi e <b>indica il prodotto</b> giusto: il braccio si piega e <b>batte il dito</b> sulla scheda (4 colpetti).</p></div>
+      <div class="card"><h3>📳 La scheda reagisce</h3><p>Il prodotto consigliato <b>vibra</b> a ogni colpetto, con bagliore dorato e badge "La scelta di Kaya".</p></div>
+      <div class="card"><h3>👍 Reazioni</h3><p>Pollice in su quando aggiungi al carrello. Si comporta come un commesso entusiasta.</p></div>
+      <div class="card"><h3>🎯 Puntamento preciso</h3><p>Il dito si allinea esattamente alla scheda del prodotto, su desktop e su cellulare.</p></div>
+      <div class="card"><h3>🤝 Rispetta l'utente</h3><p>Se scorri o tocchi un prodotto, il puntamento finisce e torna a riposo: mai invadente.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">3</span> Come vende · Neuromarketing</h2>
+    <p>Kaya applica le tecniche dei migliori venditori in modo naturale e trilingue.</p>
+    <h3>Capire chi ha davanti (profilazione)</h3>
+    <p>Quattro domande rapide: livello d'esperienza, per chi è (sé/regalo), categoria d'interesse e budget. Da qui costruisce una raccomandazione su misura.</p>
+    <h3>Leve di persuasione (Cialdini)</h3>
+    <p>
+      <span class="tag">Riprova sociale</span>
+      <span class="tag">Scarsità</span>
+      <span class="tag">Ancoraggio prezzo</span>
+      <span class="tag">Reciprocità</span>
+      <span class="tag">Avversione alla perdita</span>
+      <span class="tag">Autorità (budtender)</span>
+      <span class="tag">Descrizione sensoriale</span>
+    </p>
+    <h3>Aumentare lo scontrino</h3>
+    <ul class="clean">
+      <li><b>Bundle / pack scontato</b> con ancoraggio sul totale e chiusura assuntiva.</li>
+      <li><b>Cross-sell e upsell</b>: "ti serve anche questo".</li>
+      <li><b>Rating e recensioni</b> su ogni prodotto + riprova sociale a rotazione.</li>
+      <li><b>Micro-urgenza</b> e segnali di disponibilità limitata.</li>
+      <li><b>Cattura email</b> (newsletter −10%) e codice ringraziamento post-acquisto.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="n">4</span> Modulo CBD · vendita problema→soluzione</h2>
+    <p>Per il cliente nuovo al CBD, Kaya usa lo schema <b>problema → soluzione</b>: educa, scopre un "momento" da curare, costruisce il bisogno e propone la <b>soluzione giusta</b> — sempre con linguaggio conforme.</p>
+    <div class="flow">
+      <div class="s"><b>Educa e rassicura</b> — "il CBD non sballa e non è una medicina: è cura e ritual."</div>
+      <div class="s"><b>Scopre il momento</b> — staccare dallo stress · cura della pelle · recupero dopo lo sport · un regalo.</div>
+      <div class="s"><b>Crea il bisogno</b> — racconto lifestyle ("torni a casa e la testa va ancora a mille…").</div>
+      <div class="s"><b>Vende la soluzione</b> — il prodotto cosmetico/aromatico giusto + complementare + pack scontato.</div>
+      <div class="s"><b>Chiude in sicurezza</b> — nota legale di conformità.</div>
+    </div>
+    <p>Il catalogo CBD è stato ampliato a <b>20 referenze</b> (cosmetici per uso topico, sali, balsami, creme, oli da massaggio + flores/hash/extractos aromatici da collezione).</p>
+  </section>
+
+  <section>
+    <h2><span class="n">5</span> Conformità legale (Spagna)</h2>
+    <div class="legal">
+      <p>La sicurezza giuridica nasce dal <b>posizionamento conforme</b>, non da claim a rischio. Tutto il copy è stato scritto per <b>evitare sanzioni</b> (AESAN / AEMPS / pubblicità).</p>
+      <p class="warn">Mai presenti nel testo:</p>
+      <ul class="dot">
+        <li>Affermazioni mediche/terapeutiche (curare, trattare, alleviare dolore/ansia/insonnia).</li>
+        <li>Inviti al consumo per ingestione o combustione ("fumare").</li>
+      </ul>
+      <p><b>Le due corsie sicure usate:</b></p>
+      <ul class="dot">
+        <li><b>Cosmetico / uso topico</b> (creme, balsami, sali, oli da massaggio).</li>
+        <li><b>Aromatico / da collezione</b> "no apto para el consumo humano" (flores, hash, extractos).</li>
+      </ul>
+      <p>Ogni scheda CBD riporta i disclaimer: <i>THC &lt;0,2% · sin finalidad terapéutica ni alimentaria · consulta a tu médico si tomas medicación · +18</i>. Inoltre: age-gate 18+ all'ingresso.</p>
+      <p style="font-size:.85rem;color:var(--muted);margin-bottom:0">Nota: sintesi operativa, non consulenza legale. Si consiglia una validazione con un legale spagnolo prima del go-live commerciale.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">6</span> Esperienza & Design</h2>
+    <ul class="clean">
+      <li><b>Fedele al sito reale</b>: palette (rosa cipria, salvia, oro, oliva), font e impaginazione boutique.</li>
+      <li><b>Sfondo wallpaper</b> del cliente come immagine di marca.</li>
+      <li><b>Mobile-first e responsive</b>: chat a scheda inferiore su cellulare, layout fluido.</li>
+      <li><b>Caricamento rapido</b>: niente framework pesanti, immagini lazy, font ridotti all'osso.</li>
+      <li><b>Multilingua ES/EN/IT</b> con rilevamento automatico della lingua del visitatore.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="n">7</span> Aspetti tecnici</h2>
+    <table>
+      <tr><th>Voce</th><th>Soluzione</th></tr>
+      <tr><td>Stack</td><td>HTML/CSS/JavaScript "vanilla", senza build — robusto e manutenibile</td></tr>
+      <tr><td>Motore di vendita</td><td>A regole, funziona <b>offline</b> (nessuna API key necessaria per la demo)</td></tr>
+      <tr><td>AI opzionale</td><td>Slot di configurazione per collegare l'API Claude (Anthropic) quando si vuole</td></tr>
+      <tr><td>Hosting</td><td>Vercel · CDN globale · link permanente · pubblicazioni rapide</td></tr>
+      <tr><td>Performance</td><td>Cache-busting versionato; asset ottimizzati</td></tr>
+      <tr><td>Accessibilità</td><td>Rispetta "riduci movimento"; testi leggibili; +18 gate</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2><span class="n">8</span> Valore per la tienda</h2>
+    <div class="grid">
+      <div class="card"><h3>Vende mentre dormi</h3><p>Un consulente esperto attivo 24/7, anche fuori orario, in 3 lingue.</p></div>
+      <div class="card"><h3>Scontrino più alto</h3><p>Bundle, cross-sell e upsell aumentano il valore medio dell'ordine.</p></div>
+      <div class="card"><h3>Meno abbandoni</h3><p>Guida chi è indeciso o nuovo al CBD fino alla scelta giusta.</p></div>
+      <div class="card"><h3>Marchio memorabile</h3><p>Il personaggio crea un'esperienza unica e riconoscibile.</p></div>
+      <div class="card"><h3>Tranquillità legale</h3><p>Copy conforme = niente rischi di sanzioni sul CBD.</p></div>
+      <div class="card"><h3>Portata internazionale</h3><p>Turisti a Las Palmas serviti nella loro lingua.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">9</span> Prossimi passi (roadmap)</h2>
+    <ul class="dot">
+      <li>Collegamento all'<b>API Claude</b> per conversazioni ancora più naturali e aperte.</li>
+      <li>Integrazione con <b>magazzino e pagamenti reali</b> (stock, checkout, spedizioni).</li>
+      <li><b>Analytics</b>: tasso di conversione, prodotti più spinti, domande frequenti.</li>
+      <li><b>Sotto-categorie CBD</b> (Flores / Hash / Cosmética) per una navigazione più ricca.</li>
+      <li><b>Nuove pose</b> del personaggio (saluto, festeggiamento) e A/B test dei messaggi.</li>
+      <li>Validazione <b>legale</b> finale e personalizzazione dei disclaimer.</li>
+    </ul>
+  </section>
+
+  <div class="cta">
+    <h2 style="color:#fff;border:none;justify-content:center">Provala dal vivo</h2>
+    <p style="color:rgba(255,255,255,.85);max-width:60ch;margin:0 auto">Scegli "Curioso di CBD", indica un momento da curare e guarda Kaya costruire il bisogno e vendere la soluzione.</p>
+    <a href="https://kayamansfarm-demo.vercel.app">▶ Apri la demo</a>
+  </div>
+
+  <footer>
+    <p class="made">
+      <span class="flag"><i class="g"></i><i class="w"></i><i class="r"></i></span>
+      Made in Italy
+    </p>
+    <p>Kayaman's Farm · Budtender AI — demo dimostrativa. Documento riservato al cliente.</p>
+  </footer>
+
+</div>
+</body>
+</html>

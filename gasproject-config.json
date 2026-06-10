@@ -1,0 +1,52 @@
+{
+  "brand": "GAS Project",
+  "host": "gasproject.it",
+  "mode": "lead",
+  "character": false,
+  "accent": "#e2231a",
+  "lead": {
+    "whatsapp": "393343567577",
+    "phone": "+393343567577",
+    "bookText": "Ciao GAS Project! 🔧 Vorrei prenotare un appuntamento per: ",
+    "cta": { "it": "Prenota su WhatsApp", "es": "Reservar por WhatsApp", "en": "Book on WhatsApp" }
+  },
+  "greeting": {
+    "it": "Ciao! 👋 Sono l'assistente di GAS Project, l'autofficina racing di Comacchio. Dimmi cosa succede alla tua auto o moto e ti dico subito come la sistemiamo — la diagnosi al primo appuntamento è gratuita 😉",
+    "es": "¡Hola! 👋 Soy el asistente de GAS Project, el taller racing de Comacchio. Dime qué le pasa a tu coche o moto y te digo cómo lo arreglamos — el diagnóstico en la primera cita es gratis 😉",
+    "en": "Hi! 👋 I'm GAS Project's assistant, the racing garage in Comacchio. Tell me what's up with your car or bike and I'll tell you how we fix it — first-visit diagnosis is free 😉"
+  },
+  "profiling": [
+    { "intent": "category", "q": { "it": "Cosa ti serve oggi?", "es": "¿Qué necesitas hoy?", "en": "What do you need today?" },
+      "options": [
+        { "it": "Spia accesa / un guasto", "es": "Testigo encendido / avería", "en": "Warning light / a fault", "val": "Diagnosi" },
+        { "it": "Tagliando / manutenzione", "es": "Revisión / mantenimiento", "en": "Service / maintenance", "val": "Tagliando" },
+        { "it": "Taratura ADAS (dopo parabrezza)", "es": "Calibración ADAS", "en": "ADAS calibration", "val": "ADAS" },
+        { "it": "Più potenza / preparazione", "es": "Más potencia / preparación", "en": "More power / tuning", "val": "Sportive" },
+        { "it": "Impianto GPL / risparmio", "es": "GLP / ahorro", "en": "LPG / fuel saving", "val": "GPL" },
+        { "it": "Gomme", "es": "Neumáticos", "en": "Tyres", "val": "Gomme" },
+        { "it": "La mia moto 🏍️", "es": "Mi moto 🏍️", "en": "My bike 🏍️", "val": "Moto" }
+      ]
+    }
+  ],
+  "catLabels": {
+    "Diagnosi": { "it": "Diagnosi & Centraline", "es": "Diagnóstico", "en": "Diagnostics" },
+    "Tagliando": { "it": "Meccanica & Tagliandi", "es": "Mecánica", "en": "Service" },
+    "ADAS": { "it": "Tarature ADAS", "es": "ADAS", "en": "ADAS" },
+    "Sportive": { "it": "Preparazioni Sportive", "es": "Preparación", "en": "Tuning" },
+    "GPL": { "it": "Impianti GPL/Metano", "es": "GLP", "en": "LPG/CNG" },
+    "Gomme": { "it": "Gommista", "es": "Neumáticos", "en": "Tyres" },
+    "Moto": { "it": "Moto", "es": "Moto", "en": "Bike" }
+  },
+  "products": [
+    { "id": 7001, "name": "Diagnosi Elettronica & Centraline", "category": "Diagnosi", "price": 0, "description": "Spia accesa? Leggiamo tutti i moduli (motore, cambio, ABS, airbag), troviamo anche i guasti intermittenti. Reset DPF/AdBlue e riprogrammazione.", "imageUrl": "", "badge": "Diagnosi gratuita", "stock": 99 },
+    { "id": 7002, "name": "Aggiornamenti Software & Firmware ECU", "category": "Diagnosi", "price": 0, "description": "Reprogrammazione ECU, flashing moduli e reset procedure adattive — esattamente come il concessionario.", "imageUrl": "", "badge": "", "stock": 99 },
+    { "id": 7003, "name": "Codifiche & Abbinamento Componenti", "category": "Diagnosi", "price": 0, "description": "Codifica centraline sostituite, chiavi e transponder, sensori parcheggio, iniettori e DPF.", "imageUrl": "", "badge": "", "stock": 99 },
+    { "id": 7004, "name": "Tagliando & Meccanica Generale", "category": "Tagliando", "price": 0, "description": "Tagliandi, distribuzione, freni, frizioni, sospensioni. Tutto per tenere l'auto in forma perfetta.", "imageUrl": "", "badge": "Più richiesto", "stock": 99 },
+    { "id": 7005, "name": "Taratura & Calibrazione ADAS", "category": "ADAS", "price": 0, "description": "Calibrazione telecamere, radar anticollisione, sensori sterzo. Indispensabile dopo parabrezza o sospensioni. Strumentazione certificata.", "imageUrl": "", "badge": "", "stock": 99 },
+    { "id": 7006, "name": "Preparazioni Sportive", "category": "Sportive", "price": 0, "description": "Assetti racing, freni Brembo, filtri sportivi, scarichi performance. Trasformiamo la tua auto in una belva.", "imageUrl": "", "badge": "Racing 🏁", "stock": 99 },
+    { "id": 7007, "name": "Impianti GPL / Metano", "category": "GPL", "price": 0, "description": "Installazione, revisione e riparazione impianti gas. Risparmio reale sul carburante, prestazioni invariate.", "imageUrl": "", "badge": "Risparmio", "stock": 99 },
+    { "id": 7008, "name": "Gommista Auto", "category": "Gomme", "price": 0, "description": "Gomme auto: montaggio, equilibratura, cambio stagionale.", "imageUrl": "", "badge": "", "stock": 99 },
+    { "id": 7009, "name": "Manutenzione Moto", "category": "Moto", "price": 0, "description": "Tagliandi e riparazioni moto. La tua moto è in mani sicure.", "imageUrl": "", "badge": "", "stock": 99 },
+    { "id": 7010, "name": "Gomme Moto", "category": "Moto", "price": 0, "description": "Gomme moto montate a regola d'arte.", "imageUrl": "", "badge": "", "stock": 99 }
+  ]
+}

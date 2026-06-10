@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Prova collisione FAB</title>
+<style>
+  body{margin:0;font-family:system-ui;background:#eef}
+  .hero{padding:60px 24px;text-align:center}
+  /* due bottoni flottanti GIA' presenti sul sito (come WhatsApp + chiamata) */
+  .fab{position:fixed;right:20px;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;box-shadow:0 6px 16px rgba(0,0,0,.3);z-index:9999}
+  #wa{bottom:20px;background:#25d366}
+  #call{bottom:86px;background:#2a7}
+</style>
+</head>
+<body>
+  <div class="hero"><h1>Sito con WhatsApp + Chiamata già flottanti</h1><p>La pallina AI deve mettersi SOPRA, senza coprirli.</p></div>
+  <a id="wa" class="fab" href="#">🟢</a>
+  <a id="call" class="fab" href="#">📞</a>
+  <script src="widget.js" data-config="demo-config.json" data-color="#7a1730" defer></script>
+</body>
+</html>
