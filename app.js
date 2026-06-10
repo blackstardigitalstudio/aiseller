@@ -301,9 +301,9 @@
     lazyThrottle = setTimeout(() => { lazyThrottle = null; checkLazy(); }, 120);
   }
   function cardHTML(p) {
-    const img = p.imageUrl ? `data-bg="${p.imageUrl}"` : "";
+    const img = safeImg(p.imageUrl) ? `data-bg="${safeImg(p.imageUrl)}"` : "";
     const ph = p.imageUrl ? "" : (emoji[p.category] || "🌿");
-    const badge = p.badge ? `<span class="card-badge badge-${p.badge}">${p.badge}</span>` : "";
+    const badge = p.badge ? `<span class="card-badge badge-${esc(String(p.badge).replace(/[^a-zA-Z0-9]/g, ""))}">${esc(p.badge)}</span>` : "";
     const low = p.stock <= 6 ? `<span class="card-stock">${t("onlyLeft", LANG).replace("{n}", p.stock)}</span>` : "";
     const rt = prodRating(p);
     const rating = `<div class="card-rating">${starsHTML(rt.stars)}<b>${rt.stars.toFixed(1)}</b><span class="rev">(${rt.count})</span></div>`;
@@ -312,10 +312,10 @@
     return `<div class="card">
       <div class="card-img" ${img}>${ph}${badge}${low}</div>
       <div class="card-body">
-        <span class="card-cat">${catLabel(p.category)}</span>
-        <div class="card-name">${p.name}</div>
+        <span class="card-cat">${esc(catLabel(p.category))}</span>
+        <div class="card-name">${esc(p.name)}</div>
         ${rating}
-        <div class="card-desc">${p.description}</div>
+        <div class="card-desc">${esc(p.description)}</div>
         ${urgency}
         <div class="card-foot">
           <span class="card-price">${priceHTML(p)}</span>
@@ -564,15 +564,19 @@
     scrollChat();
     return el;
   }
+  // SICUREZZA (anti-XSS): escape dei testi da config (nomi/badge prodotto, ecc.) + validazione URL immagine
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function safeImg(u) { u = String(u == null ? "" : u); return (/^https?:\/\//i.test(u) || /^data:image\//i.test(u)) && !/["'<>\s]/.test(u) ? u : ""; }
   function productCard(p, isPick) {
     const lead = isLead();
     const el = document.createElement("div");
     el.className = "msg-product" + (isPick ? " kaya-pick" : "");
     if (isPick) el.setAttribute("data-pick", (D.seller && D.seller.pick && (D.seller.pick[LANG] || D.seller.pick.es)) || "👉");
-    const bg = p.imageUrl ? `style="background-image:url('${p.imageUrl}')"` : "";
+    const safeBg = safeImg(p.imageUrl);
+    const bg = safeBg ? `style="background-image:url('${safeBg}')"` : "";
     const ph = p.imageUrl ? "" : (emoji[p.category] || KF_DATA.itemEmoji || (lead ? "🔧" : "🌿"));
     const rt = prodRating(p);
-    const priceOrBadge = lead ? `<div class="mp-badge">${p.badge || ""}</div>` : `<div class="mp-price">${money(p.price)}</div>`;
+    const priceOrBadge = lead ? `<div class="mp-badge">${esc(p.badge || "")}</div>` : `<div class="mp-price">${money(p.price)}</div>`;
     const linkLabel = p.linkLabel && (p.linkLabel[LANG] || p.linkLabel.it);
     const btnLabel = !lead ? t("addToCart", LANG)
       : linkLabel ? linkLabel
@@ -580,10 +584,10 @@
       : hasCrossSell() ? ((D.ctaAdd && (D.ctaAdd[LANG] || D.ctaAdd.it)) || (LANG === "es" ? "➕ Añadir" : LANG === "en" ? "➕ Add" : "➕ Aggiungi"))
       : ((KF_DATA.lead && KF_DATA.lead.cta && (KF_DATA.lead.cta[LANG] || KF_DATA.lead.cta.it)) || "Prenota");
     el.innerHTML = `<div class="mp-img" ${bg}>${ph}</div>
-      <div class="mp-info"><div class="mp-name">${p.name}</div>
+      <div class="mp-info"><div class="mp-name">${esc(p.name)}</div>
       <div class="mp-rating">${starsHTML(rt.stars)}<span class="rev">${rt.stars.toFixed(1)} (${rt.count})</span></div>
       ${priceOrBadge}</div>
-      <button class="mp-add">${btnLabel}</button>`;
+      <button class="mp-add">${esc(btnLabel)}</button>`;
     el.querySelector(".mp-add").onclick = (e) => {
       e.stopPropagation();
       if (lead) {
@@ -1830,8 +1834,8 @@ CATALOGO:\n${cat}`;
   // filigrana sullo sfondo della chat (tocco professionale): logo del brand, o in mancanza il viso del personaggio
   function applyWatermark() {
     const c = KF_DATA.character;
-    const mark = KF_DATA.logo || (c && typeof c === "object" && (c.face || c.thumb)) || "";
-    if (!mark) return;
+    const mark = safeImg(KF_DATA.logo) || safeImg(c && typeof c === "object" && (c.face || c.thumb)) || "";
+    if (!mark) return;   // safeImg scarta URL non http(s)/data:image o con caratteri pericolosi (anti CSS-injection)
     document.documentElement.style.setProperty("--chat-logo", "url('" + mark + "')");
     document.body.classList.add("has-watermark");
   }

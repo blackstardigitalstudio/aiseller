@@ -118,6 +118,9 @@
   function b64dec(b64){ return decodeURIComponent(escape(atob((b64||"").replace(/\s/g,"")))); }
   function isUrl(s){ return /^https?:\/\//i.test(s||""); }
   function charFace(c){ return (c && typeof c==="object") ? (c.face||c.rest||"") : ""; }
+  // SICUREZZA: escape HTML (anti-XSS → protegge il token) + URL immagine validato
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+  function safeImg(u){ u=String(u==null?"":u); return (/^https?:\/\//i.test(u)||/^data:image\//i.test(u)) && !/["'<>\s]/.test(u) ? u : ""; }
 
   // ---- carica stato di tutti i clienti ----
   async function loadAll(){
@@ -141,13 +144,13 @@
       var cfg=await r.json(); state[c.id]={config:cfg};
       st.className="stat ok"; st.innerHTML='<span class="dot"></span> Online';
       var n=(cfg.products||[]).length;
-      me.innerHTML="<b>"+(cfg._brand||cfg.brand||c.label)+"</b> · "+(cfg.mode||"?")+" · "+n+" voci · "+(typeof cfg.character==="object"?"mascotte ✓":"senza mascotte");
-      var face=charFace(cfg.character);
-      if(face){ mm.style.backgroundImage="url('"+face+"')"; mm.textContent=""; } else { mm.textContent="🤖"; }
+      me.innerHTML="<b>"+esc(cfg._brand||cfg.brand||c.label)+"</b> · "+esc(cfg.mode||"?")+" · "+n+" voci · "+(typeof cfg.character==="object"?"mascotte ✓":"senza mascotte");
+      var sf=safeImg(charFace(cfg.character));
+      if(sf){ mm.style.backgroundImage="url('"+sf+"')"; mm.textContent=""; } else { mm.textContent="🤖"; }
       var url=CDN+"/?widget=1&config="+encodeURIComponent(CDN+"/clients/"+c.id+".json")+"&accent="+encodeURIComponent(cfg.accent||c.accent);
       document.getElementById("try-"+c.id).href=url;
     }catch(e){
-      st.className="stat bad"; st.innerHTML='<span class="dot"></span> Down ('+e.message+')';
+      st.className="stat bad"; st.innerHTML='<span class="dot"></span> Down ('+esc(e.message)+')';
       me.textContent="config non raggiungibile";
     }
   }
@@ -176,13 +179,13 @@
     document.getElementById("eMascot").disabled=no;
     var p=document.getElementById("ePrev");
     if(no){ p.style.backgroundImage=""; p.textContent=""; p.style.opacity=.4; }
-    else if(isUrl(url)){ p.style.backgroundImage="url('"+url+"')"; p.textContent=""; p.style.opacity=1; }
-    else { var f=charFace(curOrigChar); p.style.backgroundImage=f?"url('"+f+"')":""; p.style.opacity=1; }
+    else if(safeImg(url)){ p.style.backgroundImage="url('"+safeImg(url)+"')"; p.textContent=""; p.style.opacity=1; }
+    else { var f=safeImg(charFace(curOrigChar)); p.style.backgroundImage=f?"url('"+f+"')":""; p.style.opacity=1; }
   }
   function computeChar(){
     if(document.getElementById("eNoMascot").checked) return false;
-    var url=document.getElementById("eMascot").value.trim();
-    if(isUrl(url)){
+    var url=safeImg(document.getElementById("eMascot").value.trim());   // solo URL http(s)/data:image puliti
+    if(url){
       var w=(curOrigChar&&curOrigChar.w)||1024, h=(curOrigChar&&curOrigChar.h)||1536;
       return { rest:url, point:url, pointBack:url, face:url, w:w, h:h };
     }

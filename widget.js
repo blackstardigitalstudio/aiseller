@@ -132,7 +132,7 @@
   function hide() { if (frame) frame.style.display = "none"; btn.style.display = "flex"; open = false; if (ring) ring.style.display = "block"; startAttention(); }
 
   window.addEventListener("message", function (e) {
-    if (!e.data) return;
+    if (!e.data || !frame || e.source !== frame.contentWindow) return;   // accetta SOLO messaggi dal nostro iframe (anti-spoofing)
     if (e.data.aiseller === "close") hide();
     else if (e.data.aiseller === "lead") track("chat_lead", { service: e.data.service || "", ai_seller: e.data.brand || "" });
   });

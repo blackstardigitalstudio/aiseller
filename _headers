@@ -4,6 +4,13 @@
   Access-Control-Allow-Origin: *
   Access-Control-Allow-Methods: GET, OPTIONS
   Access-Control-Allow-Headers: Content-Type
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+# il PANNELLO non deve essere incorniciabile (anti-clickjacking) e non si mette in cache
+/pannello.html
+  X-Frame-Options: DENY
+  Cache-Control: no-store
 
 # le config si aggiornano spesso (le gestiamo da dietro) → cache breve
 /clients/*
