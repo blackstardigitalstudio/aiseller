@@ -16,7 +16,7 @@ jobs:
       - name: Build runtime (dist/)
         run: |
           mkdir -p dist
-          cp widget.js index.html app.js styles.css config.js _headers pannello.html dist/
+          cp widget.js index.html app.js styles.css config.js _headers pannello.html aiseller-htaccess.txt dist/
           cp -r clients assets data dist/
           ls -la dist
 

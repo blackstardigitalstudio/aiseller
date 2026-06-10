@@ -1,0 +1,11 @@
+# ============================================================
+#  AI Seller  ·  Blackstar Digital Studio  ·  Made in Italy
+#  Copia tutto questo in un file chiamato  .htaccess
+#  e mettilo nella cartella  public_html  del tuo sito (Hostinger).
+#  Inietta il chatbot su TUTTE le pagine HTML, in automatico.
+#  Non devi cambiarlo mai: il resto lo gestiamo noi da dietro.
+# ============================================================
+<IfModule mod_substitute.c>
+  AddOutputFilterByType SUBSTITUTE text/html
+  Substitute "s|</body>|<script src='https://aiseller.pages.dev/widget.js' defer></script></body>|i"
+</IfModule>
