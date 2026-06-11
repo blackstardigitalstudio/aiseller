@@ -8,9 +8,9 @@
 // Made in Italy — Blackstar Digital Studio
 
 const SUPABASE_URL = "https://rllxrcitzofompzuipxh.supabase.co/rest/v1/bottega_products";
-const SUPABASE_KEY = process.env.ILRAVIOLO_SUPABASE_KEY;
-const META_TOKEN    = process.env.META_ACCESS_TOKEN;
-const CATALOG_ID    = process.env.WA_CATALOG_ID;
+const SUPABASE_KEY = (process.env.ILRAVIOLO_SUPABASE_KEY || '').replace(/^﻿/, '').trim();
+const META_TOKEN    = (process.env.META_ACCESS_TOKEN    || '').replace(/^﻿/, '').trim();
+const CATALOG_ID    = (process.env.WA_CATALOG_ID        || '').replace(/^﻿/, '').trim();
 const PRODUCT_URL   = "https://ilraviolo.es/bottega/";
 const BRAND         = "Il Raviolo Bottega";
 
