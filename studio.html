@@ -70,7 +70,22 @@
   .flag i{flex:1}.g{background:#009246}.w{background:#fff}.r{background:#ce2b37}
 </style>
 </head>
+<style>
+  .hub{display:flex;gap:10px;padding:14px 16px;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.08);flex-wrap:wrap;position:sticky;top:0;z-index:10}
+  .hub a{flex:1;min-width:120px;text-align:center;text-decoration:none;border-radius:12px;padding:12px 10px;font-weight:800;font-size:.9rem;border:2px solid transparent;transition:all .18s;line-height:1.3}
+  .hub a .lbl{display:block;font-size:.72rem;font-weight:600;opacity:.7;margin-top:2px}
+  .hub a.h-studio{background:#f0b429;color:#231a00}
+  .hub a.h-chatbot{background:rgba(255,255,255,.06);color:rgba(255,255,255,.55);border-color:rgba(255,255,255,.1)}
+  .hub a.h-chatbot:hover{border-color:#f0b429;color:#fff}
+  .hub a.h-installa{background:rgba(255,255,255,.06);color:rgba(255,255,255,.55);border-color:rgba(255,255,255,.1)}
+  .hub a.h-installa:hover{border-color:#f0b429;color:#fff}
+</style>
 <body>
+<div class="hub">
+  <a href="pannello.html" class="h-chatbot">🤖 I miei chatbot<span class="lbl">online · offline · modifica</span></a>
+  <a href="studio.html" class="h-studio">🎨 Crea chatbot<span class="lbl">nuovo cliente · config · colori</span></a>
+  <a href="installa.html" class="h-installa">📋 Installa<span class="lbl">snippet · guide piattaforme</span></a>
+</div>
 <div class="wrap">
   <header class="hero">
     <div class="kick">AI Seller Studio</div>
