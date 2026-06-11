@@ -73,7 +73,7 @@ let success = 0, errors = 0;
 
 for (let i = 0; i < requests.length; i += BATCH_SIZE) {
   const batch = requests.slice(i, i + BATCH_SIZE);
-  const payload = { allow_upsert: true, requests: batch };
+  const payload = { allow_upsert: true, item_type: "PRODUCT_ITEM", requests: batch };
 
   const metaResp = await fetch(
     `https://graph.facebook.com/v21.0/${CATALOG_ID}/items_batch`,
