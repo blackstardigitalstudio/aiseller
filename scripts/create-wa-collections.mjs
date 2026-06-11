@@ -57,7 +57,8 @@ for (const c of CATS) {
   const body = new URLSearchParams({ name: c.name, filter, access_token: TOKEN });
   const r = await fetch(`${API}/${CATALOG}/product_sets`, { method: 'POST', body });
   const j = await r.json();
-  if (!r.ok || j.error) { console.error(`❌ ${c.name}:`, JSON.stringify(j.error || j)); errors++; }
+  if (j.error && j.error.code === 10803) { console.log(`⏭️  Filtro gia' presente: ${c.name}`); skipped++; } // duplicato (stesso filtro)
+  else if (!r.ok || j.error) { console.error(`❌ ${c.name}:`, JSON.stringify(j.error || j)); errors++; }
   else { console.log(`✅ Creata: ${c.name} (id ${j.id})`); created++; }
 }
 
