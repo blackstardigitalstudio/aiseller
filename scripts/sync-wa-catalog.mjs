@@ -35,8 +35,13 @@ const products = Array.isArray(rows) ? rows : [];
 console.log(`📦 Letti ${products.length} prodotti da Supabase`);
 
 // --- 2. Costruisci le richieste items_batch ---
+// Formato API items_batch (PRODUCT_ITEM):
+//   - method UPDATE/DELETE (con allow_upsert:true, UPDATE crea se non esiste)
+//   - identificatore = data.id (il retailer id)
+//   - campi: title / link / image_link (NON name / url / image_url)
+//   - price = stringa "12.50 EUR" (importo + valuta ISO)
 const isTrue = v => v === true || v === "True" || v === "true" || v === "t" || v === 1;
-const toPrice = v => { const n = parseFloat(v); return isFinite(n) ? Math.round(n * 100).toString() : "0"; };
+const toPrice = v => { const n = parseFloat(v); return (isFinite(n) ? n : 0).toFixed(2) + " EUR"; };
 
 const requests = products
   .filter(p => p.nombre && p.id)
@@ -46,26 +51,31 @@ const requests = products
     const promoAct  = isTrue(p.promo_activa) && p.promo_precio;
     const price     = toPrice(promoAct ? p.promo_precio : p.precio);
     const availability = (visible && !agotado) ? "in stock" : "out of stock";
+    const retailerId = `raviolo-${p.id}`;
+
+    // Prodotti nascosti → DELETE (basta l'id); visibili → UPDATE (upsert) con tutti i campi.
+    if (!visible) {
+      return { method: "DELETE", data: { id: retailerId } };
+    }
 
     return {
-      method: visible ? "UPSERT" : "DELETE",
-      retailer_id: `raviolo-${p.id}`,
+      method: "UPDATE",
       data: {
-        name: (p.nombre || "").substring(0, 150),
+        id: retailerId,
+        title: (p.nombre || "").substring(0, 150),
         description: (p.descripcion || "Producto artesanal italiano").substring(0, 5000),
         price,
-        currency: "EUR",
-        url: PRODUCT_URL,
-        image_url: p.imagen_url || "",
+        link: PRODUCT_URL,
+        image_link: p.imagen_url || "",
         availability,
         condition: "new",
         brand: BRAND,
-        category: mapCategory(p.categoria || ""),
+        google_product_category: mapCategory(p.categoria || ""),
       }
     };
   });
 
-console.log(`🔄 Operazioni da inviare: ${requests.length} (UPSERT + DELETE)`);
+console.log(`🔄 Operazioni da inviare: ${requests.length} (UPDATE + DELETE)`);
 
 // --- 3. Invia a Meta in batch da 50 (limite API) ---
 const BATCH_SIZE = 50;
@@ -89,13 +99,27 @@ for (let i = 0; i < requests.length; i += BATCH_SIZE) {
 
   const metaBody = await metaResp.json();
 
+  // Raccogli eventuali errori di validazione per-item (items_batch li restituisce
+  // in validation_status[].errors anche con HTTP 200: NON sono in metaBody.error).
+  const validationErrors = (metaBody.validation_status || [])
+    .filter(v => v.errors && v.errors.length)
+    .map(v => `${v.retailer_id || "?"}: ${v.errors.map(e => e.message).join("; ")}`);
+
   if (!metaResp.ok || metaBody.error) {
     console.error(`❌ Errore batch ${i}-${i + batch.length}:`, JSON.stringify(metaBody.error || metaBody));
     errors += batch.length;
+  } else if (!metaBody.handles || !metaBody.handles.length) {
+    // Nessun handle = batch NON accettato (di solito tutti gli item invalidi).
+    console.error(`❌ Batch ${i}-${i + batch.length} rifiutato (nessun handle).`,
+      validationErrors.length ? validationErrors.join(" | ") : JSON.stringify(metaBody));
+    errors += batch.length;
   } else {
-    // La risposta di items_batch include handles per tracciare lo stato asincrono
-    console.log(`✅ Batch ${i}-${i + batch.length}: inviato (handle: ${metaBody.handles?.[0] || "n/a"})`);
-    success += batch.length;
+    // Handle presente = batch accettato per l'elaborazione asincrona.
+    const okCount = batch.length - validationErrors.length;
+    success += okCount;
+    errors += validationErrors.length;
+    console.log(`✅ Batch ${i}-${i + batch.length}: accettato (handle: ${metaBody.handles[0]})`
+      + (validationErrors.length ? ` — ${validationErrors.length} item con avvisi: ${validationErrors.slice(0, 5).join(" | ")}` : ""));
   }
 }
 
