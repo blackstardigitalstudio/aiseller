@@ -34,15 +34,19 @@ const CATS = [
 const API = 'https://graph.facebook.com/v21.0';
 
 // 1. Collezioni gia' esistenti (per idempotenza)
-const existing = new Set();
-let url = `${API}/${CATALOG}/product_sets?fields=name&limit=200&access_token=${TOKEN}`;
-while (url) {
-  const r = await fetch(url);
-  const j = await r.json();
-  if (j.error) { console.error('❌ Lettura product_sets:', JSON.stringify(j.error)); process.exit(1); }
-  (j.data || []).forEach(s => existing.add(s.name));
-  url = j.paging?.next || null;
+async function listSets() {
+  const sets = [];
+  let url = `${API}/${CATALOG}/product_sets?fields=name,product_count&limit=200&access_token=${TOKEN}`;
+  while (url) {
+    const r = await fetch(url);
+    const j = await r.json();
+    if (j.error) { console.error('❌ Lettura product_sets:', JSON.stringify(j.error)); process.exit(1); }
+    sets.push(...(j.data || []));
+    url = j.paging?.next || null;
+  }
+  return sets;
 }
+const existing = new Set((await listSets()).map(s => s.name));
 console.log(`📋 Collezioni esistenti: ${existing.size}`);
 
 // 2. Crea quelle mancanti, nell'ordine del menu
@@ -58,4 +62,10 @@ for (const c of CATS) {
 }
 
 console.log(`\n🏁 Collezioni: ${created} create, ${skipped} gia' presenti, ${errors} errori`);
+
+// 3. Riepilogo: ogni collezione con il numero di prodotti dentro
+console.log('\n📊 Prodotti per collezione:');
+for (const s of await listSets()) {
+  console.log(`   ${String(s.product_count ?? '?').padStart(3)}  ${s.name}`);
+}
 if (errors > 0) process.exit(1);
