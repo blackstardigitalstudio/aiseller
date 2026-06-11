@@ -1,0 +1,22 @@
+name: Create WhatsApp Collections
+
+# Crea le Collezioni (product set) per categoria nel catalogo WhatsApp.
+# Da lanciare una volta manualmente (workflow_dispatch). Idempotente.
+on:
+  workflow_dispatch:
+
+jobs:
+  collections:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Crea Collezioni catalogo WhatsApp
+        run: node scripts/create-wa-collections.mjs
+        env:
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+          WA_CATALOG_ID:     ${{ secrets.WA_CATALOG_ID }}
