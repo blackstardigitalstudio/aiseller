@@ -70,6 +70,7 @@ const requests = products
         availability,
         condition: "new",
         brand: BRAND,
+        product_type: (p.categoria || "").substring(0, 750), // categoria Supabase → filtro per le Collezioni WhatsApp
         google_product_category: mapCategory(p.categoria || ""),
       }
     };
