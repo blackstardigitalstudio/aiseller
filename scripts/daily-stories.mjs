@@ -1,19 +1,14 @@
 // "Prodotto del giorno" — gira ogni mattina (GitHub Actions).
-// 1. Sceglie il prodotto del giorno (rotazione automatica, uno diverso ogni giorno).
-// 2. Genera l'immagine-storia (1080x1920 JPEG).
-// 3. La carica su Vercel Blob → link pubblico stabile (per WhatsApp Stato: aprilo sul telefono e condividi).
-// 4. La pubblica in automatico su Instagram Stories e Facebook Stories.
+// 1. Sceglie il prodotto del giorno (rotazione, uno diverso ogni giorno, SOLO con foto).
+// 2. Genera 2 immagini: storia 9:16 e post 4:5.
+// 3. Le carica su Vercel Blob → link pubblici (per WhatsApp Stato: apri sul telefono e condividi).
+// 4. Pubblica in automatico: Instagram Stories + post, Facebook Stories + post.
 // 5. Mette il prodotto in evidenza nel catalogo (collezione "⭐ Producto del día").
 //
 // Variabili d'ambiente (GitHub Secrets):
-//   ILRAVIOLO_SUPABASE_KEY  — lettura prodotti
-//   META_ACCESS_TOKEN       — token System User con scope: catalog_management, business_management,
-//                             instagram_basic, instagram_content_publish, pages_show_list,
-//                             pages_manage_posts, pages_read_engagement
-//   WA_CATALOG_ID           — catalogo
-//   BLOB_READ_WRITE_TOKEN   — Vercel Blob (hosting immagine pubblica)
-//   IG_USER_ID              — id Instagram business (per le Stories)
-//   FB_PAGE_ID              — id Pagina Facebook (per le Stories)
+//   ILRAVIOLO_SUPABASE_KEY, META_ACCESS_TOKEN, WA_CATALOG_ID,
+//   BLOB_READ_WRITE_TOKEN, IG_USER_ID, FB_PAGE_ID
+//   (opz.) POST_FEED=0 per pubblicare solo le storie, niente post in bacheca.
 //
 // Made in Italy — Blackstar Digital Studio
 
@@ -27,99 +22,110 @@ const CATALOG = (process.env.WA_CATALOG_ID || '').replace(/^﻿/, '').trim();
 const BLOB  = (process.env.BLOB_READ_WRITE_TOKEN || '').replace(/^﻿/, '').trim();
 const IG    = (process.env.IG_USER_ID || '').replace(/^﻿/, '').trim();
 const PAGE  = (process.env.FB_PAGE_ID || '').replace(/^﻿/, '').trim();
-const LOGO  = 'https://ilraviolo.es/assets/logo.webp';
-const G     = 'https://graph.facebook.com/v21.0';
+const DO_FEED = process.env.POST_FEED !== '0';
+const WA = '34 671 085 862';
+const LOGO = 'https://ilraviolo.es/assets/logo.webp';
+const G = 'https://graph.facebook.com/v21.0';
 
-if (!KEY)   { console.error('❌ ILRAVIOLO_SUPABASE_KEY mancante'); process.exit(1); }
-if (!BLOB)  { console.error('❌ BLOB_READ_WRITE_TOKEN mancante'); process.exit(1); }
+if (!KEY)  { console.error('❌ ILRAVIOLO_SUPABASE_KEY mancante'); process.exit(1); }
+if (!BLOB) { console.error('❌ BLOB_READ_WRITE_TOKEN mancante'); process.exit(1); }
 
 const isTrue = v => v === true || v === 'True' || v === 'true' || v === 't' || v === 1;
+const fmtPrice = v => { const n = parseFloat(String(v).replace(',', '.')); return (isFinite(n) ? n : 0).toFixed(2).replace('.', ',') + ' €'; };
 
-// ordine categorie come il menu del sito
 const CAT_ORDER = ['Pasta fresca','Embutidos','Quesos','Salsas','Trufa','Postres','Focaccia y pizza',
   'Plato preparado','Bebidas','Vino biodinámico','Licores','Horno','Pane','Harinas','Complementos'];
 const catIdx = c => { const i = CAT_ORDER.indexOf(c); return i < 0 ? 99 : i; };
 
-// --- 1. Prodotti visibili e disponibili, in ordine stabile ---
+// --- 1. Prodotti visibili, disponibili e CON foto, in ordine stabile ---
 const url = SUPA + '?select=id,categoria,nombre,precio,imagen_url,visible,agotado,promo_activa,promo_precio,orden';
 const rows = await fetch(url, { headers: { apikey: KEY, Authorization: 'Bearer ' + KEY } }).then(r => r.json());
 const items = (Array.isArray(rows) ? rows : [])
   .filter(p => p.nombre && p.id && isTrue(p.visible) && !isTrue(p.agotado) && p.imagen_url && String(p.imagen_url).trim())
   .sort((a, b) => catIdx(a.categoria) - catIdx(b.categoria) || (a.orden || 0) - (b.orden || 0) || String(a.id).localeCompare(String(b.id)));
+if (!items.length) { console.error('❌ Nessun prodotto con foto disponibile'); process.exit(1); }
 
-if (!items.length) { console.error('❌ Nessun prodotto disponibile'); process.exit(1); }
-
-// --- Rotazione: un prodotto diverso ogni giorno (deterministico per data) ---
+// rotazione deterministica per data
 const dayNumber = Math.floor(Date.now() / 86400000);
 const p = items[dayNumber % items.length];
-const promoAct = isTrue(p.promo_activa) && p.promo_precio;
-const price = promoAct ? p.promo_precio : p.precio;
-console.log(`⭐ Prodotto del giorno (${dayNumber % items.length + 1}/${items.length}): ${p.nombre} — ${p.categoria} — ${price}€`);
+const price = (isTrue(p.promo_activa) && p.promo_precio) ? p.promo_precio : p.precio;
+console.log(`⭐ Prodotto del giorno (${dayNumber % items.length + 1}/${items.length}): ${p.nombre} — ${p.categoria} — ${fmtPrice(price)}`);
 
-// --- 2. Genera immagine ---
-const jpg = await generateStory({ name: p.nombre, price, imageUrl: p.imagen_url, category: p.categoria, logoUrl: LOGO });
-console.log(`🖼️  Immagine generata (${(jpg.length / 1024).toFixed(0)} KB)`);
+// --- 2. Genera storia (9:16) e post (4:5) ---
+const common = { name: p.nombre, price, imageUrl: p.imagen_url, category: p.categoria, logoUrl: LOGO };
+const storyJpg = await generateStory({ ...common, format: 'story' });
+const feedJpg  = await generateStory({ ...common, format: 'feed' });
+console.log(`🖼️  Immagini generate: storia ${(storyJpg.length/1024).toFixed(0)}KB, post ${(feedJpg.length/1024).toFixed(0)}KB`);
 
-// --- 3. Carica su Vercel Blob (link stabile + archivio per data) ---
+// --- 3. Carica su Vercel Blob ---
 const ymd = new Date(dayNumber * 86400000).toISOString().slice(0, 10);
-const hoy = await put('historias/historia-hoy.jpg', jpg, { access: 'public', token: BLOB, addRandomSuffix: false, allowOverwrite: true, contentType: 'image/jpeg', cacheControlMaxAge: 3600 });
-await put(`historias/${ymd}.jpg`, jpg, { access: 'public', token: BLOB, addRandomSuffix: false, allowOverwrite: true, contentType: 'image/jpeg' }).catch(() => {});
-const imageUrl = hoy.url;
-console.log(`🔗 Link pubblico (WhatsApp Stato → aprilo sul telefono e condividi):\n   ${imageUrl}`);
+async function upload(path, buf) {
+  const r = await put(path, buf, { access: 'public', token: BLOB, addRandomSuffix: false, allowOverwrite: true, contentType: 'image/jpeg' });
+  return r.url;
+}
+const storyUrl = await upload('historias/historia-hoy.jpg', storyJpg);
+const feedUrl  = await upload('historias/post-hoy.jpg', feedJpg);
+await upload(`historias/${ymd}-historia.jpg`, storyJpg).catch(() => {});
+await upload(`historias/${ymd}-post.jpg`, feedJpg).catch(() => {});
+console.log(`🔗 Storia WhatsApp (apri sul telefono → condividi su Stato):\n   ${storyUrl}`);
 
-// helper Graph API
+// --- didascalia per i post ---
+const tag = String(p.categoria || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-zA-Z0-9]/g, '');
+const caption = `Producto del día en Il Raviolo Bottega 🍝\n\n${p.nombre} — ${fmtPrice(price)}\n${p.categoria}\n\nPídelo por WhatsApp 📲 ${WA}\n📍 ilraviolo.es\n\n#IlRavioloBottega #ComidaItaliana #ProductoDelDia${tag ? ' #' + tag : ''} #Gava #Italia`;
+
+// helper Graph API (POST form-encoded / GET con query)
 async function fb(method, path, params) {
   const u = new URL(`${G}/${path}`);
-  if (method === 'GET') Object.entries(params || {}).forEach(([k, v]) => u.searchParams.set(k, v));
   const opt = { method };
-  if (method === 'POST') { opt.body = new URLSearchParams(params || {}); }
-  const r = await fetch(u, opt);
-  return r.json();
+  if (method === 'GET') Object.entries(params || {}).forEach(([k, v]) => u.searchParams.set(k, v));
+  else opt.body = new URLSearchParams(params || {});
+  const j = await (await fetch(u, opt)).json();
+  if (j.error) throw new Error(JSON.stringify(j.error));
+  return j;
+}
+async function igPublish(params, label) {
+  try {
+    const c = await fb('POST', `${IG}/media`, { ...params, access_token: TOKEN });
+    const pub = await fb('POST', `${IG}/media_publish`, { creation_id: c.id, access_token: TOKEN });
+    console.log(`✅ Instagram ${label} pubblicato (id ${pub.id})`);
+  } catch (e) { console.error(`⚠️  Instagram ${label} NON pubblicato:`, e.message); }
 }
 
-// --- 4a. Instagram Stories ---
+// --- 4. Instagram: storia + post ---
 if (IG && TOKEN) {
-  try {
-    const c = await fb('POST', `${IG}/media`, { media_type: 'STORIES', image_url: imageUrl, access_token: TOKEN });
-    if (c.error) throw new Error(JSON.stringify(c.error));
-    const pub = await fb('POST', `${IG}/media_publish`, { creation_id: c.id, access_token: TOKEN });
-    if (pub.error) throw new Error(JSON.stringify(pub.error));
-    console.log(`✅ Instagram Stories pubblicata (id ${pub.id})`);
-  } catch (e) { console.error('⚠️  Instagram Stories non pubblicata:', e.message); }
-} else { console.log('⏭️  Instagram saltato (IG_USER_ID o token mancante)'); }
+  await igPublish({ media_type: 'STORIES', image_url: storyUrl }, 'Stories');
+  if (DO_FEED) await igPublish({ image_url: feedUrl, caption }, 'post');
+} else console.log('⏭️  Instagram saltato (IG_USER_ID o token mancante)');
 
-// --- 4b. Facebook Page Stories ---
+// --- 5. Facebook: storia + post ---
 if (PAGE && TOKEN) {
   try {
-    // serve il Page access token
-    const tok = await fb('GET', PAGE, { fields: 'access_token', access_token: TOKEN });
-    const pageTok = tok.access_token || TOKEN;
-    // carica la foto come non pubblicata, poi la promuovi a storia
-    const photo = await fb('POST', `${PAGE}/photos`, { url: imageUrl, published: 'false', access_token: pageTok });
-    if (photo.error) throw new Error(JSON.stringify(photo.error));
-    const story = await fb('POST', `${PAGE}/photo_stories`, { photo_id: photo.id, access_token: pageTok });
-    if (story.error) throw new Error(JSON.stringify(story.error));
-    console.log(`✅ Facebook Stories pubblicata (${JSON.stringify(story.post_id || story.success || story.id || story)})`);
-  } catch (e) { console.error('⚠️  Facebook Stories non pubblicata:', e.message); }
-} else { console.log('⏭️  Facebook saltato (FB_PAGE_ID o token mancante)'); }
+    const pageTok = (await fb('GET', PAGE, { fields: 'access_token', access_token: TOKEN })).access_token || TOKEN;
+    // storia FB
+    try {
+      const ph = await fb('POST', `${PAGE}/photos`, { url: storyUrl, published: 'false', access_token: pageTok });
+      await fb('POST', `${PAGE}/photo_stories`, { photo_id: ph.id, access_token: pageTok });
+      console.log('✅ Facebook Stories pubblicata');
+    } catch (e) { console.error('⚠️  Facebook Stories NON pubblicata:', e.message); }
+    // post FB in bacheca
+    if (DO_FEED) {
+      try {
+        const post = await fb('POST', `${PAGE}/photos`, { url: feedUrl, message: caption, published: 'true', access_token: pageTok });
+        console.log(`✅ Facebook post pubblicato (id ${post.post_id || post.id})`);
+      } catch (e) { console.error('⚠️  Facebook post NON pubblicato:', e.message); }
+    }
+  } catch (e) { console.error('⚠️  Facebook saltato (page token):', e.message); }
+} else console.log('⏭️  Facebook saltato (FB_PAGE_ID o token mancante)');
 
-// --- 5. Evidenza nel catalogo: collezione "⭐ Producto del día" = prodotto di oggi ---
+// --- 6. Evidenza nel catalogo: collezione "⭐ Producto del día" ---
 if (CATALOG && TOKEN) {
   try {
     const SET_NAME = '⭐ Producto del día';
-    const retailer = `raviolo-${p.id}`;
-    const filter = JSON.stringify({ retailer_id: { eq: retailer } });
+    const filter = JSON.stringify({ retailer_id: { eq: `raviolo-${p.id}` } });
     const list = await fb('GET', `${CATALOG}/product_sets`, { fields: 'name', limit: '200', access_token: TOKEN });
     const found = (list.data || []).find(s => s.name === SET_NAME);
-    if (found) {
-      const u = await fb('POST', found.id, { filter, access_token: TOKEN });
-      if (u.error) throw new Error(JSON.stringify(u.error));
-      console.log('✅ Catalogo: collezione "Producto del día" aggiornata');
-    } else {
-      const c = await fb('POST', `${CATALOG}/product_sets`, { name: SET_NAME, filter, access_token: TOKEN });
-      if (c.error) throw new Error(JSON.stringify(c.error));
-      console.log(`✅ Catalogo: collezione "Producto del día" creata (id ${c.id})`);
-    }
+    if (found) { await fb('POST', found.id, { filter, access_token: TOKEN }); console.log('✅ Catalogo: "Producto del día" aggiornato'); }
+    else { const c = await fb('POST', `${CATALOG}/product_sets`, { name: SET_NAME, filter, access_token: TOKEN }); console.log(`✅ Catalogo: "Producto del día" creato (id ${c.id})`); }
   } catch (e) { console.error('⚠️  Catalogo evidenza non aggiornata:', e.message); }
 }
 
