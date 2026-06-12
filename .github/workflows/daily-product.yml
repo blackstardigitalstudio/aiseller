@@ -31,3 +31,4 @@ jobs:
           BLOB_READ_WRITE_TOKEN:  ${{ secrets.BLOB_READ_WRITE_TOKEN }}
           IG_USER_ID:             ${{ secrets.IG_USER_ID }}
           FB_PAGE_ID:             ${{ secrets.FB_PAGE_ID }}
+          SOCIAL_WEBHOOK_URL:     ${{ secrets.SOCIAL_WEBHOOK_URL }}
