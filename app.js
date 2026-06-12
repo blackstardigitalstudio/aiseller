@@ -59,6 +59,27 @@
     }
     return "en"; // lingua non ancora tradotta → default internazionale (pronto per i locale-pack/traduzione runtime)
   }
+
+  // Rileva la lingua dal testo digitato dall'utente e aggiorna LANG se abbastanza sicuro.
+  // Usato all'inizio di handleUser() per rispondere nella lingua che il cliente sta scrivendo.
+  function sniffLang(text) {
+    const w = text.toLowerCase();
+    const scores = { it: 0, es: 0, en: 0 };
+    // parole funzione / stopword ad alta frequenza per ciascuna lingua
+    const signs = {
+      it: /\b(ciao|salve|buongiorno|buonasera|grazie|prego|vorrei|voglio|ho bisogno|quanto|dove|quando|che|cosa|come|perché|sì|però|anche|non|con|per|del|della|degli|delle|hai|avete|siete|sono|posso|puoi|mi|ti|ci|vi|lo|la|le|li)\b/g,
+      es: /\b(hola|buenos|buenas|gracias|por favor|quiero|quisiera|necesito|cuánto|dónde|cuándo|qué|cómo|por qué|sí|también|pero|con|para|del|de la|tienes|tenéis|sois|soy|puedo|puedes|me|te|nos|os|lo|la|las|los)\b/g,
+      en: /\b(hi|hello|hey|good|morning|evening|thanks|thank you|please|want|need|how much|where|when|what|how|why|yes|also|but|with|for|the|have|are|you|can|i|my|we|it|is|do|not)\b/g
+    };
+    for (const [lang, re] of Object.entries(signs)) {
+      const m = w.match(re);
+      scores[lang] = m ? m.length : 0;
+    }
+    const best = Object.entries(scores).sort((a, b) => b[1] - a[1])[0];
+    // cambia lingua solo se almeno 2 segnali chiari (evita falsi positivi su frasi corte)
+    if (best[1] >= 2 && best[0] !== LANG) setLang(best[0]);
+  }
+
   let built = false;
   function setLang(lang) {
     LANG = lang;
@@ -1064,6 +1085,7 @@
 
   // Input libero → capisce cosa vuole/dice il cliente e instrada SEMPRE con senso (e umanità)
   async function handleUser(text) {
+    sniffLang(text);
     userMsg(text);
     clearQuick();
     state.engaged = true;
