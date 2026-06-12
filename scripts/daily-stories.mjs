@@ -44,7 +44,7 @@ const catIdx = c => { const i = CAT_ORDER.indexOf(c); return i < 0 ? 99 : i; };
 const url = SUPA + '?select=id,categoria,nombre,precio,imagen_url,visible,agotado,promo_activa,promo_precio,orden';
 const rows = await fetch(url, { headers: { apikey: KEY, Authorization: 'Bearer ' + KEY } }).then(r => r.json());
 const items = (Array.isArray(rows) ? rows : [])
-  .filter(p => p.nombre && p.id && isTrue(p.visible) && !isTrue(p.agotado))
+  .filter(p => p.nombre && p.id && isTrue(p.visible) && !isTrue(p.agotado) && p.imagen_url && String(p.imagen_url).trim())
   .sort((a, b) => catIdx(a.categoria) - catIdx(b.categoria) || (a.orden || 0) - (b.orden || 0) || String(a.id).localeCompare(String(b.id)));
 
 if (!items.length) { console.error('❌ Nessun prodotto disponibile'); process.exit(1); }

@@ -1,20 +1,18 @@
-// Test locale del generatore storia: prende prodotti veri dall'endpoint pubblico,
-// genera 2 esempi (uno con foto, uno senza) e li salva come JPEG da controllare a occhio.
+// Test locale del generatore storia: solo prodotti CON foto.
+// Genera un caso nome-lungo (2 righe) e uno corto per verificare spaziatura/proporzioni.
 import { generateStory } from './lib/story-image.mjs';
 import { writeFileSync } from 'node:fs';
 
 const cfg = await fetch('https://aiseller-blackstar.vercel.app/api/ilraviolo').then(r => r.json());
-const withImg = cfg.products.find(p => p.imageUrl && /salsa|tartuf|raviol|pizza|vino/i.test(p.name)) || cfg.products.find(p => p.imageUrl);
-const noImg = cfg.products.find(p => !p.imageUrl);
+const withPhoto = cfg.products.filter(p => p.imageUrl);
+const longName = withPhoto.find(p => /pizza artesanal/i.test(p.name)) || withPhoto.find(p => p.name.length > 18);
+const shortName = withPhoto.find(p => p.name.length <= 14) || withPhoto[0];
 
 const LOGO = 'https://ilraviolo.es/assets/logo.webp';
 
-for (const [tag, p] of [['confoto', withImg], ['senzafoto', noImg]]) {
+for (const [tag, p] of [['lungo', longName], ['corto', shortName]]) {
   if (!p) continue;
-  const jpg = await generateStory({
-    name: p.name, price: p.price, imageUrl: p.imageUrl, category: p.category, logoUrl: LOGO,
-  });
-  const file = `story-${tag}.jpg`;
-  writeFileSync(file, jpg);
-  console.log(`✅ ${file}  (${(jpg.length/1024).toFixed(0)} KB)  ← ${p.name} | ${p.category} | ${p.price}`);
+  const jpg = await generateStory({ name: p.name, price: p.price, imageUrl: p.imageUrl, category: p.category, logoUrl: LOGO });
+  writeFileSync(`story-${tag}.jpg`, jpg);
+  console.log(`✅ story-${tag}.jpg (${(jpg.length / 1024).toFixed(0)} KB) ← "${p.name}" | ${p.category} | ${p.price}`);
 }
