@@ -69,9 +69,32 @@ await upload(`historias/${ymd}-historia.jpg`, storyJpg).catch(() => {});
 await upload(`historias/${ymd}-post.jpg`, feedJpg).catch(() => {});
 console.log(`🔗 Storia WhatsApp (apri sul telefono → condividi su Stato):\n   ${storyUrl}`);
 
-// --- didascalia per i post ---
-const tag = String(p.categoria || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-zA-Z0-9]/g, '');
-const caption = `Producto del día en Il Raviolo Bottega 🍝\n\n${p.nombre} — ${fmtPrice(price)}\n${p.categoria}\n\nPídelo por WhatsApp 📲 ${WA}\n📍 ilraviolo.es\n\n#IlRavioloBottega #ComidaItaliana #ProductoDelDia${tag ? ' #' + tag : ''} #Gava #Italia`;
+// --- didascalia + hashtag brandizzati (ruotano ogni giorno: IG penalizza i blocchi identici) ---
+const HASHTAGS = {
+  brand: ['#IlRavioloBottega', '#RavioloBottega', '#ProductoDelDíaRaviolo', '#LaBottegaDeGavà'],
+  local: ['#Gavà', '#GavàMar', '#Castelldefels', '#BaixLlobregat', '#Barcelona', '#CostaBarcelona', '#BcnFoodie', '#BarcelonaFood'],
+  general: ['#ComidaItaliana', '#CocinaItaliana', '#HechoEnItalia', '#ProductoItaliano', '#DelicatessenItaliana', '#SaboresDeItalia', '#ComerEnBarcelona'],
+  cat: {
+    'Pasta fresca': ['#PastaFresca', '#PastaArtesanal', '#PastaItaliana'],
+    'Embutidos': ['#Embutidos', '#SalumiItaliani', '#Charcutería'],
+    'Quesos': ['#Quesos', '#FormaggiItaliani', '#QuesoArtesano'],
+    'Salsas': ['#SalsaItaliana', '#SugoFattoInCasa', '#Pesto'],
+    'Trufa': ['#Trufa', '#Tartufo', '#Trufado'],
+    'Postres': ['#PostresItalianos', '#Dolci', '#Tiramisú'],
+    'Focaccia y pizza': ['#Focaccia', '#PizzaArtesanal', '#PizzaAlTaglio'],
+    'Plato preparado': ['#ComidaCasera', '#PlatosItalianos', '#ComidaPreparada'],
+    'Bebidas': ['#VinoItaliano', '#Bebidas', '#Maridaje'],
+    'Vino biodinámico': ['#VinoNatural', '#VinoItaliano', '#VinoBiodinámico'],
+    'Licores': ['#LicorItaliano', '#Amaro', '#Digestivo'],
+    'Horno': ['#PanArtesano', '#PaneItaliano', '#Panadería'],
+    'Pane': ['#PanArtesano', '#PaneItaliano', '#Panadería'],
+    'Complementos': ['#GourmetItaliano', '#DespensaItaliana', '#Delicatessen'],
+  },
+};
+const rot = (arr, n, k) => Array.from({ length: Math.min(k, arr.length) }, (_, i) => arr[(n + i) % arr.length]);
+const cats = HASHTAGS.cat[p.categoria] || ['#GourmetItaliano', '#ProductoItaliano'];
+const tags = [...HASHTAGS.brand, ...cats, ...rot(HASHTAGS.local, dayNumber, 4), ...rot(HASHTAGS.general, dayNumber, 3)];
+const caption = `🍝 Producto del día en Il Raviolo Bottega\n\n${p.nombre} — ${fmtPrice(price)}\n${p.categoria} · recién hecho\n\n¿Te lo guardo? Pídelo por WhatsApp 📲 ${WA}\n📍 Gavà · ilraviolo.es\n\n${tags.join(' ')}`;
 
 // helper Graph API (POST form-encoded / GET con query)
 async function fb(method, path, params) {
