@@ -1,4 +1,4 @@
-// Test locale: genera storia (9:16) e post (4:5), solo prodotti CON foto.
+// Test locale: storia + post, temi blue/gold, solo prodotti CON foto.
 import { generateStory } from './lib/story-image.mjs';
 import { writeFileSync } from 'node:fs';
 
@@ -8,10 +8,13 @@ const longName = withPhoto.find(p => /pizza artesanal/i.test(p.name)) || withPho
 const shortName = withPhoto.find(p => /moretti/i.test(p.name)) || withPhoto[0];
 const LOGO = 'https://ilraviolo.es/assets/logo.webp';
 
-for (const [tag, p] of [['lungo', longName], ['corto', shortName]]) {
-  for (const format of ['story', 'feed']) {
-    const jpg = await generateStory({ name: p.name, price: p.price, imageUrl: p.imageUrl, category: p.category, logoUrl: LOGO, format });
-    writeFileSync(`story-${tag}-${format}.jpg`, jpg);
-    console.log(`✅ story-${tag}-${format}.jpg (${(jpg.length / 1024).toFixed(0)} KB) ← "${p.name}"`);
-  }
+const jobs = [
+  ['gold-story', shortName, 'story', 'gold'],
+  ['gold-feed', longName, 'feed', 'gold'],
+  ['blue-feed', longName, 'feed', 'blue'],
+];
+for (const [tag, p, format, theme] of jobs) {
+  const jpg = await generateStory({ name: p.name, price: p.price, imageUrl: p.imageUrl, category: p.category, logoUrl: LOGO, format, theme });
+  writeFileSync(`story-${tag}.jpg`, jpg);
+  console.log(`✅ story-${tag}.jpg (${(jpg.length / 1024).toFixed(0)} KB) ← "${p.name}" [${theme}/${format}]`);
 }

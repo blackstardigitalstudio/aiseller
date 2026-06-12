@@ -52,10 +52,12 @@ const price = (isTrue(p.promo_activa) && p.promo_precio) ? p.promo_precio : p.pr
 console.log(`⭐ Prodotto del giorno (${dayNumber % items.length + 1}/${items.length}): ${p.nombre} — ${p.categoria} — ${fmtPrice(price)}`);
 
 // --- 2. Genera storia (9:16) e post (4:5) ---
-const common = { name: p.nombre, price, imageUrl: p.imagen_url, category: p.categoria, logoUrl: LOGO };
+// Sfondo in rotazione: 3 giorni azzurro, 3 giorni oro (il colore del logo).
+const theme = (dayNumber % 6) < 3 ? 'blue' : 'gold';
+const common = { name: p.nombre, price, imageUrl: p.imagen_url, category: p.categoria, logoUrl: LOGO, theme };
 const storyJpg = await generateStory({ ...common, format: 'story' });
 const feedJpg  = await generateStory({ ...common, format: 'feed' });
-console.log(`🖼️  Immagini generate: storia ${(storyJpg.length/1024).toFixed(0)}KB, post ${(feedJpg.length/1024).toFixed(0)}KB`);
+console.log(`🖼️  Immagini generate (tema ${theme}): storia ${(storyJpg.length/1024).toFixed(0)}KB, post ${(feedJpg.length/1024).toFixed(0)}KB`);
 
 // --- 3. Carica su Vercel Blob ---
 const ymd = new Date(dayNumber * 86400000).toISOString().slice(0, 10);
