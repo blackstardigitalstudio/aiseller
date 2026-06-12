@@ -23,6 +23,9 @@ const BLOB  = (process.env.BLOB_READ_WRITE_TOKEN || '').replace(/^﻿/, '').trim
 const IG    = (process.env.IG_USER_ID || '').replace(/^﻿/, '').trim();
 const PAGE  = (process.env.FB_PAGE_ID || '').replace(/^﻿/, '').trim();
 const DO_FEED = process.env.POST_FEED !== '0';
+// Ponte social con app Meta già approvata (Make/Zapier/n8n). Se impostato, pubblica IG/FB via webhook
+// invece che con la nostra app (che ha i permessi bloccati). Bypassa App Review e config Meta.
+const WEBHOOK = (process.env.SOCIAL_WEBHOOK_URL || '').replace(/^﻿/, '').trim();
 const WA = '34 671 085 862';
 const LOGO = 'https://ilraviolo.es/assets/logo.webp';
 const G = 'https://graph.facebook.com/v21.0';
@@ -116,14 +119,29 @@ async function igPublish(params, label) {
   } catch (e) { console.error(`⚠️  Instagram ${label} NON pubblicato:`, e.message); }
 }
 
-// --- 4. Instagram: storia + post ---
-if (IG && TOKEN) {
+// --- 4. Pubblicazione social via webhook (ponte con app Meta approvata: Make/Zapier/n8n) ---
+if (WEBHOOK) {
+  try {
+    const r = await fetch(WEBHOOK, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        productName: p.nombre, price: fmtPrice(price), category: p.categoria, theme,
+        caption, storyUrl, feedUrl,           // storyUrl = 9:16 (storie) · feedUrl = 4:5 (post)
+        date: ymd,
+      }),
+    });
+    console.log(`✅ Inviato al ponte social via webhook (HTTP ${r.status}) — IG/FB pubblicati da lì`);
+  } catch (e) { console.error('⚠️  Webhook social fallito:', e.message); }
+}
+
+// --- 4b. Instagram diretto (solo se NON si usa il webhook) ---
+if (!WEBHOOK && IG && TOKEN) {
   await igPublish({ media_type: 'STORIES', image_url: storyUrl }, 'Stories');
   if (DO_FEED) await igPublish({ image_url: feedUrl, caption }, 'post');
 } else console.log('⏭️  Instagram saltato (IG_USER_ID o token mancante)');
 
-// --- 5. Facebook: storia + post ---
-if (PAGE && TOKEN) {
+// --- 5. Facebook diretto (solo se NON si usa il webhook) ---
+if (!WEBHOOK && PAGE && TOKEN) {
   try {
     const pageTok = (await fb('GET', PAGE, { fields: 'access_token', access_token: TOKEN })).access_token || TOKEN;
     // storia FB
