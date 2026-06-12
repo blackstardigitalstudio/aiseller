@@ -8,3 +8,5 @@ node_modules/
 dist/
 .wrangler/
 story-*.jpg
+
+.meta_token.tmp
