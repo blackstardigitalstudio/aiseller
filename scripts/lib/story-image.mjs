@@ -28,13 +28,13 @@ const LAYOUTS = {
     footY: 1858, footSize: 36, markY: 1320, markSize: 760 },
   feed: { W: 1080, H: 1350, M: 90, photo: 604, photoY: 388, logo: 150, logoY: 56,
     brandY: 262, brandSize: 38, badgeW: 470, badgeY: 286, badgeH: 64, badgeSize: 31,
-    catSize: 34, gap: 60, name1: 74, name2: 58, priceSize: 86, priceGap: 110,
-    footY: 1306, footSize: 30, markY: 770, markSize: 560 },
+    catSize: 34, gap: 56, name1: 74, name2: 56, priceSize: 80, priceGap: 104,
+    footY: 1308, footSize: 30, markY: 770, markSize: 560 },
 };
 
 const esc = s => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-function wrapLines(text, fontSize, maxW, em = 0.56) {
+function wrapLines(text, fontSize, maxW, em = 0.60) {
   const words = String(text || '').trim().split(/\s+/).filter(Boolean);
   const lines = []; let cur = '';
   const width = s => s.length * fontSize * em;
@@ -83,7 +83,8 @@ export async function generateStory({ name, price, imageUrl, category, badgeText
   const lineH = Math.round(nameSize * 1.12);
   const nameY = catY + L.gap;
   const nameLastY = nameY + (lines.length - 1) * lineH;
-  const priceY = nameLastY + L.priceGap;
+  // il prezzo non deve mai toccare il footer
+  const priceY = Math.min(nameLastY + L.priceGap, L.footY - 74);
 
   const photoBlock = photoUri
     ? `<image href="${photoUri}" x="${photoX}" y="${L.photoY}" width="${L.photo}" height="${L.photo}" clip-path="url(#round)"/>
