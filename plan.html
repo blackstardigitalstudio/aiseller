@@ -88,7 +88,7 @@ function pickFor(d){ // contenuto pre-creato per la data
   const cats=prod?(HASH.cat[prod.category]||['#GourmetItaliano']):['#GourmetItaliano'];
   const tags=[...HASH.brand,...cats,...rot(HASH.local,dn,4),...rot(HASH.general,dn,2)];
   const title=prod?prod.name:'';
-  const price=prod?fmt(prod.price):'';
+  const price=prod?(fmt(prod.price)+(prod.unit?` /${prod.unit}`:'')):'';
   let cap;
   if(p.bts){cap=`${p.intro}\n\nDetrás de cada producto hay tradición italiana y trabajo artesanal. ¿Quieres saber qué preparamos hoy?\n\nPídelo por WhatsApp 📲 ${WA}\n📍 ${CITY} · ${SITE}`}
   else{cap=`${p.intro}: ${title} — ${price}\n${prod?prod.category:''} · recién hecho\n\n¿Te lo guardo? Pídelo por WhatsApp 📲 ${WA}\n📍 ${CITY} · ${SITE}`}

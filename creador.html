@@ -114,7 +114,7 @@ fetch('https://aiseller-blackstar.vercel.app/api/ilraviolo').then(r=>r.json()).t
 }).catch(()=>{});
 $('prod').onchange=e=>{const p=(window._cat||[])[e.target.value];if(!p)return;
   cfg.title=p.name;$('title').value=p.name;cfg.cat=(p.category||'').toUpperCase();$('cat').value=cfg.cat;
-  const pr=(parseFloat(String(p.price).replace(',','.'))||0).toFixed(2).replace('.',',')+' €';cfg.price=pr;$('price').value=pr;
+  const pr=(parseFloat(String(p.price).replace(',','.'))||0).toFixed(2).replace('.',',')+' €'+(p.unit?' /'+p.unit:'');cfg.price=pr;$('price').value=pr;
   if(p.imageUrl){const im=new Image();im.crossOrigin='anonymous';im.onload=()=>{photo=im;render()};im.onerror=()=>{photo=null;render();alert('No se pudo cargar la foto del catálogo (CORS). Súbela desde tu dispositivo para poder descargar.')};im.src=p.imageUrl}
   render();
 };

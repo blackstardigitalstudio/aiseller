@@ -23,12 +23,3 @@ jobs:
           ILRAVIOLO_SUPABASE_KEY: ${{ secrets.ILRAVIOLO_SUPABASE_KEY }}
           META_ACCESS_TOKEN:      ${{ secrets.META_ACCESS_TOKEN }}
           WA_CATALOG_ID:          ${{ secrets.WA_CATALOG_ID }}
-
-      # TEMP: stampa tutte le colonne del catalogo (per trovare il campo unità). Da rimuovere.
-      - name: Peek catalogo (one-off)
-        if: github.event_name == 'workflow_dispatch'
-        run: |
-          curl -s "https://rllxrcitzofompzuipxh.supabase.co/rest/v1/bottega_products?select=*&limit=4" \
-            -H "apikey: $KEY" -H "Authorization: Bearer $KEY"
-        env:
-          KEY: ${{ secrets.ILRAVIOLO_SUPABASE_KEY }}

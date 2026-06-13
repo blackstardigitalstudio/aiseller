@@ -11,7 +11,7 @@
   "catalog": {
     "type": "supabase",
     "rest": "https://rllxrcitzofompzuipxh.supabase.co/rest/v1/bottega_products",
-    "select": "id,categoria,nombre,descripcion,precio,imagen_url,visible,agotado,promo_activa,promo_precio,orden",
+    "select": "id,categoria,nombre,descripcion,precio,imagen_url,visible,agotado,promo_activa,promo_precio,orden,unidad",
     "fields": { "id": "id", "name": "nombre", "price": "precio", "image": "imagen_url", "category": "categoria", "visible": "visible", "soldout": "agotado", "order": "orden", "promoActive": "promo_activa", "promoPrice": "promo_precio", "unit": "unidad" }
   },
   "priceUnitDefault": "ud",
