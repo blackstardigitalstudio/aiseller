@@ -78,10 +78,17 @@ async function upload(path, buf) {
   const r = await put(path, buf, { access: 'public', token: BLOB, addRandomSuffix: false, allowOverwrite: true, contentType: 'image/jpeg' });
   return r.url;
 }
-const storyUrl = await upload('historias/historia-hoy.jpg', storyJpg);
-const feedUrl  = await upload('historias/post-hoy.jpg', feedJpg);
-await upload(`historias/${ymd}-historia.jpg`, storyJpg).catch(() => {});
-await upload(`historias/${ymd}-post.jpg`, feedJpg).catch(() => {});
+// Rete di sicurezza: se l'hosting fallisce, si usa la foto originale del prodotto (già pubblica) → il post esce comunque.
+let storyUrl, feedUrl;
+try {
+  storyUrl = await upload('historias/historia-hoy.jpg', storyJpg);
+  feedUrl  = await upload('historias/post-hoy.jpg', feedJpg);
+  await upload(`historias/${ymd}-historia.jpg`, storyJpg).catch(() => {});
+  await upload(`historias/${ymd}-post.jpg`, feedJpg).catch(() => {});
+} catch (e) {
+  console.error('⚠️  Hosting immagini non disponibile, uso la foto originale del prodotto:', e.message);
+  storyUrl = IMG; feedUrl = IMG;
+}
 console.log(`🔗 Storia WhatsApp (apri sul telefono → condividi su Stato):\n   ${storyUrl}`);
 
 // --- didascalia + hashtag brandizzati (ruotano ogni giorno: IG penalizza i blocchi identici) ---

@@ -23,15 +23,3 @@ jobs:
           ILRAVIOLO_SUPABASE_KEY: ${{ secrets.ILRAVIOLO_SUPABASE_KEY }}
           META_ACCESS_TOKEN:      ${{ secrets.META_ACCESS_TOKEN }}
           WA_CATALOG_ID:          ${{ secrets.WA_CATALOG_ID }}
-
-      # TEMP: verifica se la chiave Supabase può caricare su Storage. Da rimuovere.
-      - name: Check Supabase Storage (one-off)
-        if: github.event_name == 'workflow_dispatch'
-        run: |
-          printf 'test' > /tmp/t.txt
-          echo "--- upload product-images ---"
-          curl -s -o /dev/null -w "HTTP %{http_code}\n" -X POST "https://rllxrcitzofompzuipxh.supabase.co/storage/v1/object/product-images/social/test.txt" -H "apikey: $KEY" -H "Authorization: Bearer $KEY" -H "Content-Type: text/plain" --data-binary @/tmp/t.txt
-          echo "--- list buckets ---"
-          curl -s "https://rllxrcitzofompzuipxh.supabase.co/storage/v1/bucket" -H "apikey: $KEY" -H "Authorization: Bearer $KEY" | head -c 500; echo
-        env:
-          KEY: ${{ secrets.ILRAVIOLO_SUPABASE_KEY }}
