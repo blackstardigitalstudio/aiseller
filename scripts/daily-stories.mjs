@@ -76,8 +76,8 @@ console.log(`🔗 Storia WhatsApp (apri sul telefono → condividi su Stato):\n 
 
 // --- didascalia + hashtag brandizzati (ruotano ogni giorno: IG penalizza i blocchi identici) ---
 const HASHTAGS = {
-  brand: ['#IlRavioloBottega', '#RavioloBottega', '#ProductoDelDíaRaviolo', '#LaBottegaDeGavà'],
-  local: ['#Gavà', '#GavàMar', '#Castelldefels', '#BaixLlobregat', '#Barcelona', '#CostaBarcelona', '#BcnFoodie', '#BarcelonaFood'],
+  brand: ['#IlRavioloBottega', '#RavioloBottega', '#ProductoDelDíaRaviolo', '#LaBottegaItaliana'],
+  local: ['#LasPalmas', '#LasPalmasDeGranCanaria', '#GranCanaria', '#Canarias', '#LPGC', '#ComerEnLasPalmas', '#GranCanariaFoodie', '#CanariasGastronomía'],
   general: ['#ComidaItaliana', '#CocinaItaliana', '#HechoEnItalia', '#ProductoItaliano', '#DelicatessenItaliana', '#SaboresDeItalia', '#ComerEnBarcelona'],
   cat: {
     'Pasta fresca': ['#PastaFresca', '#PastaArtesanal', '#PastaItaliana'],
@@ -99,7 +99,7 @@ const HASHTAGS = {
 const rot = (arr, n, k) => Array.from({ length: Math.min(k, arr.length) }, (_, i) => arr[(n + i) % arr.length]);
 const cats = HASHTAGS.cat[p.categoria] || ['#GourmetItaliano', '#ProductoItaliano'];
 const tags = [...HASHTAGS.brand, ...cats, ...rot(HASHTAGS.local, dayNumber, 4), ...rot(HASHTAGS.general, dayNumber, 3)];
-const caption = `🍝 Producto del día en Il Raviolo Bottega\n\n${p.nombre} — ${fmtPrice(price)}\n${p.categoria} · recién hecho\n\n¿Te lo guardo? Pídelo por WhatsApp 📲 ${WA}\n📍 Gavà · ilraviolo.es\n\n${tags.join(' ')}`;
+const caption = `🍝 Producto del día en Il Raviolo Bottega\n\n${p.nombre} — ${fmtPrice(price)}\n${p.categoria} · recién hecho\n\n¿Te lo guardo? Pídelo por WhatsApp 📲 ${WA}\n📍 Las Palmas de Gran Canaria · ilraviolo.es\n\n${tags.join(' ')}`;
 
 // helper Graph API (POST form-encoded / GET con query)
 async function fb(method, path, params) {
