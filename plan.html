@@ -59,6 +59,7 @@
 <footer>Made in Italy — Blackstar Digital Studio</footer>
 <script>
 const API='https://aiseller-blackstar.vercel.app/api/ilraviolo';
+function fetchCat(){return fetch('data/catalog.json?t='+Date.now()).then(r=>{if(!r.ok)throw 0;return r.json()}).catch(()=>fetch('clients/ilraviolo.json?t='+Date.now()).then(r=>r.json())).catch(()=>fetch(API).then(r=>r.json()))}
 const WA='671 085 862', SITE='ilraviolo.es/bottega', CITY='Las Palmas de Gran Canaria';
 const CAT_ORDER=['Pasta fresca','Embutidos','Quesos','Salsas','Trufa','Postres','Focaccia y pizza','Plato preparado','Bebidas','Vino biodinámico','Licores','Horno','Pane','Harinas','Complementos'];
 const catIdx=c=>{const i=CAT_ORDER.indexOf(c);return i<0?99:i};
@@ -141,7 +142,7 @@ function resetDay(ds){const d=new Date(ds);localStorage.removeItem(key(d));docum
 function esc(s){return String(s==null?'':s).replace(/"/g,'&quot;').replace(/</g,'&lt;')}
 function toast(m){const e=document.createElement('div');e.textContent=m;e.style.cssText='position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#0c2440;color:#fff;padding:10px 18px;border-radius:22px;font-weight:700;z-index:99';document.body.appendChild(e);setTimeout(()=>e.remove(),1300)}
 
-fetch(API).then(r=>r.json()).then(c=>{PROD=(c.products||[]).filter(p=>p.imageUrl);PROD.sort((a,b)=>catIdx(a.category)-catIdx(b.category)||String(a.name).localeCompare(b.name));
+fetchCat().then(c=>{PROD=(c.products||[]).filter(p=>p.imageUrl);PROD.sort((a,b)=>catIdx(a.category)-catIdx(b.category)||String(a.name).localeCompare(b.name));
   BYCAT={};PROD.forEach(p=>{(BYCAT[p.category]=BYCAT[p.category]||[]).push(p)});render();
 }).catch(()=>{document.getElementById('cal').innerHTML='<div style="padding:20px;color:#7a8699">No se pudo cargar el catálogo.</div>'});
 if('serviceWorker' in navigator&&location.protocol.startsWith('http')){navigator.serviceWorker.register('panel-sw.js').catch(()=>{})}

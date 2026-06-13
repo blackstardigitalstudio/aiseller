@@ -80,6 +80,7 @@
 <footer>Made in Italy — Blackstar Digital Studio</footer>
 <script>
 const API='https://aiseller-blackstar.vercel.app/api/ilraviolo';
+function fetchCat(){return fetch('data/catalog.json?t='+Date.now()).then(r=>{if(!r.ok)throw 0;return r.json()}).catch(()=>fetch('clients/ilraviolo.json?t='+Date.now()).then(r=>r.json())).catch(()=>fetch(API).then(r=>r.json()))}
 const WA='671 085 862', SITE='ilraviolo.es/bottega', CITY='Las Palmas de Gran Canaria', LOGO='https://ilraviolo.es/assets/logo.webp';
 const CAT_ORDER=['Pasta fresca','Embutidos','Quesos','Salsas','Trufa','Postres','Focaccia y pizza','Plato preparado','Bebidas','Vino biodinámico','Licores','Horno','Pane','Harinas','Complementos'];
 const catIdx=c=>{const i=CAT_ORDER.indexOf(c);return i<0?99:i};
@@ -103,7 +104,7 @@ function pick(dn){const wd=new Date(dn*864e5).getUTCDay(),p=PILLARS[wd];let prod
 function caption(x){return x.bts?`${x.intro}\n\nDetrás de cada producto hay tradición italiana y trabajo artesanal. Pídelo por WhatsApp 📲 ${WA}\n📍 ${CITY} · ${SITE}`:`${x.intro}: ${x.name} — ${x.price}\n${x.cat} · recién hecho\n\n¿Te lo guardo? Pídelo por WhatsApp 📲 ${WA}\n📍 ${CITY} · ${SITE}`;}
 const dLabel=dn=>new Date(dn*864e5).toLocaleDateString('es-ES',{weekday:'short',day:'numeric',month:'short'});
 
-fetch(API).then(r=>r.json()).then(c=>{
+fetchCat().then(c=>{
   PROD=(c.products||[]).filter(p=>p.imageUrl);PROD.sort((a,b)=>catIdx(a.category)-catIdx(b.category)||String(a.name).localeCompare(b.name));
   BYCAT={};PROD.forEach(p=>{(BYCAT[p.category]=BYCAT[p.category]||[]).push(p)});
   if(!PROD.length){document.getElementById('hoy').innerHTML='<div class="status">No hay productos con foto.</div>';return}

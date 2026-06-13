@@ -80,6 +80,7 @@
 
 <script>
 const API='https://aiseller-blackstar.vercel.app/api/ilraviolo';
+function fetchCat(){return fetch('data/catalog.json?t='+Date.now()).then(r=>{if(!r.ok)throw 0;return r.json()}).catch(()=>fetch('clients/ilraviolo.json?t='+Date.now()).then(r=>r.json())).catch(()=>fetch(API).then(r=>r.json()))}
 const WA='34 671 085 862', SITE='ilraviolo.es', CITY='Las Palmas de Gran Canaria';
 const CAT_ORDER=['Pasta fresca','Embutidos','Quesos','Salsas','Trufa','Postres','Focaccia y pizza','Plato preparado','Bebidas','Vino biodinámico','Licores','Horno','Pane','Harinas','Complementos'];
 const catIdx=c=>{const i=CAT_ORDER.indexOf(c);return i<0?99:i};
@@ -101,7 +102,7 @@ function prevHTML(p,th){return `<div class="prev ${th}" style="background-image:
 
 (async()=>{
   let products=[];
-  try{const cfg=await (await fetch(API)).json();products=(cfg.products||[]).filter(p=>p.imageUrl);}
+  try{const cfg=await fetchCat();products=(cfg.products||[]).filter(p=>p.imageUrl);}
   catch(e){document.getElementById('today').innerHTML='<div class="status">No se pudo cargar el catálogo. Revisa la conexión.</div>';return}
   products.sort((a,b)=>catIdx(a.category)-catIdx(b.category)||String(a.name).localeCompare(b.name));
   if(!products.length){document.getElementById('today').innerHTML='<div class="status">No hay productos con foto.</div>';return}
