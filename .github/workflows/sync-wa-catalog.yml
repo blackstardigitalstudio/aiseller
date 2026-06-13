@@ -24,14 +24,14 @@ jobs:
           META_ACCESS_TOKEN:      ${{ secrets.META_ACCESS_TOKEN }}
           WA_CATALOG_ID:          ${{ secrets.WA_CATALOG_ID }}
 
-      # TEMP: verifica capacità del token Cloudflare (R2 + permessi). Da rimuovere.
-      - name: Check Cloudflare (one-off)
+      # TEMP: verifica se la chiave Supabase può caricare su Storage. Da rimuovere.
+      - name: Check Supabase Storage (one-off)
         if: github.event_name == 'workflow_dispatch'
         run: |
-          echo "--- token verify ---"
-          curl -s "https://api.cloudflare.com/client/v4/user/tokens/verify" -H "Authorization: Bearer $CF" | head -c 600; echo
-          echo "--- R2 buckets ---"
-          curl -s "https://api.cloudflare.com/client/v4/accounts/$ACC/r2/buckets" -H "Authorization: Bearer $CF" | head -c 800; echo
+          printf 'test' > /tmp/t.txt
+          echo "--- upload product-images ---"
+          curl -s -o /dev/null -w "HTTP %{http_code}\n" -X POST "https://rllxrcitzofompzuipxh.supabase.co/storage/v1/object/product-images/social/test.txt" -H "apikey: $KEY" -H "Authorization: Bearer $KEY" -H "Content-Type: text/plain" --data-binary @/tmp/t.txt
+          echo "--- list buckets ---"
+          curl -s "https://rllxrcitzofompzuipxh.supabase.co/storage/v1/bucket" -H "apikey: $KEY" -H "Authorization: Bearer $KEY" | head -c 500; echo
         env:
-          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          ACC: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          KEY: ${{ secrets.ILRAVIOLO_SUPABASE_KEY }}
