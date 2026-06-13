@@ -192,6 +192,14 @@ function hexA(hex,a){const c=hex.replace('#','');return `rgba(${parseInt(c.subst
 function contrast(hex){return isLight(hex)?'#0c2440':'#ffffff'}
 
 $('dl').onclick=()=>{try{const a=document.createElement('a');a.download='ilraviolo-post.png';a.href=cv.toDataURL('image/png');a.click()}catch(e){alert('Para descargar, sube la foto desde tu dispositivo (la del catálogo está bloqueada por seguridad del navegador).')}};
+// precompila dal plan.html ("Abrir en el editor")
+try{ if(location.hash.length>2){const h=JSON.parse(decodeURIComponent(location.hash.slice(1)));
+  if(h.title){cfg.title=h.title;$('title').value=h.title}
+  if(h.price){cfg.price=h.price;$('price').value=h.price}
+  if(h.cat){cfg.cat=h.cat;$('cat').value=h.cat}
+  if(h.theme==='gold'){cfg.bg1='#e8b84f';cfg.bg2='#cf9d35';cfg.tc='#0c2440';cfg.ac='#0c2440';$('bg1').value='#e8b84f';$('bg2').value='#cf9d35';$('tc').value='#0c2440';$('ac').value='#0c2440'}
+  if(h.img){const im=new Image();im.crossOrigin='anonymous';im.onload=()=>{photo=im;render()};im.onerror=()=>{};im.src=h.img}
+}}catch(e){}
 document.fonts.ready.then(render);setTimeout(render,400);
 if('serviceWorker' in navigator&&location.protocol.startsWith('http')){navigator.serviceWorker.register('panel-sw.js').catch(()=>{})}
 </script>
