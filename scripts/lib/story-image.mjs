@@ -17,15 +17,14 @@ const FONTS = [
   join(ROOT, 'assets/fonts/Poppins-Regular.ttf'),
 ];
 
-const NAVY = '#0c2440', GOLD = '#e8b84f';
-
-// temi colore (testi invertiti per leggibilità)
-const THEMES = {
-  blue: { bg1: '#0c2440', bg2: '#06182c', text: '#ffffff', cat: GOLD, price: GOLD,
-    badgeBg: GOLD, badgeText: NAVY, stroke: GOLD, foot: '#ffffff', pat: 0.13, fallback: GOLD },
-  gold: { bg1: '#edc366', bg2: '#cf9d35', text: NAVY, cat: NAVY, price: NAVY,
-    badgeBg: NAVY, badgeText: GOLD, stroke: NAVY, foot: NAVY, pat: 0.16, fallback: NAVY },
-};
+const DEFAULT_BRAND = { primary: '#0c2440', primary2: '#06182c', accent: '#e8b84f', accent2: '#cf9d35' };
+// temi derivati dai colori del brand → riutilizzabile per ogni cliente (config-driven)
+function buildThemes(b) { return {
+  blue: { bg1: b.primary, bg2: b.primary2, text: '#ffffff', cat: b.accent, price: b.accent,
+    badgeBg: b.accent, badgeText: b.primary, stroke: b.accent, foot: '#ffffff', pat: 0.13, fallback: b.accent },
+  gold: { bg1: b.accent, bg2: b.accent2, text: b.primary, cat: b.primary, price: b.primary,
+    badgeBg: b.primary, badgeText: b.accent, stroke: b.primary, foot: b.primary, pat: 0.16, fallback: b.primary },
+}; }
 
 // preset per formato
 const LAYOUTS = {
@@ -70,8 +69,11 @@ async function uriContain(buf, size) {
   return 'data:image/png;base64,' + out.toString('base64');
 }
 
-export async function generateStory({ name, price, imageUrl, category, badgeText = 'PRODUCTO DEL DÍA', logoUrl, whatsapp = '34 671 085 862', format = 'story', theme = 'blue' }) {
+export async function generateStory({ name, price, imageUrl, category, badgeText = 'PRODUCTO DEL DÍA', logoUrl, whatsapp = '671 085 862', format = 'story', theme = 'blue', brand = {} }) {
   const L = LAYOUTS[format] || LAYOUTS.story;
+  const b = { ...DEFAULT_BRAND, ...(brand.colors || brand) };
+  logoUrl = logoUrl || brand.logo;
+  const THEMES = buildThemes(b);
   const T = THEMES[theme] || THEMES.blue;
   const { W, H, M } = L;
   const photoX = (W - L.photo) / 2;

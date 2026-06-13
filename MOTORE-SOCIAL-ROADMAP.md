@@ -55,9 +55,8 @@ Tabella `content_plan` (data, contenuto, stato). Le modifiche al calendario si s
 Il generatore giornaliero usa lo stile inmersivo dell'editor (non il vecchio).
 *(Autonomo.)*
 
-### 🔜 Fase 5 — Motore settimanale AI
-Workflow domenicale: legge risultati + tendenze → (ri)scrive la settimana nel piano.
-*(Serve: una chiave API AI — piccolo costo ricorrente.)*
+### 🔜 Fase 5 — Motore settimanale (GRATIS, a regole)
+Workflow domenicale che rigenera la settimana seguendo la "guida generale" codificata (pilastri, regole di varietà, best-practice dello studio) + eventuali dati di performance. **Nessuna AI a pagamento, nessun costo, nessuna dipendenza.** AI gratuita (Gemini/Groq/Cloudflare) opzionale e attivabile come "extra" per testi più freschi.
 
 ### 🔜 Fase 6 — Analisi risultati ("cosa funziona")
 Metriche reali IG (reach/like/salvataggi) in dashboard.
