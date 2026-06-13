@@ -60,6 +60,30 @@
   .hub a.h-installa:hover{border-color:var(--gold);color:var(--ink)}
 </style>
 <body>
+<script>
+(function(){
+  var H='fb4f5fdb2c2508803d16317807680280f731f5486d98933f0f5bcd05a5f9d5ec',K='_as_auth';
+  if(sessionStorage.getItem(K)==='1')return;
+  document.documentElement.style.visibility='hidden';
+  function gate(){
+    var o=document.createElement('div');
+    o.style.cssText='position:fixed;inset:0;background:#0b1020;display:flex;align-items:center;justify-content:center;z-index:99999;font-family:system-ui,sans-serif';
+    o.innerHTML='<div style="text-align:center;max-width:300px;width:90%;padding:0 20px"><div style="font-size:2.4rem;margin-bottom:10px">⭐</div><h2 style="color:#eaf1f9;margin:0 0 4px;font-size:1.15rem">AI Seller</h2><p style="color:#9fb0c7;font-size:.82rem;margin:0 0 22px">Blackstar Digital Studio</p><input id="_pw" type="password" placeholder="Password" autocomplete="current-password" style="width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid #22304d;background:#121a30;color:#eaf1f9;font-size:1rem;outline:none;margin-bottom:8px"><div id="_err" style="color:#e0573a;font-size:.8rem;min-height:16px;margin-bottom:8px"></div><button id="_ok" style="width:100%;padding:12px;border-radius:12px;border:none;background:#e8b84f;color:#231a00;font-weight:800;font-size:1rem;cursor:pointer">Entra</button></div>';
+    document.body.appendChild(o);
+    document.documentElement.style.visibility='visible';
+    setTimeout(function(){document.getElementById('_pw').focus();},80);
+    async function check(){
+      var buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(document.getElementById('_pw').value));
+      var hex=Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0')}).join('');
+      if(hex===H){sessionStorage.setItem(K,'1');o.remove();}
+      else{document.getElementById('_err').textContent='Password errata';document.getElementById('_pw').select();}
+    }
+    document.getElementById('_ok').onclick=check;
+    document.getElementById('_pw').onkeydown=function(e){if(e.key==='Enter')check();};
+  }
+  document.body?gate():document.addEventListener('DOMContentLoaded',gate);
+})();
+</script>
 <div class="hub">
   <a href="pannello.html" class="h-chatbot">🤖 I miei chatbot<span class="lbl">online · offline · modifica</span></a>
   <a href="studio.html" class="h-studio">🎨 Crea chatbot<span class="lbl">nuovo cliente · config · colori</span></a>
