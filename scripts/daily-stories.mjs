@@ -174,4 +174,18 @@ if (CATALOG && TOKEN) {
   } catch (e) { console.error('⚠️  Catalogo evidenza non aggiornata:', e.message); }
 }
 
+// --- 7. Log attività per i report (giornaliero/mensile) ---
+try {
+  const base = (storyUrl && storyUrl.includes('.public.blob.vercel-storage.com')) ? storyUrl.split('/historias/')[0] : null;
+  const logUrl = (base || 'https://hziutulpistrgear.public.blob.vercel-storage.com') + '/reportes/actividad.json';
+  let log = [];
+  try { const r = await fetch(logUrl + '?t=' + Date.now()); if (r.ok) log = await r.json(); } catch (e) {}
+  if (!Array.isArray(log)) log = [];
+  log = log.filter(e => e.date !== ymd); // un record per giorno
+  log.unshift({ date: ymd, product: NAME, category: CAT, price: priceStr, theme, formats: DO_FEED ? ['post', 'story'] : ['story'], via: WEBHOOK ? 'make' : 'directo' });
+  log = log.slice(0, 200);
+  await put('reportes/actividad.json', JSON.stringify(log), { access: 'public', token: BLOB, addRandomSuffix: false, allowOverwrite: true, contentType: 'application/json' });
+  console.log('🧾 Attività registrata per i report.');
+} catch (e) { console.error('⚠️  Log report non salvato:', e.message); }
+
 console.log('\n🏁 Prodotto del giorno: fatto.');

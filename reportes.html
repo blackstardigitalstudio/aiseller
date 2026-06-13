@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reportes · Il Raviolo Bottega</title>
+<meta name="theme-color" content="#0c2440">
+<link rel="manifest" href="reportes.webmanifest">
+<style>
+  :root{--navy:#0c2440;--navy2:#06182c;--gold:#e8b84f;--bg:#eef0f4;--card:#fff;--line:#e4e7ee;--muted:#7a8699}
+  *{box-sizing:border-box}html,body{margin:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--navy);padding-bottom:env(safe-area-inset-bottom)}
+  header{background:linear-gradient(180deg,var(--navy),var(--navy2));color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px}
+  header img{width:36px;height:36px;border-radius:8px}header b{font-size:15px}header span{font-size:11px;color:#cdd6e4}
+  .wrap{max-width:900px;margin:0 auto;padding:16px}
+  .nav{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}.nav a{flex:1;text-align:center;text-decoration:none;background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px;font-weight:700;font-size:13px;color:var(--navy)}
+  h2{font-size:13px;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);margin:18px 4px 10px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+  .kpi .n{font-size:26px;font-weight:800}.kpi .l{font-size:12px;color:var(--muted)}
+  .box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:10px}
+  .li{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:5px 0;border-bottom:1px solid #f1f3f7}
+  .li .day{color:var(--muted);min-width:88px}
+  .bar{height:8px;background:#eef1f6;border-radius:6px;overflow:hidden;margin-top:3px}.bar i{display:block;height:100%;background:var(--gold)}
+  .note{background:#fff7e6;border:1px solid #f0dca6;border-radius:12px;padding:12px;font-size:13px;color:#7a5b12;margin-top:10px}
+  footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
+</style>
+</head>
+<body>
+<header><img src="https://ilraviolo.es/assets/logo.webp" alt=""><div><b>Reportes</b><br><span>Il Raviolo Bottega · seguimiento diario y mensual</span></div></header>
+<div class="wrap">
+  <div class="nav"><a href="hub.html">🏠 Inicio</a><a href="plan.html">📅 Plan</a><a href="ajustes.html">⚙️ Ajustes</a></div>
+
+  <h2>Este mes (resumen)</h2>
+  <div class="cards" id="kpis"></div>
+  <div class="box" id="byCat"></div>
+
+  <h2>Actividad reciente (lo publicado)</h2>
+  <div class="box" id="act"><div style="color:#7a8699;font-size:13px">Cargando…</div></div>
+
+  <h2>Métricas reales (alcance, likes, guardados)</h2>
+  <div class="note">Para ver los <b>números reales</b> de cada post (alcance, interacciones, guardados, mensajes) hay que conectar <b>Metricool (gratis)</b> o el permiso de <i>insights</i> de Instagram. Es la verdad: sin esa conexión, este reporte muestra <b>qué</b> se publicó, no <b>cómo rindió</b>. Cuando lo conectemos, estas tarjetas se llenan con los datos reales y el motor ajusta la semana según lo que mejor funciona.</div>
+
+  <div class="note" id="status" style="background:#eef6ff;border-color:#cfe2ff;color:#1f4e8a"></div>
+</div>
+<footer>Made in Italy — Blackstar Digital Studio</footer>
+<script>
+const API='https://aiseller-blackstar.vercel.app/api/ilraviolo';
+const LOG='https://hziutulpistrgear.public.blob.vercel-storage.com/reportes/actividad.json';
+const CAT_ORDER=['Pasta fresca','Embutidos','Quesos','Salsas','Trufa','Postres','Focaccia y pizza','Plato preparado','Bebidas','Vino biodinámico','Licores','Horno','Pane','Harinas','Complementos'];
+const catIdx=c=>{const i=CAT_ORDER.indexOf(c);return i<0?99:i};
+const PILLARS={1:{cat:'Pasta fresca'},2:{cat:null},3:{cat:null,bts:true},4:{cat:'Quesos'},5:{cat:'Focaccia y pizza'},6:{cat:'Embutidos'},0:{cat:'Postres'}};
+let PROD=[],BYCAT={};
+function pickCat(dn){const wd=new Date(dn*864e5).getUTCDay(),p=PILLARS[wd];if(p.bts)return null;if(p.cat&&BYCAT[p.cat]&&BYCAT[p.cat].length)return p.cat;return PROD.length?PROD[dn%PROD.length].category:null;}
+const theme=dn=>((dn%6)<3)?'blue':'gold';
+
+fetch(API).then(r=>r.json()).then(c=>{
+  PROD=(c.products||[]).filter(p=>p.imageUrl);PROD.sort((a,b)=>catIdx(a.category)-catIdx(b.category)||String(a.name).localeCompare(b.name));
+  BYCAT={};PROD.forEach(p=>{(BYCAT[p.category]=BYCAT[p.category]||[]).push(p)});
+  monthly();
+});
+function monthly(){
+  const now=new Date(); const y=now.getUTCFullYear(),m=now.getUTCMonth();
+  const dim=new Date(Date.UTC(y,m+1,0)).getUTCDate();
+  let posts=0,stories=0,blue=0,gold=0,bts=0;const cat={};
+  for(let d=1;d<=dim;d++){const dn=Math.floor(Date.UTC(y,m,d)/864e5);posts++;stories++;(theme(dn)==='blue'?blue++:gold++);const c=pickCat(dn);if(c)cat[c]=(cat[c]||0)+1;else bts++;}
+  document.getElementById('kpis').innerHTML=
+    kpi(posts,'Posts planificados')+kpi(stories,'Stories planificadas')+kpi(blue+'/'+gold,'Azul / Oro')+kpi(bts,'Detrás de bottega');
+  const max=Math.max(1,...Object.values(cat));
+  document.getElementById('byCat').innerHTML='<div style="font-weight:700;margin-bottom:8px">Reparto por categoría (este mes)</div>'+
+    Object.entries(cat).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="li"><span>${k}</span><b>${v}</b></div><div class="bar"><i style="width:${Math.round(v/max*100)}%"></i></div>`).join('');
+}
+function kpi(n,l){return `<div class="kpi"><div class="n">${n}</div><div class="l">${l}</div></div>`}
+fetch(LOG+'?t='+Date.now()).then(r=>r.ok?r.json():[]).then(log=>{
+  if(!Array.isArray(log)||!log.length){document.getElementById('act').innerHTML='<div style="color:#7a8699;font-size:13px">Aún no hay publicaciones registradas. Se irán registrando solas cuando el motor empiece a publicar (tras activar la PR).</div>';document.getElementById('status').textContent='El motor registrará aquí cada publicación (qué, cuándo, formato). El reporte mensual se construye solo.';return}
+  const byMonth={};log.forEach(e=>{const mk=e.date.slice(0,7);byMonth[mk]=(byMonth[mk]||0)+1});
+  document.getElementById('status').innerHTML='Publicaciones registradas: <b>'+log.length+'</b> · meses con actividad: <b>'+Object.keys(byMonth).length+'</b>.';
+  document.getElementById('act').innerHTML=log.slice(0,30).map(e=>`<div class="li"><span class="day">${e.date}</span><b>${e.product||'—'}</b><span>${(e.formats||[]).join('+')} · ${e.theme}</span></div>`).join('');
+}).catch(()=>{document.getElementById('act').innerHTML='<div style="color:#7a8699;font-size:13px">Sin actividad todavía.</div>'});
+if('serviceWorker' in navigator&&location.protocol.startsWith('http')){navigator.serviceWorker.register('panel-sw.js').catch(()=>{})}
+</script>
+</body>
+</html>
