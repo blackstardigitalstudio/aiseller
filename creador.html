@@ -156,7 +156,12 @@ function computeText(W,H,M){
   while(lines.length>3 && titleFs>30){ titleFs*=0.9; lines=wrap(cfg.title,titleFs,cfg.font,maxw); }
   lines=lines.slice(0,3);
   const lineH=Math.round(titleFs*1.06);
-  const catFs=Math.round(W*0.038), priceFs=Math.round(W*0.115), footFs=Math.round(W*0.032);
+  const catFs=Math.round(W*0.038);
+  // autofit: prezzo e footer si rimpiccioliscono per stare nella larghezza (responsive)
+  let priceFs=Math.round(W*0.115);
+  if(cfg.price){ctx.font=`800 ${priceFs}px Poppins`;while(priceFs>40&&ctx.measureText(cfg.price).width>maxw){priceFs-=2;ctx.font=`800 ${priceFs}px Poppins`;}}
+  let footFs=Math.round(W*0.032);
+  if(cfg.foot){ctx.font=`600 ${footFs}px Poppins`;while(footFs>15&&ctx.measureText(cfg.foot).width>maxw){footFs-=2;ctx.font=`600 ${footFs}px Poppins`;}}
   const footY=H-Math.round(M*0.7);
   const priceY=footY-footFs-Math.round(H*0.018);
   const titleLastY=priceY-Math.round(priceFs*0.72)-Math.round(H*0.018);
@@ -181,11 +186,13 @@ function render(){
     drawTextBlock(W,T,cfg.tc);
   } else {
     if(photo)cover(photo,0,0,W,H);else fillBg(W,H);
-    // velo che copre SEMPRE tutta la zona del testo → niente testo "sopra" il prodotto in modo illeggibile
+    // se lo sfondo è un'immagine caricata (non foto prodotto), velo più leggero così l'immagine si vede
+    const bgCustom = !photo && !!bgImage;
+    const a1 = bgCustom?0.45:0.82, a2 = bgCustom?0.72:0.98, at = bgCustom?0.5:0.85;
     const sg=ctx.createLinearGradient(0,Math.max(H*0.30,T.topY-H*0.14),0,H);
-    sg.addColorStop(0,hexA(cfg.bg2,0));sg.addColorStop(.5,hexA(cfg.bg2,.82));sg.addColorStop(1,hexA(cfg.bg2,.98));
+    sg.addColorStop(0,hexA(cfg.bg2,0));sg.addColorStop(.5,hexA(cfg.bg2,a1));sg.addColorStop(1,hexA(cfg.bg2,a2));
     ctx.fillStyle=sg;ctx.fillRect(0,0,W,H);
-    const tg=ctx.createLinearGradient(0,0,0,H*0.22);tg.addColorStop(0,hexA(cfg.bg2,.85));tg.addColorStop(1,hexA(cfg.bg2,0));ctx.fillStyle=tg;ctx.fillRect(0,0,W,H*0.22);
+    const tg=ctx.createLinearGradient(0,0,0,H*0.22);tg.addColorStop(0,hexA(cfg.bg2,at));tg.addColorStop(1,hexA(cfg.bg2,0));ctx.fillStyle=tg;ctx.fillRect(0,0,W,H*0.22);
     drawHeader(W,M);
     drawTextBlock(W,T,'#ffffff');
   }
