@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>AI Seller · Il mio chatbot — Black Star</title>
+<meta name="theme-color" content="#0b0e16" />
+<link rel="manifest" href="chatbot-home.webmanifest" />
+<style>
+  :root{--gold:#e8b84f;--gold-d:#a68732;--ink:#eef1f6;--muted:#9aa3b5;--card:#161b27;--card2:#0e131d;--line:rgba(255,255,255,.09)}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);
+    background:radial-gradient(1200px 600px at 50% -10%,#1c2336,#0b0e16 70%);padding-bottom:env(safe-area-inset-bottom)}
+  .wrap{max-width:820px;margin:0 auto;padding:44px 20px 70px}
+  header{text-align:center;margin-bottom:6px}
+  .logo{font-size:.8rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:800}
+  h1{font-size:2.1rem;margin:.25em 0 .12em}
+  .sub{color:var(--muted);margin:0;font-size:1rem}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:30px}
+  @media(max-width:560px){.grid{grid-template-columns:1fr}}
+  a.card{display:block;text-decoration:none;color:var(--ink);background:var(--card);border:1px solid var(--line);
+    border-radius:18px;padding:22px;transition:transform .12s ease,border-color .12s ease,box-shadow .12s}
+  a.card:hover{transform:translateY(-3px);border-color:var(--gold);box-shadow:0 16px 36px rgba(0,0,0,.45)}
+  .card .ico{font-size:2rem}
+  .card h2{margin:10px 0 5px;font-size:1.2rem}
+  .card p{margin:0;color:var(--muted);font-size:.9rem;line-height:1.45}
+  .card.primary{background:linear-gradient(135deg,#23304e,#141a28);border-color:var(--gold-d)}
+  .tag{display:inline-block;background:rgba(232,184,79,.15);color:var(--gold);font-size:.68rem;font-weight:800;
+    padding:3px 9px;border-radius:20px;letter-spacing:.04em;margin-bottom:7px}
+  .pin{background:#11161f;border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-top:26px;color:var(--muted);font-size:.9rem;line-height:1.55}
+  .pin b{color:var(--ink)}
+  footer{text-align:center;color:#6b7488;margin-top:34px;font-size:.82rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">★ Black Star · AI Seller</div>
+    <h1>Il mio chatbot</h1>
+    <p class="sub">Tutto il tuo venditore AI, in un posto solo.</p>
+  </header>
+
+  <div class="grid">
+    <a class="card primary" href="studio.html">
+      <div class="ico">🛠️</div>
+      <span class="tag">CREA &amp; PUBBLICA</span>
+      <h2>Studio</h2>
+      <p>Analizza un sito, genera il venditore, scegli il personaggio e <b>pubblica in 1 click</b>.</p>
+    </a>
+    <a class="card" href="pannello.html">
+      <div class="ico">🎛️</div>
+      <span class="tag">GESTISCI</span>
+      <h2>Pannello di controllo</h2>
+      <p>Modifica i prodotti e la configurazione dei tuoi chatbot, vedi l'anteprima dal vivo e salva.</p>
+    </a>
+    <a class="card" href="installa.html">
+      <div class="ico">📖</div>
+      <span class="tag">GUIDA</span>
+      <h2>Istruzioni installazione</h2>
+      <p>Dove incollare la riga di codice: HTML, WordPress, Shopify, Wix, GTM… da mandare al cliente.</p>
+    </a>
+    <a class="card" href="pannello.html">
+      <div class="ico">👀</div>
+      <span class="tag">ANTEPRIMA</span>
+      <h2>Prova i chatbot</h2>
+      <p>Apri il Pannello e usa «Anteprima» su ogni cliente per vedere il venditore dal vivo.</p>
+    </a>
+  </div>
+
+  <div class="pin">
+    📌 <b>Per averla sempre a portata:</b> apri questa pagina nel browser e premi <b>Ctrl+D</b> per salvarla nei preferiti.
+    Su telefono: menu del browser → «<b>Aggiungi a schermata Home</b>» / «<b>Installa app</b>» e diventa un'icona come un'app.
+  </div>
+
+  <footer>★ Blackstar Digital Studio · AI Seller — 🇮🇹 Made in Italy</footer>
+</div>
+</body>
+</html>
