@@ -155,6 +155,7 @@ function applyCatalog(cfg, live) {
       price: toNum(p.promo_precio || p.precio),
       description: p.descripcion || "",
       imageUrl: p.imagen_url || "",
+      unit: p.unidad || "",
       badge: promo ? ("🎉 " + p.promo_texto) : (isTrue(p.destacado) ? "⭐ Destacado" : ""),
       keys: keysFrom(p.nombre, p.categoria),
       stock: 99
@@ -173,7 +174,7 @@ module.exports = async function handler(req, res) {
   const key = process.env.ILRAVIOLO_SUPABASE_KEY;
   try {
     if (!key) throw new Error("missing ILRAVIOLO_SUPABASE_KEY");
-    const url = SUPABASE + "?select=id,categoria,nombre,descripcion,precio,imagen_url,destacado,visible,agotado,orden,promo_activa,promo_texto,promo_precio&visible=eq.true&order=categoria.asc,orden.asc";
+    const url = SUPABASE + "?select=id,categoria,nombre,descripcion,precio,imagen_url,destacado,visible,agotado,orden,promo_activa,promo_texto,promo_precio,unidad&visible=eq.true&order=categoria.asc,orden.asc";
     const r = await fetch(url, { headers: { apikey: key, Authorization: "Bearer " + key } });
     if (!r.ok) throw new Error("supabase " + r.status);
     const rows = await r.json();

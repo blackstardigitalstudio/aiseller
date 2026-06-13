@@ -14,50 +14,68 @@
 
 import { generateStory } from './lib/story-image.mjs';
 import { put } from '@vercel/blob';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 
-const SUPA  = 'https://rllxrcitzofompzuipxh.supabase.co/rest/v1/bottega_products';
-const KEY   = (process.env.ILRAVIOLO_SUPABASE_KEY || '').replace(/^﻿/, '').trim();
+// --- Config del cliente (motore riutilizzabile): clients/<CLIENT>.config.json ---
+const CLIENT = (process.env.CLIENT || 'raviolo').trim();
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+const cfg = JSON.parse(readFileSync(join(ROOT, 'clients', `${CLIENT}.config.json`), 'utf8'));
+const BRAND = cfg.brand, F = cfg.catalog.fields;
+
+// --- Secrets (per cliente) ---
+const KEY   = (process.env.ILRAVIOLO_SUPABASE_KEY || process.env.SUPABASE_KEY || '').replace(/^﻿/, '').trim();
 const TOKEN = (process.env.META_ACCESS_TOKEN || '').replace(/^﻿/, '').trim();
 const CATALOG = (process.env.WA_CATALOG_ID || '').replace(/^﻿/, '').trim();
 const BLOB  = (process.env.BLOB_READ_WRITE_TOKEN || '').replace(/^﻿/, '').trim();
 const IG    = (process.env.IG_USER_ID || '').replace(/^﻿/, '').trim();
 const PAGE  = (process.env.FB_PAGE_ID || '').replace(/^﻿/, '').trim();
 const DO_FEED = process.env.POST_FEED !== '0';
-// Ponte social con app Meta già approvata (Make/Zapier/n8n). Se impostato, pubblica IG/FB via webhook
-// invece che con la nostra app (che ha i permessi bloccati). Bypassa App Review e config Meta.
+// Ponte social (Make/Zapier/n8n) con app Meta già approvata: se impostato, pubblica IG/FB da lì.
 const WEBHOOK = (process.env.SOCIAL_WEBHOOK_URL || '').replace(/^﻿/, '').trim();
-const WA = '34 671 085 862';
-const LOGO = 'https://ilraviolo.es/assets/logo.webp';
+const WA = BRAND.whatsapp, LOGO = BRAND.logo;
 const G = 'https://graph.facebook.com/v21.0';
 
-if (!KEY)  { console.error('❌ ILRAVIOLO_SUPABASE_KEY mancante'); process.exit(1); }
+if (!KEY)  { console.error('❌ Supabase key mancante (ILRAVIOLO_SUPABASE_KEY/SUPABASE_KEY)'); process.exit(1); }
 if (!BLOB) { console.error('❌ BLOB_READ_WRITE_TOKEN mancante'); process.exit(1); }
 
 const isTrue = v => v === true || v === 'True' || v === 'true' || v === 't' || v === 1;
 const fmtPrice = v => { const n = parseFloat(String(v).replace(',', '.')); return (isFinite(n) ? n : 0).toFixed(2).replace('.', ',') + ' €'; };
 
-const CAT_ORDER = ['Pasta fresca','Embutidos','Quesos','Salsas','Trufa','Postres','Focaccia y pizza',
-  'Plato preparado','Bebidas','Vino biodinámico','Licores','Horno','Pane','Harinas','Complementos'];
+const CAT_ORDER = cfg.categoryOrder;
 const catIdx = c => { const i = CAT_ORDER.indexOf(c); return i < 0 ? 99 : i; };
 
 // --- 1. Prodotti visibili, disponibili e CON foto, in ordine stabile ---
-const url = SUPA + '?select=id,categoria,nombre,precio,imagen_url,visible,agotado,promo_activa,promo_precio,orden';
+const url = cfg.catalog.rest + '?select=' + encodeURIComponent(cfg.catalog.select);
 const rows = await fetch(url, { headers: { apikey: KEY, Authorization: 'Bearer ' + KEY } }).then(r => r.json());
 const items = (Array.isArray(rows) ? rows : [])
-  .filter(p => p.nombre && p.id && isTrue(p.visible) && !isTrue(p.agotado) && p.imagen_url && String(p.imagen_url).trim())
-  .sort((a, b) => catIdx(a.categoria) - catIdx(b.categoria) || (a.orden || 0) - (b.orden || 0) || String(a.id).localeCompare(String(b.id)));
+  .filter(p => p[F.name] && p[F.id] && isTrue(p[F.visible]) && !isTrue(p[F.soldout]) && p[F.image] && String(p[F.image]).trim())
+  .sort((a, b) => catIdx(a[F.category]) - catIdx(b[F.category]) || ((a[F.order] || 0) - (b[F.order] || 0)) || String(a[F.id]).localeCompare(String(b[F.id])));
 if (!items.length) { console.error('❌ Nessun prodotto con foto disponibile'); process.exit(1); }
 
 // rotazione deterministica per data
 const dayNumber = Math.floor(Date.now() / 86400000);
-const p = items[dayNumber % items.length];
-const price = (isTrue(p.promo_activa) && p.promo_precio) ? p.promo_precio : p.precio;
-console.log(`⭐ Prodotto del giorno (${dayNumber % items.length + 1}/${items.length}): ${p.nombre} — ${p.categoria} — ${fmtPrice(price)}`);
+const ymdToday = new Date(dayNumber * 86400000).toISOString().slice(0, 10);
+// Segue il PIANO settimanale (Fase 5) se presente: usa il prodotto/tema pianificato per oggi.
+let p = null, planTheme = null;
+try {
+  const planBase = cfg.blobBase || 'https://hziutulpistrgear.public.blob.vercel-storage.com';
+  const pr = await fetch(planBase + '/plan/semana-actual.json?t=' + Date.now());
+  if (pr.ok) { const plan = await pr.json(); const e = (plan.days || []).find(d => d.date === ymdToday); if (e && e.productId) { const f = items.find(it => String(it[F.id]) === String(e.productId)); if (f) { p = f; planTheme = e.theme; console.log('📋 Seguo il piano settimanale per oggi.'); } } }
+} catch (e) {}
+if (!p) p = items[dayNumber % items.length];
+const NAME = p[F.name], CAT = p[F.category], IMG = p[F.image], PID = p[F.id];
+const price = (isTrue(p[F.promoActive]) && p[F.promoPrice]) ? p[F.promoPrice] : p[F.price];
+const unit = (F.unit && p[F.unit]) ? String(p[F.unit]).trim() : (cfg.priceUnitDefault || '');
+const priceStr = fmtPrice(price) + (unit ? ` /${unit}` : '');
+console.log(`⭐ Prodotto del giorno (${dayNumber % items.length + 1}/${items.length}): ${NAME} — ${CAT} — ${fmtPrice(price)}`);
 
 // --- 2. Genera storia (9:16) e post (4:5) ---
-// Sfondo in rotazione: 3 giorni azzurro, 3 giorni oro (il colore del logo).
-const theme = (dayNumber % 6) < 3 ? 'blue' : 'gold';
-const common = { name: p.nombre, price, imageUrl: p.imagen_url, category: p.categoria, logoUrl: LOGO, theme };
+// Sfondo in rotazione secondo config (es. 3 azzurro / 3 oro).
+const rotArr = cfg.themeRotation || ['blue', 'blue', 'blue', 'gold', 'gold', 'gold'];
+const theme = planTheme || rotArr[dayNumber % rotArr.length];
+const common = { name: NAME, price, imageUrl: IMG, category: CAT, logoUrl: LOGO, brand: BRAND, theme, whatsapp: WA, unit };
 const storyJpg = await generateStory({ ...common, format: 'story' });
 const feedJpg  = await generateStory({ ...common, format: 'feed' });
 console.log(`🖼️  Immagini generate (tema ${theme}): storia ${(storyJpg.length/1024).toFixed(0)}KB, post ${(feedJpg.length/1024).toFixed(0)}KB`);
@@ -68,38 +86,30 @@ async function upload(path, buf) {
   const r = await put(path, buf, { access: 'public', token: BLOB, addRandomSuffix: false, allowOverwrite: true, contentType: 'image/jpeg' });
   return r.url;
 }
-const storyUrl = await upload('historias/historia-hoy.jpg', storyJpg);
-const feedUrl  = await upload('historias/post-hoy.jpg', feedJpg);
-await upload(`historias/${ymd}-historia.jpg`, storyJpg).catch(() => {});
-await upload(`historias/${ymd}-post.jpg`, feedJpg).catch(() => {});
+// Rete di sicurezza: se l'hosting fallisce, si usa la foto originale del prodotto (già pubblica) → il post esce comunque.
+let storyUrl, feedUrl;
+try {
+  storyUrl = await upload('historias/historia-hoy.jpg', storyJpg);
+  feedUrl  = await upload('historias/post-hoy.jpg', feedJpg);
+  await upload(`historias/${ymd}-historia.jpg`, storyJpg).catch(() => {});
+  await upload(`historias/${ymd}-post.jpg`, feedJpg).catch(() => {});
+} catch (e) {
+  console.error('⚠️  Hosting immagini non disponibile, uso la foto originale del prodotto:', e.message);
+  storyUrl = IMG; feedUrl = IMG;
+}
 console.log(`🔗 Storia WhatsApp (apri sul telefono → condividi su Stato):\n   ${storyUrl}`);
 
 // --- didascalia + hashtag brandizzati (ruotano ogni giorno: IG penalizza i blocchi identici) ---
-const HASHTAGS = {
-  brand: ['#IlRavioloBottega', '#RavioloBottega', '#ProductoDelDíaRaviolo', '#LaBottegaDeGavà'],
-  local: ['#Gavà', '#GavàMar', '#Castelldefels', '#BaixLlobregat', '#Barcelona', '#CostaBarcelona', '#BcnFoodie', '#BarcelonaFood'],
-  general: ['#ComidaItaliana', '#CocinaItaliana', '#HechoEnItalia', '#ProductoItaliano', '#DelicatessenItaliana', '#SaboresDeItalia', '#ComerEnBarcelona'],
-  cat: {
-    'Pasta fresca': ['#PastaFresca', '#PastaArtesanal', '#PastaItaliana'],
-    'Embutidos': ['#Embutidos', '#SalumiItaliani', '#Charcutería'],
-    'Quesos': ['#Quesos', '#FormaggiItaliani', '#QuesoArtesano'],
-    'Salsas': ['#SalsaItaliana', '#SugoFattoInCasa', '#Pesto'],
-    'Trufa': ['#Trufa', '#Tartufo', '#Trufado'],
-    'Postres': ['#PostresItalianos', '#Dolci', '#Tiramisú'],
-    'Focaccia y pizza': ['#Focaccia', '#PizzaArtesanal', '#PizzaAlTaglio'],
-    'Plato preparado': ['#ComidaCasera', '#PlatosItalianos', '#ComidaPreparada'],
-    'Bebidas': ['#VinoItaliano', '#Bebidas', '#Maridaje'],
-    'Vino biodinámico': ['#VinoNatural', '#VinoItaliano', '#VinoBiodinámico'],
-    'Licores': ['#LicorItaliano', '#Amaro', '#Digestivo'],
-    'Horno': ['#PanArtesano', '#PaneItaliano', '#Panadería'],
-    'Pane': ['#PanArtesano', '#PaneItaliano', '#Panadería'],
-    'Complementos': ['#GourmetItaliano', '#DespensaItaliana', '#Delicatessen'],
-  },
-};
-const rot = (arr, n, k) => Array.from({ length: Math.min(k, arr.length) }, (_, i) => arr[(n + i) % arr.length]);
-const cats = HASHTAGS.cat[p.categoria] || ['#GourmetItaliano', '#ProductoItaliano'];
-const tags = [...HASHTAGS.brand, ...cats, ...rot(HASHTAGS.local, dayNumber, 4), ...rot(HASHTAGS.general, dayNumber, 3)];
-const caption = `🍝 Producto del día en Il Raviolo Bottega\n\n${p.nombre} — ${fmtPrice(price)}\n${p.categoria} · recién hecho\n\n¿Te lo guardo? Pídelo por WhatsApp 📲 ${WA}\n📍 Gavà · ilraviolo.es\n\n${tags.join(' ')}`;
+const HASHTAGS = cfg.hashtags || { brand: [], local: [], general: [], cat: {} };
+const rot = (arr, n, k) => Array.from({ length: Math.min(k, (arr || []).length) }, (_, i) => arr[(n + i) % arr.length]);
+const cats = (HASHTAGS.cat && HASHTAGS.cat[CAT]) || ['#GourmetItaliano', '#ProductoItaliano'];
+const tags = [...(HASHTAGS.brand || []), ...cats, ...rot(HASHTAGS.local, dayNumber, 4), ...rot(HASHTAGS.general, dayNumber, 3)];
+const tpl = cfg.captionTemplate || '🍝 {intro}: {name} — {price}\n{category}\n📲 {whatsapp} · {web}';
+const caption = tpl
+  .replace('{intro}', 'Producto del día en ' + BRAND.name)
+  .replace('{name}', NAME).replace('{price}', priceStr).replace('{category}', CAT)
+  .replace('{whatsapp}', WA).replace('{city}', BRAND.city).replace('{web}', BRAND.web)
+  + '\n\n' + tags.join(' ');
 
 // helper Graph API (POST form-encoded / GET con query)
 async function fb(method, path, params) {
@@ -125,7 +135,7 @@ if (WEBHOOK) {
     const r = await fetch(WEBHOOK, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        productName: p.nombre, price: fmtPrice(price), category: p.categoria, theme,
+        productName: NAME, price: priceStr, category: CAT, theme,
         caption, storyUrl, feedUrl,           // storyUrl = 9:16 (storie) · feedUrl = 4:5 (post)
         date: ymd,
       }),
@@ -164,12 +174,26 @@ if (!WEBHOOK && PAGE && TOKEN) {
 if (CATALOG && TOKEN) {
   try {
     const SET_NAME = '⭐ Producto del día';
-    const filter = JSON.stringify({ retailer_id: { eq: `raviolo-${p.id}` } });
+    const filter = JSON.stringify({ retailer_id: { eq: `${CLIENT}-${PID}` } });
     const list = await fb('GET', `${CATALOG}/product_sets`, { fields: 'name', limit: '200', access_token: TOKEN });
     const found = (list.data || []).find(s => s.name === SET_NAME);
     if (found) { await fb('POST', found.id, { filter, access_token: TOKEN }); console.log('✅ Catalogo: "Producto del día" aggiornato'); }
     else { const c = await fb('POST', `${CATALOG}/product_sets`, { name: SET_NAME, filter, access_token: TOKEN }); console.log(`✅ Catalogo: "Producto del día" creato (id ${c.id})`); }
   } catch (e) { console.error('⚠️  Catalogo evidenza non aggiornata:', e.message); }
 }
+
+// --- 7. Log attività per i report (giornaliero/mensile) ---
+try {
+  const base = (storyUrl && storyUrl.includes('.public.blob.vercel-storage.com')) ? storyUrl.split('/historias/')[0] : null;
+  const logUrl = (base || 'https://hziutulpistrgear.public.blob.vercel-storage.com') + '/reportes/actividad.json';
+  let log = [];
+  try { const r = await fetch(logUrl + '?t=' + Date.now()); if (r.ok) log = await r.json(); } catch (e) {}
+  if (!Array.isArray(log)) log = [];
+  log = log.filter(e => e.date !== ymd); // un record per giorno
+  log.unshift({ date: ymd, product: NAME, category: CAT, price: priceStr, theme, formats: DO_FEED ? ['post', 'story'] : ['story'], via: WEBHOOK ? 'make' : 'directo' });
+  log = log.slice(0, 200);
+  await put('reportes/actividad.json', JSON.stringify(log), { access: 'public', token: BLOB, addRandomSuffix: false, allowOverwrite: true, contentType: 'application/json' });
+  console.log('🧾 Attività registrata per i report.');
+} catch (e) { console.error('⚠️  Log report non salvato:', e.message); }
 
 console.log('\n🏁 Prodotto del giorno: fatto.');

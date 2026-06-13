@@ -1,0 +1,13 @@
+{
+  "name": "Centro de control · Il Raviolo Bottega",
+  "short_name": "Raviolo Hub",
+  "description": "Centro de control: todo lo que el motor publicará en los próximos días y semanas.",
+  "start_url": "hub.html",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#0c2440",
+  "theme_color": "#0c2440",
+  "icons": [
+    { "src": "https://ilraviolo.es/assets/logo.webp", "sizes": "512x512", "type": "image/webp", "purpose": "any" }
+  ]
+}

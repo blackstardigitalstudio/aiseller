@@ -1,0 +1,13 @@
+{
+  "name": "Ajustes · Il Raviolo Bottega",
+  "short_name": "Ajustes Raviolo",
+  "description": "Ajustes del motor: cuántos posts/stories al día y a la semana.",
+  "start_url": "ajustes.html",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#0c2440",
+  "theme_color": "#0c2440",
+  "icons": [
+    { "src": "https://ilraviolo.es/assets/logo.webp", "sizes": "512x512", "type": "image/webp", "purpose": "any" }
+  ]
+}

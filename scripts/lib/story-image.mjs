@@ -17,15 +17,14 @@ const FONTS = [
   join(ROOT, 'assets/fonts/Poppins-Regular.ttf'),
 ];
 
-const NAVY = '#0c2440', GOLD = '#e8b84f';
-
-// temi colore (testi invertiti per leggibilità)
-const THEMES = {
-  blue: { bg1: '#0c2440', bg2: '#06182c', text: '#ffffff', cat: GOLD, price: GOLD,
-    badgeBg: GOLD, badgeText: NAVY, stroke: GOLD, foot: '#ffffff', mark: 0.08, fallback: GOLD },
-  gold: { bg1: '#edc366', bg2: '#cf9d35', text: NAVY, cat: NAVY, price: NAVY,
-    badgeBg: NAVY, badgeText: GOLD, stroke: NAVY, foot: NAVY, mark: 0.10, fallback: NAVY },
-};
+const DEFAULT_BRAND = { primary: '#0c2440', primary2: '#06182c', accent: '#e8b84f', accent2: '#cf9d35' };
+// temi derivati dai colori del brand → riutilizzabile per ogni cliente (config-driven)
+function buildThemes(b) { return {
+  blue: { bg1: b.primary, bg2: b.primary2, text: '#ffffff', cat: b.accent, price: b.accent,
+    badgeBg: b.accent, badgeText: b.primary, stroke: b.accent, foot: '#ffffff', pat: 0.13, fallback: b.accent },
+  gold: { bg1: b.accent, bg2: b.accent2, text: b.primary, cat: b.primary, price: b.primary,
+    badgeBg: b.primary, badgeText: b.accent, stroke: b.primary, foot: b.primary, pat: 0.16, fallback: b.primary },
+}; }
 
 // preset per formato
 const LAYOUTS = {
@@ -70,59 +69,77 @@ async function uriContain(buf, size) {
   return 'data:image/png;base64,' + out.toString('base64');
 }
 
-export async function generateStory({ name, price, imageUrl, category, badgeText = 'PRODUCTO DEL DÍA', logoUrl, whatsapp = '34 671 085 862', format = 'story', theme = 'blue' }) {
+export async function generateStory({ name, price, imageUrl, category, badgeText = 'PRODUCTO DEL DÍA', logoUrl, whatsapp = '671 085 862', format = 'story', theme = 'blue', brand = {}, unit = '' }) {
   const L = LAYOUTS[format] || LAYOUTS.story;
+  const b = { ...DEFAULT_BRAND, ...(brand.colors || brand) };
+  logoUrl = logoUrl || brand.logo;
+  const THEMES = buildThemes(b);
   const T = THEMES[theme] || THEMES.blue;
-  const { W, H, M } = L;
-  const photoX = (W - L.photo) / 2;
-  const photoBottom = L.photoY + L.photo;
+  const { W, H } = L;
+  const M = Math.round(W * 0.085);
+  const bname = (brand.name || 'Il Raviolo Bottega').toUpperCase();
+  const bweb = brand.web || 'ilraviolo.es';
+  const hexA = (h, a) => { const c = h.replace('#', ''); return `rgba(${parseInt(c.slice(0,2),16)},${parseInt(c.slice(2,4),16)},${parseInt(c.slice(4,6),16)},${a})`; };
 
   const photoBuf = await fetchBuf(imageUrl);
   const logoBuf = await fetchBuf(logoUrl);
-  const photoUri = photoBuf ? await uriCover(photoBuf, L.photo, L.photo) : null;
-  const logoUri = logoBuf ? await uriContain(logoBuf, L.logo) : null;
-  const markUri = logoBuf ? await uriContain(logoBuf, L.markSize) : null;
+  const logoSize = Math.round(W * 0.14);
+  const photoUri = photoBuf ? await uriCover(photoBuf, W, H) : null;     // foto a tutto schermo
+  const logoUri = logoBuf ? await uriContain(logoBuf, logoSize) : null;
 
-  const catY = photoBottom + L.gap;
-  let nameSize = L.name1;
-  let lines = wrapLines(name, nameSize, W - 2 * M);
-  if (lines.length > 1) { nameSize = L.name2; lines = wrapLines(name, nameSize, W - 2 * M); }
-  if (lines.length > 2) lines = lines.slice(0, 2);
-  const lineH = Math.round(nameSize * 1.12);
-  const nameY = catY + L.gap;
-  const nameLastY = nameY + (lines.length - 1) * lineH;
-  const priceY = Math.min(nameLastY + L.priceGap, L.footY - 74);
+  // titolo: bold, max 3 righe, riduce se lungo
+  const titleMax = W - 2 * M;
+  let titleFs = Math.round(W * 0.094);
+  let lines = wrapLines(name, titleFs, titleMax, 0.6);
+  if (lines.length > 2) { titleFs = Math.round(W * 0.075); lines = wrapLines(name, titleFs, titleMax, 0.6); }
+  if (lines.length > 3) lines = lines.slice(0, 3);
+  const lineH = Math.round(titleFs * 1.05);
+  const catFs = Math.round(W * 0.04), priceFs = Math.round(W * 0.125), footFs = Math.round(W * 0.032), brandFs = Math.round(W * 0.042);
 
-  const photoBlock = photoUri
-    ? `<image href="${photoUri}" x="${photoX}" y="${L.photoY}" width="${L.photo}" height="${L.photo}" clip-path="url(#round)"/>
-       <rect x="${photoX}" y="${L.photoY}" width="${L.photo}" height="${L.photo}" rx="46" fill="none" stroke="${T.stroke}" stroke-width="4" opacity="0.6"/>`
-    : `<rect x="${photoX}" y="${L.photoY}" width="${L.photo}" height="${L.photo}" rx="46" fill="${theme === 'gold' ? '#f3d488' : '#0a1f38'}" stroke="${T.stroke}" stroke-width="4" opacity="0.9"/>
-       <text x="${W / 2}" y="${L.photoY + L.photo / 2 + 14}" font-family="Poppins" font-weight="700" font-size="84" fill="${T.fallback}" text-anchor="middle" opacity="0.9" letter-spacing="4">BOTTEGA</text>`;
+  // blocco testo ancorato in basso (sopra il velo)
+  const footY = H - Math.round(M * 0.7);
+  const priceY = footY - footFs - Math.round(W * 0.05);
+  const titleLastY = priceY - Math.round(priceFs * 0.72) - Math.round(W * 0.03);
+  const titleY0 = titleLastY - (lines.length - 1) * lineH;
+  const catY = titleY0 - Math.round(titleFs * 0.78) - Math.round(W * 0.018);
+
+  // header
+  const logoY = Math.round(M * 0.55);
+  const brandY = logoY + logoSize + Math.round(W * 0.05);
+  const badgeH = Math.round(W * 0.07), badgeW = Math.round(W * 0.58), badgeY = brandY + Math.round(W * 0.028);
 
   const nameSvg = lines.map((l, i) =>
-    `<text x="${W / 2}" y="${nameY + i * lineH}" font-family="Poppins" font-weight="700" font-size="${nameSize}" fill="${T.text}" text-anchor="middle">${esc(l)}</text>`
-  ).join('\n  ');
+    `<text x="${W/2}" y="${titleY0 + i*lineH}" font-family="Poppins" font-weight="800" font-size="${titleFs}" fill="#ffffff" text-anchor="middle">${esc(l)}</text>`).join('\n  ');
+
+  const bgBlock = photoUri
+    ? `<image href="${photoUri}" x="0" y="0" width="${W}" height="${H}" preserveAspectRatio="xMidYMid slice"/>`
+    : `<rect width="${W}" height="${H}" fill="url(#bg)"/>`;
 
   const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${T.bg1}"/><stop offset="1" stop-color="${T.bg2}"/></linearGradient>
-    <clipPath id="round"><rect x="${photoX}" y="${L.photoY}" width="${L.photo}" height="${L.photo}" rx="46"/></clipPath>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${b.primary}"/><stop offset="1" stop-color="${b.primary2}"/></linearGradient>
+    <linearGradient id="scrim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0.26" stop-color="${hexA(b.primary2,0)}"/>
+      <stop offset="0.60" stop-color="${hexA(b.primary2,0.72)}"/>
+      <stop offset="1" stop-color="${hexA(b.primary2,0.98)}"/>
+    </linearGradient>
+    <linearGradient id="top" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${hexA(b.primary2,0.82)}"/><stop offset="1" stop-color="${hexA(b.primary2,0)}"/>
+    </linearGradient>
   </defs>
-  <rect width="${W}" height="${H}" fill="url(#bg)"/>
-  ${markUri ? `<image href="${markUri}" x="${(W - L.markSize) / 2}" y="${L.markY}" width="${L.markSize}" height="${L.markSize}" opacity="${T.mark}"/>` : ''}
+  ${bgBlock}
+  <rect x="0" y="${Math.round(H*0.28)}" width="${W}" height="${Math.round(H*0.72)+2}" fill="url(#scrim)"/>
+  <rect x="0" y="0" width="${W}" height="${Math.round(H*0.24)}" fill="url(#top)"/>
 
-  ${logoUri ? `<image href="${logoUri}" x="${W / 2 - L.logo / 2}" y="${L.logoY}" width="${L.logo}" height="${L.logo}"/>` : ''}
-  <text x="${W / 2}" y="${L.brandY}" font-family="Poppins" font-weight="700" font-size="${L.brandSize}" fill="${T.text}" text-anchor="middle" letter-spacing="6">IL RAVIOLO BOTTEGA</text>
-  <rect x="${W / 2 - L.badgeW / 2}" y="${L.badgeY}" width="${L.badgeW}" height="${L.badgeH}" rx="${L.badgeH / 2}" fill="${T.badgeBg}"/>
-  <text x="${W / 2}" y="${L.badgeY + L.badgeH / 2 + L.badgeSize * 0.36}" font-family="Poppins" font-weight="700" font-size="${L.badgeSize}" fill="${T.badgeText}" text-anchor="middle" letter-spacing="3">${esc(badgeText)}</text>
+  ${logoUri ? `<image href="${logoUri}" x="${(W-logoSize)/2}" y="${logoY}" width="${logoSize}" height="${logoSize}"/>` : ''}
+  <text x="${W/2}" y="${brandY}" font-family="Poppins" font-weight="700" font-size="${brandFs}" fill="#ffffff" text-anchor="middle" letter-spacing="6">${esc(bname)}</text>
+  <rect x="${(W-badgeW)/2}" y="${badgeY}" width="${badgeW}" height="${badgeH}" rx="${badgeH/2}" fill="${b.accent}"/>
+  <text x="${W/2}" y="${badgeY + badgeH/2 + Math.round(badgeH*0.34)}" font-family="Poppins" font-weight="700" font-size="${Math.round(W*0.036)}" fill="${b.primary}" text-anchor="middle" letter-spacing="3">${esc(badgeText)}</text>
 
-  ${photoBlock}
-
-  ${category ? `<text x="${W / 2}" y="${catY}" font-family="Poppins" font-weight="600" font-size="${L.catSize}" fill="${T.cat}" text-anchor="middle" letter-spacing="5">${esc(String(category).toUpperCase())}</text>` : ''}
+  ${category ? `<text x="${W/2}" y="${catY}" font-family="Poppins" font-weight="700" font-size="${catFs}" fill="${b.accent}" text-anchor="middle" letter-spacing="5">${esc(String(category).toUpperCase())}</text>` : ''}
   ${nameSvg}
-  <text x="${W / 2}" y="${priceY}" font-family="Poppins" font-weight="700" font-size="${L.priceSize}" fill="${T.price}" text-anchor="middle">${esc(fmtPrice(price))}</text>
-
-  <text x="${W / 2}" y="${L.footY}" font-family="Poppins" font-weight="600" font-size="${L.footSize}" fill="${T.foot}" text-anchor="middle" opacity="0.9">WhatsApp ${esc(whatsapp)}  ·  ilraviolo.es</text>
+  <text x="${W/2}" y="${priceY}" font-family="Poppins" font-weight="800" font-size="${priceFs}" fill="${b.accent}" text-anchor="middle">${esc(fmtPrice(price))}${unit ? `<tspan font-size="${Math.round(priceFs*0.44)}" font-weight="700"> /${esc(unit)}</tspan>` : ''}</text>
+  <text x="${W/2}" y="${footY}" font-family="Poppins" font-weight="600" font-size="${footFs}" fill="#ffffff" text-anchor="middle" opacity="0.92">WhatsApp ${esc(whatsapp)}  ·  ${esc(bweb)}</text>
 </svg>`;
 
   const png = new Resvg(svg, {

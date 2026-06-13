@@ -6,7 +6,7 @@ name: Producto del dia
 # pubblico pronto per lo Stato WhatsApp. Avviabile anche a mano.
 on:
   schedule:
-    - cron: "0 7 * * *"
+    - cron: "0 8 * * *"   # ~09:00 Canarias (verano) — franja matutina óptima (neuromarketing)
   workflow_dispatch:
 
 jobs:
