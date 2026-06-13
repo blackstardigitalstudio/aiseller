@@ -13,10 +13,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Genera catalogo statico da Supabase (data/catalog.json)
+        env:
+          ILRAVIOLO_SUPABASE_KEY: ${{ secrets.ILRAVIOLO_SUPABASE_KEY }}
+        run: node scripts/build-catalog.mjs
+
       - name: Build runtime (dist/)
         run: |
           mkdir -p dist
           cp widget.js index.html app.js styles.css config.js _headers pannello.html aiseller-htaccess.txt installa.html studio.html dist/
+          cp hub.html plan.html creador.html reportes.html ajustes.html panel.html dist/
+          cp hub.webmanifest plan.webmanifest creador.webmanifest reportes.webmanifest ajustes.webmanifest panel.webmanifest panel-sw.js dist/
           cp -r clients assets data dist/
           ls -la dist
 

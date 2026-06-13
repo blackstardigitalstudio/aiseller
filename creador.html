@@ -117,7 +117,9 @@ const bgpre=$('bgpre');PRESETS.forEach(p=>{const b=document.createElement('butto
 function isLight(hex){const c=hex.replace('#','');const r=parseInt(c.substr(0,2),16),g=parseInt(c.substr(2,2),16),b=parseInt(c.substr(4,2),16);return (0.299*r+0.587*g+0.114*b)>150}
 
 // catálogo
-fetch('https://aiseller-blackstar.vercel.app/api/ilraviolo').then(r=>r.json()).then(c=>{
+const API='https://aiseller-blackstar.vercel.app/api/ilraviolo';
+function fetchCat(){return fetch('data/catalog.json?t='+Date.now()).then(r=>{if(!r.ok)throw 0;return r.json()}).catch(()=>fetch('clients/ilraviolo.json?t='+Date.now()).then(r=>r.json())).catch(()=>fetch(API).then(r=>r.json()))}
+fetchCat().then(c=>{
   (c.products||[]).forEach((p,i)=>{const o=document.createElement('option');o.value=i;o.textContent=p.name;o._p=p;$('prod').appendChild(o)});
   window._cat=c.products||[];
 }).catch(()=>{});
