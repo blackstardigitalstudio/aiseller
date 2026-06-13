@@ -16,6 +16,8 @@
   },
   "priceUnitDefault": "ud",
   "publishing": { "postsPerDay": 1, "daysPerWeek": 7, "formats": ["post", "story"] },
+  "timezone": "Atlantic/Canary",
+  "schedule": { "story": ["09:00", "14:00"], "post": ["13:30", "20:30"], "reel": ["20:00"] },
   "themeRotation": ["blue", "blue", "blue", "gold", "gold", "gold"],
   "categoryOrder": ["Pasta fresca", "Embutidos", "Quesos", "Salsas", "Trufa", "Postres", "Focaccia y pizza", "Plato preparado", "Bebidas", "Vino biodinámico", "Licores", "Horno", "Pane", "Harinas", "Complementos"],
   "pillars": {
