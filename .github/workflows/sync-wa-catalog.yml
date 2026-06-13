@@ -23,3 +23,15 @@ jobs:
           ILRAVIOLO_SUPABASE_KEY: ${{ secrets.ILRAVIOLO_SUPABASE_KEY }}
           META_ACCESS_TOKEN:      ${{ secrets.META_ACCESS_TOKEN }}
           WA_CATALOG_ID:          ${{ secrets.WA_CATALOG_ID }}
+
+      # TEMP: verifica capacità del token Cloudflare (R2 + permessi). Da rimuovere.
+      - name: Check Cloudflare (one-off)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          echo "--- token verify ---"
+          curl -s "https://api.cloudflare.com/client/v4/user/tokens/verify" -H "Authorization: Bearer $CF" | head -c 600; echo
+          echo "--- R2 buckets ---"
+          curl -s "https://api.cloudflare.com/client/v4/accounts/$ACC/r2/buckets" -H "Authorization: Bearer $CF" | head -c 800; echo
+        env:
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACC: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
