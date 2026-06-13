@@ -56,7 +56,15 @@ if (!items.length) { console.error('❌ Nessun prodotto con foto disponibile'); 
 
 // rotazione deterministica per data
 const dayNumber = Math.floor(Date.now() / 86400000);
-const p = items[dayNumber % items.length];
+const ymdToday = new Date(dayNumber * 86400000).toISOString().slice(0, 10);
+// Segue il PIANO settimanale (Fase 5) se presente: usa il prodotto/tema pianificato per oggi.
+let p = null, planTheme = null;
+try {
+  const planBase = cfg.blobBase || 'https://hziutulpistrgear.public.blob.vercel-storage.com';
+  const pr = await fetch(planBase + '/plan/semana-actual.json?t=' + Date.now());
+  if (pr.ok) { const plan = await pr.json(); const e = (plan.days || []).find(d => d.date === ymdToday); if (e && e.productId) { const f = items.find(it => String(it[F.id]) === String(e.productId)); if (f) { p = f; planTheme = e.theme; console.log('📋 Seguo il piano settimanale per oggi.'); } } }
+} catch (e) {}
+if (!p) p = items[dayNumber % items.length];
 const NAME = p[F.name], CAT = p[F.category], IMG = p[F.image], PID = p[F.id];
 const price = (isTrue(p[F.promoActive]) && p[F.promoPrice]) ? p[F.promoPrice] : p[F.price];
 const unit = (F.unit && p[F.unit]) ? String(p[F.unit]).trim() : (cfg.priceUnitDefault || '');
@@ -66,7 +74,7 @@ console.log(`⭐ Prodotto del giorno (${dayNumber % items.length + 1}/${items.le
 // --- 2. Genera storia (9:16) e post (4:5) ---
 // Sfondo in rotazione secondo config (es. 3 azzurro / 3 oro).
 const rotArr = cfg.themeRotation || ['blue', 'blue', 'blue', 'gold', 'gold', 'gold'];
-const theme = rotArr[dayNumber % rotArr.length];
+const theme = planTheme || rotArr[dayNumber % rotArr.length];
 const common = { name: NAME, price, imageUrl: IMG, category: CAT, logoUrl: LOGO, brand: BRAND, theme, whatsapp: WA, unit };
 const storyJpg = await generateStory({ ...common, format: 'story' });
 const feedJpg  = await generateStory({ ...common, format: 'feed' });
