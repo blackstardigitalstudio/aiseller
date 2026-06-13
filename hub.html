@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Centro de control · Il Raviolo Bottega</title>
+<meta name="theme-color" content="#0c2440">
+<link rel="manifest" href="hub.webmanifest">
+<style>
+  :root{--navy:#0c2440;--navy2:#06182c;--gold:#e8b84f;--bg:#eef0f4;--card:#fff;--line:#e4e7ee;--muted:#7a8699}
+  *{box-sizing:border-box}html,body{margin:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--navy);padding-bottom:env(safe-area-inset-bottom)}
+  header{background:linear-gradient(180deg,var(--navy),var(--navy2));color:#fff;padding:16px 18px;display:flex;align-items:center;gap:12px}
+  header img{width:44px;height:44px;border-radius:10px}
+  header .t{font-weight:800;font-size:17px;line-height:1.1}header .s{font-size:12px;color:#cdd6e4}
+  .wrap{max-width:1000px;margin:0 auto;padding:16px}
+  .nav{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+  .nav a{text-decoration:none;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 8px;text-align:center;color:var(--navy);font-weight:700;font-size:13px;box-shadow:0 3px 10px rgba(12,36,64,.06)}
+  .nav a .ic{font-size:22px;display:block;margin-bottom:4px}
+  h2{font-size:13px;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);margin:20px 4px 10px}
+  .hoy{display:grid;grid-template-columns:230px 1fr;gap:16px;background:var(--card);border-radius:18px;padding:16px;box-shadow:0 6px 22px rgba(12,36,64,.09)}
+  .prev{aspect-ratio:4/5;border-radius:14px;background-size:84px;background-repeat:repeat;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:14px;color:#fff;text-align:center;position:relative;overflow:hidden}
+  .prev.blue{background-color:#0c2440}.prev.gold{background-color:#e3b659;color:#0c2440}
+  .prev img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .prev .ov{position:relative;z-index:2;text-shadow:0 2px 8px rgba(0,0,0,.5)}
+  .prev .pp{font-weight:800;font-size:20px}
+  .hoy .pill{color:var(--gold);font-weight:800;font-size:12px;letter-spacing:1.5px;text-transform:uppercase}
+  .hoy .nm{font-size:24px;font-weight:800;line-height:1.15;margin:2px 0 6px}
+  .hoy .pr{font-size:24px;font-weight:800}
+  .hoy .cap{font-size:13px;color:#33415c;background:#f7f5ef;border-radius:10px;padding:10px;margin-top:10px;white-space:pre-wrap;max-height:120px;overflow:auto}
+  .week{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+  .d{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px;min-height:92px;display:flex;flex-direction:column;gap:3px}
+  .d .dd{font-size:11px;font-weight:800;color:var(--muted)}
+  .d.today{outline:2px solid var(--gold)}
+  .d .dot{width:8px;height:8px;border-radius:50%}.dot.blue{background:var(--navy)}.dot.gold{background:var(--gold)}
+  .d .pl{font-size:10px;font-weight:700;color:#b98f25;line-height:1.05}
+  .d .nn{font-size:11.5px;font-weight:600;line-height:1.15}
+  .wk{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px}
+  .wk h4{margin:0 0 8px;font-size:13px}
+  .wk .li{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;padding:3px 0;border-bottom:1px solid #f1f3f7}
+  .wk .li b{font-weight:700}.wk .li .day{color:var(--muted);min-width:74px}
+  .status{font-size:12px;color:var(--muted);text-align:center;margin:18px 4px}
+  footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
+  @media(max-width:620px){.hoy{grid-template-columns:1fr}.week{grid-template-columns:repeat(4,1fr)}.nav{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<header><img src="https://ilraviolo.es/assets/logo.webp" alt=""><div><div class="t">Centro de control</div><div class="s">Il Raviolo Bottega · todo lo que el motor publicará</div></div></header>
+<div class="wrap">
+  <div class="nav">
+    <a href="plan.html"><span class="ic">📅</span>Plan anual</a>
+    <a href="creador.html"><span class="ic">🎨</span>Editor</a>
+    <a href="ajustes.html"><span class="ic">⚙️</span>Ajustes</a>
+    <a href="panel.html"><span class="ic">📊</span>Panel</a>
+  </div>
+
+  <h2>Hoy se publica</h2>
+  <div id="hoy" class="hoy"><div class="status">Cargando…</div></div>
+
+  <h2>Esta semana</h2>
+  <div id="week" class="week"></div>
+
+  <h2>Próximas semanas</h2>
+  <div id="weeks"></div>
+
+  <div class="status" id="status"></div>
+</div>
+<footer>Made in Italy — Blackstar Digital Studio</footer>
+<script>
+const API='https://aiseller-blackstar.vercel.app/api/ilraviolo';
+const WA='671 085 862', SITE='ilraviolo.es/bottega', CITY='Las Palmas de Gran Canaria', LOGO='https://ilraviolo.es/assets/logo.webp';
+const CAT_ORDER=['Pasta fresca','Embutidos','Quesos','Salsas','Trufa','Postres','Focaccia y pizza','Plato preparado','Bebidas','Vino biodinámico','Licores','Horno','Pane','Harinas','Complementos'];
+const catIdx=c=>{const i=CAT_ORDER.indexOf(c);return i<0?99:i};
+const PILLARS={1:{l:'Lunes de pasta',cat:'Pasta fresca',intro:'Lunes de pasta fresca 🍝'},2:{l:'Producto del día',cat:null,intro:'Producto del día'},3:{l:'Detrás de la bottega',cat:null,bts:true,intro:'Hoy en la bottega 👀'},4:{l:'Maridaje',cat:'Quesos',intro:'El maridaje perfecto 🧀🍷'},5:{l:'Plan de finde',cat:'Focaccia y pizza',intro:'Plan de finde 🍕'},6:{l:'Tabla italiana',cat:'Embutidos',intro:'Tabla para compartir 🥓'},0:{l:'Domingo dulce',cat:'Postres',intro:'Domingo dulce 🍰'}};
+const fmt=v=>{const n=parseFloat(String(v).replace(',','.'));return (isFinite(n)?n:0).toFixed(2).replace('.',',')+' €'};
+const dn0=Math.floor(Date.now()/864e5);
+const theme=dn=>((dn%6)<3)?'blue':'gold';
+let PROD=[],BYCAT={};
+function pick(dn){const wd=new Date(dn*864e5).getUTCDay(),p=PILLARS[wd];let prod=null;
+  if(p.cat&&BYCAT[p.cat]&&BYCAT[p.cat].length)prod=BYCAT[p.cat][dn%BYCAT[p.cat].length];
+  if(!prod&&!p.bts&&PROD.length)prod=PROD[dn%PROD.length];
+  const unit=prod&&prod.unit?` /${prod.unit}`:'';
+  return {pillar:p.l,intro:p.intro,bts:!!p.bts,theme:theme(dn),prod,price:prod?fmt(prod.price)+unit:'',name:prod?prod.name:'',cat:prod?prod.category:'',img:prod?prod.imageUrl:''};
+}
+function caption(x){return x.bts?`${x.intro}\n\nDetrás de cada producto hay tradición italiana y trabajo artesanal. Pídelo por WhatsApp 📲 ${WA}\n📍 ${CITY} · ${SITE}`:`${x.intro}: ${x.name} — ${x.price}\n${x.cat} · recién hecho\n\n¿Te lo guardo? Pídelo por WhatsApp 📲 ${WA}\n📍 ${CITY} · ${SITE}`;}
+const dLabel=dn=>new Date(dn*864e5).toLocaleDateString('es-ES',{weekday:'short',day:'numeric',month:'short'});
+
+fetch(API).then(r=>r.json()).then(c=>{
+  PROD=(c.products||[]).filter(p=>p.imageUrl);PROD.sort((a,b)=>catIdx(a.category)-catIdx(b.category)||String(a.name).localeCompare(b.name));
+  BYCAT={};PROD.forEach(p=>{(BYCAT[p.category]=BYCAT[p.category]||[]).push(p)});
+  if(!PROD.length){document.getElementById('hoy').innerHTML='<div class="status">No hay productos con foto.</div>';return}
+  renderHoy();renderWeek();renderWeeks();
+  document.getElementById('status').textContent=`Motor activo · ${PROD.length} productos · plan generado por reglas (gratis), cada domingo se renueva.`;
+}).catch(()=>{document.getElementById('hoy').innerHTML='<div class="status">No se pudo cargar el catálogo.</div>'});
+
+function prevBox(x){return `<div class="prev ${x.theme}" style="background-image:url('${LOGO}')">${x.img?`<img src="${x.img}" alt="">`:''}<div class="ov"><div class="pp">${x.price}</div></div></div>`}
+function renderHoy(){const x=pick(dn0);
+  document.getElementById('hoy').innerHTML=prevBox(x)+`<div><div class="pill">${x.pillar}</div><div class="nm">${x.name||'Detrás de la bottega'}</div><div class="pr">${x.price}</div><div class="cap">${caption(x)}</div></div>`;
+}
+function renderWeek(){const w=document.getElementById('week');w.innerHTML='';for(let i=0;i<7;i++){const dn=dn0+i,x=pick(dn);const el=document.createElement('div');el.className='d'+(i===0?' today':'');
+  el.innerHTML=`<span class="dd">${i===0?'HOY':dLabel(dn)}</span><span class="dot ${x.theme}"></span><span class="pl">${x.pillar}</span><span class="nn">${x.name||'—'}</span>`;w.appendChild(el);}}
+function renderWeeks(){const c=document.getElementById('weeks');c.innerHTML='';
+  // 4 settimane successive (a partire da lun prossimo)
+  let start=dn0+ (7-((new Date(dn0*864e5).getUTCDay()+6)%7)); // prossimo lunedì
+  for(let wk=0;wk<4;wk++){const from=start+wk*7;const box=document.createElement('div');box.className='wk';
+    let html=`<h4>Semana del ${dLabel(from)}</h4>`;
+    for(let i=0;i<7;i++){const dn=from+i,x=pick(dn);html+=`<div class="li"><span class="day">${dLabel(dn)}</span><span class="pl" style="flex:0 0 auto">${x.pillar}</span><b>${x.name||'—'}</b><span>${x.price}</span></div>`;}
+    box.innerHTML=html;c.appendChild(box);}
+}
+if('serviceWorker' in navigator&&location.protocol.startsWith('http')){navigator.serviceWorker.register('panel-sw.js').catch(()=>{})}
+</script>
+</body>
+</html>
