@@ -59,13 +59,15 @@ const dayNumber = Math.floor(Date.now() / 86400000);
 const p = items[dayNumber % items.length];
 const NAME = p[F.name], CAT = p[F.category], IMG = p[F.image], PID = p[F.id];
 const price = (isTrue(p[F.promoActive]) && p[F.promoPrice]) ? p[F.promoPrice] : p[F.price];
+const unit = (F.unit && p[F.unit]) ? String(p[F.unit]).trim() : (cfg.priceUnitDefault || '');
+const priceStr = fmtPrice(price) + (unit ? ` /${unit}` : '');
 console.log(`⭐ Prodotto del giorno (${dayNumber % items.length + 1}/${items.length}): ${NAME} — ${CAT} — ${fmtPrice(price)}`);
 
 // --- 2. Genera storia (9:16) e post (4:5) ---
 // Sfondo in rotazione secondo config (es. 3 azzurro / 3 oro).
 const rotArr = cfg.themeRotation || ['blue', 'blue', 'blue', 'gold', 'gold', 'gold'];
 const theme = rotArr[dayNumber % rotArr.length];
-const common = { name: NAME, price, imageUrl: IMG, category: CAT, logoUrl: LOGO, brand: BRAND, theme, whatsapp: WA };
+const common = { name: NAME, price, imageUrl: IMG, category: CAT, logoUrl: LOGO, brand: BRAND, theme, whatsapp: WA, unit };
 const storyJpg = await generateStory({ ...common, format: 'story' });
 const feedJpg  = await generateStory({ ...common, format: 'feed' });
 console.log(`🖼️  Immagini generate (tema ${theme}): storia ${(storyJpg.length/1024).toFixed(0)}KB, post ${(feedJpg.length/1024).toFixed(0)}KB`);
@@ -90,7 +92,7 @@ const tags = [...(HASHTAGS.brand || []), ...cats, ...rot(HASHTAGS.local, dayNumb
 const tpl = cfg.captionTemplate || '🍝 {intro}: {name} — {price}\n{category}\n📲 {whatsapp} · {web}';
 const caption = tpl
   .replace('{intro}', 'Producto del día en ' + BRAND.name)
-  .replace('{name}', NAME).replace('{price}', fmtPrice(price)).replace('{category}', CAT)
+  .replace('{name}', NAME).replace('{price}', priceStr).replace('{category}', CAT)
   .replace('{whatsapp}', WA).replace('{city}', BRAND.city).replace('{web}', BRAND.web)
   + '\n\n' + tags.join(' ');
 
@@ -118,7 +120,7 @@ if (WEBHOOK) {
     const r = await fetch(WEBHOOK, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        productName: NAME, price: fmtPrice(price), category: CAT, theme,
+        productName: NAME, price: priceStr, category: CAT, theme,
         caption, storyUrl, feedUrl,           // storyUrl = 9:16 (storie) · feedUrl = 4:5 (post)
         date: ymd,
       }),

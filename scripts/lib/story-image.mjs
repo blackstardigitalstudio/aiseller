@@ -69,7 +69,7 @@ async function uriContain(buf, size) {
   return 'data:image/png;base64,' + out.toString('base64');
 }
 
-export async function generateStory({ name, price, imageUrl, category, badgeText = 'PRODUCTO DEL DÍA', logoUrl, whatsapp = '671 085 862', format = 'story', theme = 'blue', brand = {} }) {
+export async function generateStory({ name, price, imageUrl, category, badgeText = 'PRODUCTO DEL DÍA', logoUrl, whatsapp = '671 085 862', format = 'story', theme = 'blue', brand = {}, unit = '' }) {
   const L = LAYOUTS[format] || LAYOUTS.story;
   const b = { ...DEFAULT_BRAND, ...(brand.colors || brand) };
   logoUrl = logoUrl || brand.logo;
@@ -138,7 +138,7 @@ export async function generateStory({ name, price, imageUrl, category, badgeText
 
   ${category ? `<text x="${W/2}" y="${catY}" font-family="Poppins" font-weight="700" font-size="${catFs}" fill="${b.accent}" text-anchor="middle" letter-spacing="5">${esc(String(category).toUpperCase())}</text>` : ''}
   ${nameSvg}
-  <text x="${W/2}" y="${priceY}" font-family="Poppins" font-weight="800" font-size="${priceFs}" fill="${b.accent}" text-anchor="middle">${esc(fmtPrice(price))}</text>
+  <text x="${W/2}" y="${priceY}" font-family="Poppins" font-weight="800" font-size="${priceFs}" fill="${b.accent}" text-anchor="middle">${esc(fmtPrice(price))}${unit ? `<tspan font-size="${Math.round(priceFs*0.44)}" font-weight="700"> /${esc(unit)}</tspan>` : ''}</text>
   <text x="${W/2}" y="${footY}" font-family="Poppins" font-weight="600" font-size="${footFs}" fill="#ffffff" text-anchor="middle" opacity="0.92">WhatsApp ${esc(whatsapp)}  ·  ${esc(bweb)}</text>
 </svg>`;
 
