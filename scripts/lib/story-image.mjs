@@ -22,9 +22,9 @@ const NAVY = '#0c2440', GOLD = '#e8b84f';
 // temi colore (testi invertiti per leggibilità)
 const THEMES = {
   blue: { bg1: '#0c2440', bg2: '#06182c', text: '#ffffff', cat: GOLD, price: GOLD,
-    badgeBg: GOLD, badgeText: NAVY, stroke: GOLD, foot: '#ffffff', mark: 0.08, fallback: GOLD },
+    badgeBg: GOLD, badgeText: NAVY, stroke: GOLD, foot: '#ffffff', pat: 0.13, fallback: GOLD },
   gold: { bg1: '#edc366', bg2: '#cf9d35', text: NAVY, cat: NAVY, price: NAVY,
-    badgeBg: NAVY, badgeText: GOLD, stroke: NAVY, foot: NAVY, mark: 0.10, fallback: NAVY },
+    badgeBg: NAVY, badgeText: GOLD, stroke: NAVY, foot: NAVY, pat: 0.16, fallback: NAVY },
 };
 
 // preset per formato
@@ -81,7 +81,7 @@ export async function generateStory({ name, price, imageUrl, category, badgeText
   const logoBuf = await fetchBuf(logoUrl);
   const photoUri = photoBuf ? await uriCover(photoBuf, L.photo, L.photo) : null;
   const logoUri = logoBuf ? await uriContain(logoBuf, L.logo) : null;
-  const markUri = logoBuf ? await uriContain(logoBuf, L.markSize) : null;
+  const tileUri = logoBuf ? await uriContain(logoBuf, 128) : null; // tassello per il motivo ripetuto
 
   const catY = photoBottom + L.gap;
   let nameSize = L.name1;
@@ -107,9 +107,12 @@ export async function generateStory({ name, price, imageUrl, category, badgeText
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${T.bg1}"/><stop offset="1" stop-color="${T.bg2}"/></linearGradient>
     <clipPath id="round"><rect x="${photoX}" y="${L.photoY}" width="${L.photo}" height="${L.photo}" rx="46"/></clipPath>
+    ${tileUri ? `<pattern id="logopat" x="0" y="0" width="176" height="176" patternUnits="userSpaceOnUse" patternTransform="rotate(0)">
+      <image href="${tileUri}" x="24" y="24" width="128" height="128" opacity="${T.pat}"/>
+    </pattern>` : ''}
   </defs>
   <rect width="${W}" height="${H}" fill="url(#bg)"/>
-  ${markUri ? `<image href="${markUri}" x="${(W - L.markSize) / 2}" y="${L.markY}" width="${L.markSize}" height="${L.markSize}" opacity="${T.mark}"/>` : ''}
+  ${tileUri ? `<rect width="${W}" height="${H}" fill="url(#logopat)"/>` : ''}
 
   ${logoUri ? `<image href="${logoUri}" x="${W / 2 - L.logo / 2}" y="${L.logoY}" width="${L.logo}" height="${L.logo}"/>` : ''}
   <text x="${W / 2}" y="${L.brandY}" font-family="Poppins" font-weight="700" font-size="${L.brandSize}" fill="${T.text}" text-anchor="middle" letter-spacing="6">IL RAVIOLO BOTTEGA</text>
