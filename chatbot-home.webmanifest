@@ -1,0 +1,13 @@
+{
+  "name": "AI Seller · Il mio chatbot",
+  "short_name": "AI Seller",
+  "description": "Home del tuo venditore AI: Studio, Pannello di controllo e guida installazione.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#0b0e16",
+  "theme_color": "#0b0e16",
+  "icons": [
+    { "src": "https://ilraviolo.es/assets/logo.webp", "sizes": "512x512", "type": "image/webp", "purpose": "any" }
+  ]
+}
