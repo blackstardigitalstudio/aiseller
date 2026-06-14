@@ -533,6 +533,7 @@
       && (explicit || (oneWord && NOTNAME.indexOf(low) < 0));
     if (looksLikeName) {
       state.profile.name = candidate;
+      memSetName(candidate);   // ricorda il nome per le prossime visite
       clearQuick();
       await proceedAfterName(false);
       return true;     // era il nome → gestito
@@ -551,6 +552,89 @@
       await botMsg({ it: "Tranquillo, nessun problema 🙂", es: "Tranquilo, sin problema 🙂", en: "No worries at all 🙂" }[LANG], 300);
     }
     askProfilingStep();
+  }
+
+  /* =========================================================
+     MEMORIA CLIENTE (localStorage, first-party, NIENTE invii esterni)
+     Ricorda nome, lingua, prodotti scelti/ordinati e visite, così alla
+     visita dopo saluta per nome e personalizza i consigli (neuromarketing).
+     Disattivabile col flag config remember:false. Resettabile da "Non sono io".
+     ========================================================= */
+  var MEM = (function () {
+    function key() {
+      var b = KF_DATA._brand || KF_DATA.tenant || location.hostname || "aiseller";
+      return "aiseller_mem_" + String(b).toLowerCase().replace(/[^a-z0-9]+/g, "_");
+    }
+    function load() { try { return JSON.parse(localStorage.getItem(key()) || "null") || {}; } catch (e) { return {}; } }
+    function save(m) { try { localStorage.setItem(key(), JSON.stringify(m)); } catch (e) {} }
+    return { get: load, save: save, clear: function () { try { localStorage.removeItem(key()); } catch (e) {} } };
+  })();
+  function memOn() { return KF_DATA.remember !== false; }
+  function memSetName(n) { if (!memOn() || !n) return; var m = MEM.get(); m.name = n; m.lang = LANG; MEM.save(m); }
+  function memTouchVisit() {
+    if (!memOn()) return;
+    var m = MEM.get(), now = Date.now();
+    m.visits = (m.visits || 0) + 1; if (!m.firstSeen) m.firstSeen = now; m.lastSeen = now; m.lang = LANG;
+    MEM.save(m);
+  }
+  // registra l'interesse (aggiunta alla lista) e, se ordered, l'ordine vero e proprio: segnale più forte
+  function memRecordItem(p, ordered) {
+    if (!memOn() || !p || !p.name) return;
+    var m = MEM.get(); m.items = m.items || {};
+    var it = m.items[p.name] || { name: p.name, cat: p.category || "", added: 0, ordered: 0 };
+    it.added++; if (ordered) it.ordered++; it.last = Date.now();
+    m.items[p.name] = it; MEM.save(m);
+  }
+  // prodotto preferito = più ordinato/aggiunto (l'ordine pesa doppio)
+  function memTopProduct() {
+    var m = MEM.get(), items = m.items || {}, best = null, score = -1;
+    Object.keys(items).forEach(function (k) {
+      var it = items[k], s = (it.ordered || 0) * 2 + (it.added || 0);
+      if (s > score) { score = s; best = it; }
+    });
+    return best;   // {name, cat, added, ordered} oppure null
+  }
+  // saluto al cliente che TORNA: per nome + aggancio allo storico (rifare o novità) + "non sono io" (privacy/reset)
+  async function welcomeBack(mem) {
+    var n = nm();
+    await botMsg(pickOne({
+      it: ["Bentornato, " + n + "! 😊", "Ciao " + n + ", di nuovo qui 🙌", "Che bello rivederti, " + n + "! 😊"],
+      es: ["¡Bienvenido de nuevo, " + n + "! 😊", "¡Hola " + n + ", por aquí otra vez! 🙌", "¡Qué bien verte, " + n + "! 😊"],
+      en: ["Welcome back, " + n + "! 😊", "Hi " + n + ", good to see you again 🙌", "Great to see you again, " + n + "! 😊"]
+    }[LANG]), 420);
+    var fav = memTopProduct();
+    var favProd = fav ? (D.products || []).find(function (x) { return x.name === fav.name; }) : null;
+    var notMe = { it: "Non sono " + n, es: "No soy " + n, en: "Not " + n }[LANG];
+    if (favProd) {
+      await botMsg({
+        it: "L'ultima volta avevi scelto " + favProd.name + ". Vuoi rifare, o ti propongo qualcosa di nuovo?",
+        es: "La última vez elegiste " + favProd.name + ". ¿Repetimos o te propongo algo nuevo?",
+        en: "Last time you chose " + favProd.name + ". Repeat, or want something new?"
+      }[LANG], 650);
+      var repeat = { it: "Rifaccio: " + favProd.name, es: "Repito: " + favProd.name, en: "Repeat: " + favProd.name }[LANG];
+      var fresh = { it: "Qualcosa di nuovo", es: "Algo nuevo", en: "Something new" }[LANG];
+      quickReplies([
+        { label: repeat, onClick: async () => { clearQuick(); userMsg(repeat); state.profile.category = favProd.category; if (hasCrossSell()) await addToLista(favProd); else recommend(); } },
+        { label: fresh, onClick: async () => { clearQuick(); userMsg(fresh); askProfilingStep(); } },
+        { label: notMe, onClick: () => { clearQuick(); userMsg(notMe); forgetMe(); } }
+      ]);
+    } else {
+      var go = { it: "Iniziamo", es: "Empezamos", en: "Let's start" }[LANG];
+      await botMsg({ it: "Ripartiamo? Dimmi pure cosa cerchi 😊", es: "¿Seguimos? Dime qué buscas 😊", en: "Shall we continue? Tell me what you're after 😊" }[LANG], 500);
+      quickReplies([
+        { label: go, onClick: async () => { clearQuick(); userMsg(go); askProfilingStep(); } },
+        { label: notMe, onClick: () => { clearQuick(); userMsg(notMe); forgetMe(); } }
+      ]);
+    }
+  }
+  // "Non sono io" → cancella la memoria locale e riparte pulito (diritto all'oblio, tutto lato cliente)
+  function forgetMe() {
+    MEM.clear();
+    state.profile = {}; state.lista = []; updateCartBar();
+    (async function () {
+      await botMsg({ it: "Fatto, ho azzerato tutto 🧽 Ricominciamo!", es: "Listo, lo he borrado todo 🧽 ¡Empezamos de nuevo!", en: "Done, I've cleared everything 🧽 Let's start fresh!" }[LANG], 400);
+      if (KF_DATA.askName !== false) askNameStep(); else askProfilingStep();
+    })();
   }
 
   function botMsg(text, delay = 600) {
@@ -799,6 +883,13 @@
      ========================================================= */
   async function startConversation() {
     state.engaged = true;
+    var mem = memOn() ? MEM.get() : {};
+    memTouchVisit();
+    if (memOn() && mem.name && !nm()) {           // cliente che TORNA: lo riconosce e salta il "benvenuto" generico
+      state.profile.name = mem.name;
+      await welcomeBack(mem);
+      return;
+    }
     await botMsg(D.greetings[LANG], 500);
     if (KF_DATA.askName !== false && !nm()) { askNameStep(); return; }   // chiede il nome (vicinanza), poi profila
     askProfilingStep();
@@ -1567,6 +1658,7 @@ CATALOGO:\n${cat}`;
     if (p.lead) KF_DATA.lead = p.lead;           // { whatsapp, phone, bookText, cta }
     if (p.character !== undefined) KF_DATA.character = p.character;   // {rest,point,pointBack,thumb,blink,face,finger} oppure false = nessuna mascotte
     if (p.askName !== undefined) KF_DATA.askName = p.askName;   // chiedere il nome a inizio chat (default sì)
+    if (p.remember !== undefined) KF_DATA.remember = p.remember;   // memoria cliente via localStorage (default sì); false = disattiva
     if (p.dark !== undefined) KF_DATA.dark = p.dark;            // tema chat scuro/chiaro come il sito
     if (p.bg) KF_DATA.bg = p.bg;                                // colore di sfondo del sito → superficie chat
     if (p.accent) KF_DATA.accent = p.accent;
@@ -1775,6 +1867,7 @@ CATALOGO:\n${cat}`;
   // aggiunge alla lista e propone l'abbinamento (catena cross-sell)
   async function addToLista(p) {
     if (!state.lista.some(i => i.name === p.name)) state.lista.push({ name: p.name, category: p.category });
+    memRecordItem(p, false);   // memoria cliente: segna l'interesse per questo prodotto
     updateCartBar();   // la barra carrello fissa si aggiorna subito (sempre in primo piano)
     await botMsg(tline({ es: "Añadido: " + p.name + " ✅", it: "Aggiunto: " + p.name + " ✅", en: "Added: " + p.name + " ✅" }), 450);
     var prep = prepFor(p);
@@ -1861,6 +1954,7 @@ CATALOGO:\n${cat}`;
     if (L.whatsapp) u = "https://wa.me/" + L.whatsapp.replace(/[^0-9]/g, "") + "?text=" + encodeURIComponent(body);
     else if (L.phone) u = "tel:" + L.phone.replace(/[^0-9+]/g, "");
     if (!u) return;
+    state.lista.forEach(function (i) { memRecordItem(i, true); });   // memoria cliente: ordine inviato = segnale forte
     try { parent.postMessage({ aiseller: "lead", service: state.lista.map(i => i.name).join(", "), brand: KF_DATA._brand || "" }, "*"); } catch (e) {}
     window.open(u, "_blank");
   }
