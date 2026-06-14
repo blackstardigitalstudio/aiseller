@@ -1701,28 +1701,40 @@ CATALOGO:\n${cat}`;
     { m: /vino|tinto|birra|cerveza|nero|montepulciano|primitivo|trebbiano|lambrusco/i,
       w: ["queso", "embutido", "salumi", "postre", "dolce", "tiramisu"], why: null }
   ];
+  function _norm(s) { return String(s == null ? "" : s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""); }   // minuscolo + senza accenti (ragù = ragú = ragu)
   function nameHit(prod, kw) {
-    var hay = ((prod.name || "") + " " + (Array.isArray(prod.keys) ? prod.keys.join(" ") : "") + " " + (prod.category || "")).toLowerCase();
-    return hay.indexOf(kw.toLowerCase()) >= 0;
+    var hay = _norm((prod.name || "") + " " + (Array.isArray(prod.keys) ? prod.keys.join(" ") : "") + " " + (prod.category || ""));
+    return hay.indexOf(_norm(kw)) >= 0;
   }
   function pairEntry(p) {
     var hay = (p.name || "") + " " + (p.category || "") + " " + (Array.isArray(p.keys) ? p.keys.join(" ") : "");
     for (var i = 0; i < FOOD_PAIRINGS.length; i++) { try { if (FOOD_PAIRINGS[i].m.test(hay)) return FOOD_PAIRINGS[i]; } catch (e) {} }
     return null;
   }
-  // sceglie il complemento GIUSTO e DISPONIBILE in catalogo per il prodotto p
+  // sceglie il complemento GIUSTO e DISPONIBILE — MAI la stessa categoria (un raviolo non si abbina a un raviolo)
   function bestComplement(p) {
     var entry = pairEntry(p), kws = entry ? entry.w : [];
-    for (var i = 0; i < kws.length; i++) {
-      var kw = kws[i];
-      var cand = (D.products || []).find(function (q) {
-        return q.name !== p.name && !state.lista.some(function (it) { return it.name === q.name; }) && nameHit(q, kw);
-      });
-      if (cand) return { product: cand, entry: entry, matchedKw: kw };
-    }
-    // fallback: la regola di categoria della config (vecchio comportamento), se c'è
+    var inLista = function (n) { return state.lista.some(function (it) { return it.name === n; }); };
     var rule = (D.crossSell || {})[p.category];
-    if (rule && rule.suggest) { var sug = bestProductOf(rule.suggest); if (sug) return { product: sug, entry: null, ruleP: rule.pitch }; }
+    // 1) categoria-complemento dalla config (es. Pasta fresca → Salsas) — è SEMPRE una categoria diversa
+    if (rule && rule.suggest && rule.suggest !== p.category) {
+      var pool = (D.products || []).filter(function (q) { return q.category === rule.suggest && !inLista(q.name); });
+      if (pool.length) {
+        for (var i = 0; i < kws.length; i++) {                                   // tra i complementi, scegli il culinariamente giusto (es. ragù per ravioli di carne)
+          var hit = pool.find(function (q) { return nameHit(q, kws[i]); });
+          if (hit) return { product: hit, entry: entry };
+        }
+        pool.sort(function (a, b) { return (b.badge ? 1 : 0) - (a.badge ? 1 : 0); });
+        return { product: pool[0], entry: null, ruleP: rule.pitch };             // altrimenti il migliore del reparto, con la frase della config
+      }
+    }
+    // 2) fallback: parole culinarie su tutto il catalogo, ma MAI la stessa categoria del prodotto scelto
+    for (var j = 0; j < kws.length; j++) {
+      var cand = (D.products || []).find(function (q) { return q.category !== p.category && !inLista(q.name) && nameHit(q, kws[j]); });
+      if (cand) return { product: cand, entry: entry };
+    }
+    // 3) ultima spiaggia: regola di categoria semplice
+    if (rule && rule.suggest && rule.suggest !== p.category) { var sug = bestProductOf(rule.suggest); if (sug) return { product: sug, entry: null, ruleP: rule.pitch }; }
     return null;
   }
   // trova il primo prodotto disponibile per un gruppo di parole-chiave (per il combo vino+dolce)

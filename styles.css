@@ -256,7 +256,9 @@ body.chat-dark .pointer-bubble{color:#1d2330}
 }
 @media(max-width:760px){
   /* su mobile: in piedi più piccola, all'angolo basso-sinistra della sheet */
-  .chat-pointer{right:auto;left:8px;bottom:60px;height:clamp(104px,17dvh,132px)}
+  .chat-pointer{right:auto;left:4px;bottom:56px;height:clamp(88px,14dvh,112px)}
+  /* la card puntata scivola a destra: la mascotte NON la copre più (le lascia la corsia a sinistra) */
+  .chat-panel.pointing .msg-product.kaya-target{margin-left:78px;max-width:calc(100% - 78px)}
 }
 /* prodotto evidenziato = "la scelta di Kaya" */
 .msg-product.kaya-pick{border:2px solid var(--gold);position:relative;margin-top:8px;animation:pickPulse 1.3s ease 2}
