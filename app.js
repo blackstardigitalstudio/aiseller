@@ -996,9 +996,9 @@
   // frase della NUVOLETTA del personaggio (consiglio personale sul prodotto scelto)
   function adviceLine(p) {
     const base = isLead() ? pickOne({
-      es: [`Para tu caso, ${p.name} es justo lo que necesitas — te lo digo de corazón 👇`, `Si fueras cliente mío de toda la vida te diría: ${p.name}. Lo reservas en 10 seg 👇`, `${p.name} es lo tuyo, de verdad. Lo dejas listo en nada 👇`],
-      en: [`For your case, ${p.name} is exactly what you need — straight up 👇`, `If you were a regular of mine I'd say: ${p.name}. Book it in 10 sec 👇`, `${p.name} is the one for you, honestly. Sorted in seconds 👇`],
-      it: [`Per il tuo caso ${p.name} è proprio quello che ti serve — te lo dico col cuore 👇`, `Se fossi un mio cliente di sempre ti direi: ${p.name}. Lo prenoti in 10 secondi 👇`, `${p.name} è la cosa giusta per te, davvero. Lo sistemi in un attimo 👇`]
+      es: [`Para tu caso, ${p.name} es justo lo que necesitas. Escríbeme aquí abajo y te respondo yo, sin compromiso 👇`, `Te lo digo de corazón: ${p.name}. Toca el botón de abajo y lo dejamos listo en 1 min 👇`, `${p.name} es lo tuyo, de verdad. Escríbenos ahora y te atendemos enseguida 👇`],
+      en: [`For your case, ${p.name} is exactly what you need. Message me below and I'll reply myself, no strings 👇`, `Straight up: ${p.name}. Tap the button below and we'll sort it in 1 min 👇`, `${p.name} is the one for you. Message us now and we'll get right back to you 👇`],
+      it: [`Per il tuo caso ${p.name} è proprio quello che ti serve. Scrivimi qui sotto e ti rispondo io, senza impegno 👇`, `Te lo dico col cuore: ${p.name}. Tocca il tasto qui sotto e lo sistemiamo in 1 minuto 👇`, `${p.name} è la cosa giusta per te, davvero. Scrivici ora e ti rispondiamo subito 👇`]
     }[LANG]) : pickOne({
       es: [`Para mí, el ${p.name} es tu elección — te va a encantar 👌`, `Si me preguntas a mí, sin dudar el ${p.name} 😉`, `De corazón: el ${p.name}. Lo siento perfecto para ti 👌`],
       en: [`For me, the ${p.name} is your pick — you'll love it 👌`, `If you ask me, the ${p.name}, no doubt 😉`, `Honestly? The ${p.name}. It just feels right for you 👌`],
@@ -1108,10 +1108,14 @@
       return;
     }
     if (isLead()) {
-      // SERVIZI/prenotazione: niente domande da e-commerce/CBD — opzioni coerenti col business
+      // SERVIZI/prenotazione: il CONTATTO è l'azione primaria → primo bottone, etichetta chiara verso WhatsApp
+      var hasWa = !!(KF_DATA.lead && KF_DATA.lead.whatsapp);
+      var leadCta = (KF_DATA.lead && KF_DATA.lead.cta && KF_DATA.lead.cta[LANG])
+        || (hasWa ? { es: "💬 Escríbenos por WhatsApp", en: "💬 Message us on WhatsApp", it: "💬 Scrivici su WhatsApp" }[LANG]
+                  : { es: "Reservar", en: "Book", it: "Prenota un appuntamento" }[LANG]);
       quickReplies([
-        { label: { es: "Ver otros servicios", en: "See other services", it: "Vedi altri servizi" }[LANG], onClick: () => showCategoryMenu() },
-        { label: (KF_DATA.lead && KF_DATA.lead.cta && KF_DATA.lead.cta[LANG]) || { es: "Reservar", en: "Book", it: "Prenota un appuntamento" }[LANG], onClick: () => openBooking("") }
+        { label: leadCta, onClick: () => openBooking("") },   // azione primaria PRIMA (era seconda → poche conversioni)
+        { label: { es: "Ver otros servicios", en: "See other services", it: "Vedi altri servizi" }[LANG], onClick: () => showCategoryMenu() }
       ]);
       return;
     }
