@@ -1,0 +1,64 @@
+{
+  "brand": "Le Divine",
+  "host": "ledivineabbigliamento.it",
+  "mode": "lead",
+  "character": false,
+  "accent": "#A8857C",
+  "dark": false,
+  "askName": true,
+  "emergency": false,
+  "itemEmoji": "👗",
+  "persona": { "name": "Le Divine", "role": { "it": "la tua personal stylist", "es": "tu estilista personal", "en": "your personal stylist" } },
+  "greeting": {
+    "it": "Ciao! 👋 Sono l'assistente di Le Divine, boutique femminile a Comacchio 👗 Abiti, mini dress, casual e look da sera scelti uno a uno. Dimmi cosa cerchi e ti consiglio io 👇",
+    "es": "¡Hola! 👋 Soy la asistente de Le Divine, boutique femenina en Comacchio 👗 Vestidos, mini dress, casual y looks de noche elegidos uno a uno. Dime qué buscas y te aconsejo 👇",
+    "en": "Hi! 👋 I'm Le Divine's assistant, a women's boutique in Comacchio 👗 Dresses, mini dresses, casual and evening looks picked one by one. Tell me what you fancy and I'll help 👇"
+  },
+  "askHint": {
+    "it": "Dimmi cosa cerchi (es. \"un abito per una cena\", \"qualcosa di casual\", \"un pezzo unico\") — o scegli qui sotto 👇",
+    "es": "Dime qué buscas (ej. \"un vestido para una cena\", \"algo casual\", \"una pieza única\") — o elige aquí debajo 👇",
+    "en": "Tell me what you're after (e.g. \"a dress for dinner\", \"something casual\", \"a unique piece\") — or pick below 👇"
+  },
+  "lead": {
+    "whatsapp": "393911134975",
+    "phone": "+393911134975",
+    "bookText": "Ciao Le Divine! 👗 Vorrei chiedere info su: ",
+    "cta": { "it": "Scrivici su WhatsApp", "es": "Escríbenos por WhatsApp", "en": "Message us on WhatsApp" }
+  },
+  "pick": { "it": "La scelta di Le Divine", "es": "La elección de Le Divine", "en": "Le Divine's pick" },
+  "acks": {
+    "it": ["Ottima scelta! 💕", "Adoro questo 😍", "Perfetto, te lo segno ✨", "Sceltissima! 🙌"],
+    "es": ["¡Buena elección! 💕", "Me encanta 😍", "Perfecto, lo apunto ✨", "¡Top! 🙌"],
+    "en": ["Great choice! 💕", "Love this 😍", "Perfect, noted ✨", "So chic! 🙌"]
+  },
+  "teasers": {
+    "it": ["👗 Cerchi un look per un'occasione?", "✨ Ti mostro i nuovi arrivi?", "Posso aiutarti a scegliere 💕"],
+    "es": ["👗 ¿Buscas un look para una ocasión?", "✨ ¿Te enseño las novedades?", "Te ayudo a elegir 💕"],
+    "en": ["👗 Looking for an outfit for an occasion?", "✨ Shall I show the new arrivals?", "I can help you choose 💕"]
+  },
+  "emoji": { "Abiti": "👗", "Sera": "🌙", "Casual": "👖", "Coordinati": "✨", "Accessori": "👜" },
+  "catLabels": {
+    "Abiti": { "it": "Abiti", "es": "Vestidos", "en": "Dresses" },
+    "Sera": { "it": "Abiti da sera", "es": "Vestidos de noche", "en": "Evening dresses" },
+    "Casual": { "it": "Casual & denim", "es": "Casual & denim", "en": "Casual & denim" },
+    "Coordinati": { "it": "Crop & coordinati", "es": "Crop & coordinados", "en": "Crop & co-ords" },
+    "Accessori": { "it": "Accessori", "es": "Accesorios", "en": "Accessories" }
+  },
+  "profiling": [{
+    "intent": "category",
+    "q": { "it": "Cosa cerchi oggi? 👇", "es": "¿Qué buscas hoy? 👇", "en": "What are you after today? 👇" },
+    "options": [
+      { "it": "Abiti 👗", "es": "Vestidos 👗", "en": "Dresses 👗", "val": "Abiti" },
+      { "it": "Look da sera 🌙", "es": "Look de noche 🌙", "en": "Evening look 🌙", "val": "Sera" },
+      { "it": "Casual & denim 👖", "es": "Casual & denim 👖", "en": "Casual & denim 👖", "val": "Casual" },
+      { "it": "Novità ✨", "es": "Novedades ✨", "en": "New arrivals ✨", "val": "Abiti" },
+      { "it": "Pezzi unici 💎", "es": "Piezas únicas 💎", "en": "One-of-a-kind 💎", "val": "Abiti" }
+    ]
+  }],
+  "products": [
+    { "id": 9001, "name": "Mini dress rosa cipria", "category": "Abiti", "price": 0, "description": "Mini dress rosa cipria, linea pulita e femminile. Novità appena arrivata in boutique.", "imageUrl": "https://ledivineabbigliamento.it/immagini/foto-13.webp", "badge": "✨ Novità", "keys": ["abito", "vestito", "mini", "dress", "rosa", "cipria", "novità"], "stock": 2 },
+    { "id": 9002, "name": "Abito lime con profilo", "category": "Abiti", "price": 0, "description": "Abito lime con profilo a contrasto, perfetto per le sere d'estate sui Lidi.", "imageUrl": "https://ledivineabbigliamento.it/immagini/foto-04.webp", "badge": "", "keys": ["abito", "vestito", "lime", "profilo", "sera"], "stock": 2 },
+    { "id": 9003, "name": "Mini dress animalier", "category": "Abiti", "price": 0, "description": "Mini dress animalier dal carattere deciso. Pezzo unico, ultimo disponibile.", "imageUrl": "https://ledivineabbigliamento.it/immagini/foto-11.webp", "badge": "💎 Pezzo unico", "keys": ["abito", "vestito", "mini", "dress", "animalier", "pezzo", "unico"], "stock": 1 },
+    { "id": 9004, "name": "Abito nero sporty", "category": "Abiti", "price": 0, "description": "Abito nero con profilo bianco, taglio sporty-chic. Ultimo disponibile.", "imageUrl": "https://ledivineabbigliamento.it/immagini/foto-02.webp", "badge": "🔥 Ultimo", "keys": ["abito", "vestito", "nero", "sporty", "sera"], "stock": 1 }
+  ]
+}
