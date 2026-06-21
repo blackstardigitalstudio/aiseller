@@ -42,6 +42,15 @@
   .mascotrow{display:flex;gap:12px;align-items:center}
   .mascot-prev{width:64px;height:64px;border-radius:12px;background:var(--panel2) center/contain no-repeat;border:1px solid var(--line);flex:none}
   .chk{display:flex;align-items:center;gap:7px;font-size:.85rem;color:var(--ink);font-weight:600;margin-top:8px}
+  .mascot-studio{display:none;flex-direction:column;gap:10px;margin-top:10px}
+  .mascot-studio.show{display:flex}
+  .pose{display:flex;gap:10px;align-items:flex-start;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px}
+  .pose .thumb{width:60px;height:60px;border-radius:10px;background:#0b1020 center/contain no-repeat;border:1px solid var(--line);flex:none}
+  .pose .pose-body{flex:1;min-width:0}
+  .pose .pose-h{font-size:.82rem;font-weight:800;color:var(--ink);margin:0 0 5px}
+  .pose input{margin-bottom:6px}
+  .prompt{background:#0b1020;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:.74rem;color:var(--muted);line-height:1.45;max-height:80px;overflow:auto;white-space:normal}
+  .prompt-row{display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap}
   .efoot{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap;align-items:center}
   .msg{font-size:.82rem;margin-right:auto;font-weight:700}
   .msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)} .msg.busy{color:var(--gold)}
@@ -117,12 +126,14 @@
     <h2 id="eTitle">Modifica</h2>
     <div class="hint" id="eId"></div>
 
-    <label>🎭 Mascotte (incolla l'URL di un'immagine PNG/WEBP)</label>
-    <div class="mascotrow">
-      <span class="mascot-prev" id="ePrev"></span>
-      <input type="text" id="eMascot" placeholder="https://.../mascotte.webp" oninput="prevMascot()" />
+    <label>🎭 Mascotte — le 3 pose del personaggio</label>
+    <label class="chk"><input type="checkbox" id="eNoMascot" onchange="onNoMascot()" /> Nessuna mascotte (bot senza personaggio)</label>
+    <div class="mascot-studio" id="mascotStudio">
+      <div class="hint">Genera le 3 immagini con i prompt qui sotto (chiedi a ChatGPT <b>sfondo trasparente PNG</b>), poi incolla l'URL di ciascuna. Le 3 pose creano l'animazione "indica il prodotto".
+        <button class="btn ghost sm" type="button" style="margin-left:6px" onclick="regenPrompts()">↻ Rigenera prompt</button>
+      </div>
+      <div id="poseWrap"></div>
     </div>
-    <label class="chk"><input type="checkbox" id="eNoMascot" onchange="prevMascot()" /> Nessuna mascotte (bot senza personaggio)</label>
 
     <label>🧠 Ragionamento (configurazione completa — saluti, servizi, abbinamenti, istruzioni…)</label>
     <textarea id="eJson" spellcheck="false"></textarea>
@@ -145,7 +156,7 @@
     { id:"gasproject", label:"GAS Project",       accent:"#0099b8" },
     { id:"ilraviolo",  label:"Il Raviolo Bottega",accent:"#e8b84f" },
     { id:"mariowine",  label:"Mario Wine",        accent:"#7b1e3b" },
-    { id:"le-divine",  label:"Le Divine",         accent:"#A8857C" }
+    { id:"le-divine",  label:"Le Divine",         accent:"#C2A19A" }
   ];
   var state = {};   // id -> {config, sha}
 
@@ -204,33 +215,113 @@
     cur=id; curOrigChar=cfg.character;
     document.getElementById("eTitle").textContent="Modifica · "+c.label;
     document.getElementById("eId").textContent="clients/"+id+".json";
-    var face=charFace(cfg.character);
-    document.getElementById("eMascot").value=isUrl(face)?face:"";
     document.getElementById("eNoMascot").checked=(cfg.character===false);
     // JSON senza il personaggio (per non riempire di base64); il personaggio si gestisce col campo sopra
     var lite=Object.assign({},cfg); delete lite.character; delete lite._brand; delete lite._synced;
     document.getElementById("eJson").value=JSON.stringify(lite,null,2);
     document.getElementById("eTry").href=CDN+"/?widget=1&config="+encodeURIComponent(CDN+"/clients/"+id+".json")+"&accent="+encodeURIComponent(cfg.accent||c.accent);
-    msg(""); prevMascot();
+    renderPoses(); onNoMascot(); msg("");
     document.getElementById("editor").classList.add("show");
   }
   function closeEditor(){ document.getElementById("editor").classList.remove("show"); cur=null; }
-  function prevMascot(){
-    var no=document.getElementById("eNoMascot").checked, url=document.getElementById("eMascot").value.trim();
-    document.getElementById("eMascot").disabled=no;
-    var p=document.getElementById("ePrev");
-    if(no){ p.style.backgroundImage=""; p.textContent=""; p.style.opacity=.4; }
-    else if(safeImg(url)){ p.style.backgroundImage="url('"+safeImg(url)+"')"; p.textContent=""; p.style.opacity=1; }
-    else { var f=safeImg(charFace(curOrigChar)); p.style.backgroundImage=f?"url('"+f+"')":""; p.style.opacity=1; }
+  // ===== STUDIO MASCOTTE nel pannello: 3 pose (foto attuali + URL) + 3 prompt su misura + rigenera =====
+  var POSES = [
+    { key:"rest",      label:"1 · Riposo (figura base)",       file:"-rest.png" },
+    { key:"point",     label:"2 · Indica (braccio teso)",      file:"-point.png" },
+    { key:"pointBack", label:"3 · Braccio ritratto (2° frame)", file:"-point-back.png" }
+  ];
+  // archetipo del personaggio dedotto dal settore del cliente (stessa logica dello studio)
+  var ARCHETYPES = [
+    { k:/officin|meccanic|autofficin|\bauto\b|\bcar\b|garage|gommist|motor|veicol|carrozzeri|moto\b/i, name:"meccanico", desc:"un meccanico giovane e simpatico in tuta da officina racing, con una chiave inglese in mano" },
+    { k:/vino|wine|enotec|cantina|sommelier|bottigli|spumant/i, name:"sommelier", desc:"un sommelier elegante con grembiule, che regge un calice di vino" },
+    { k:/cbd|cannab|\bgrow\b|smoke|canap|hemp/i, name:"personaggio relax", desc:"un personaggio rilassato e amichevole dalla vibe naturale, con una piccola fogliolina o un dettaglio botanico e un sorriso disteso" },
+    { k:/raviol|tortellin|tagliatell|pastific|pastaio|pasta\s*fresc|gnocch|salumeri|salumi|embutido|norciner|formaggi|bottega|alimentari|delicatess|drogheria|\bdeli\b|gastronom/i, name:"pastaio", desc:"un pastaio/bottegaio italiano caloroso e sorridente, con grembiule da bottega e maniche rimboccate, che regge un VASSOIO DI PASTA FRESCA RIPIENA (ravioli/tortellini) oppure un MATTARELLO di legno; aria artigianale e accogliente. NIENTE fili, corde o spaghetti sciolti in mano" },
+    { k:/ristorant|pizz|\bfood\b|cucin|\bchef\b|trattoria|osteria|burger|sushi/i, name:"chef", desc:"uno chef sorridente con cappello da cuoco e grembiule" },
+    { k:/parrucchier|estetic|\bbeauty\b|capell|\bnail\b|\bspa\b|bellezz|barber/i, name:"beauty expert", desc:"un/una beauty expert dal look curato e alla moda, con forbici e pettine in mano e un grembiule da salone elegante" },
+    { k:/palestr|fitness|\bgym\b|personal train|crossfit|allenament/i, name:"personal trainer", desc:"un personal trainer energico in tenuta sportiva" },
+    { k:/moda|fashion|abbigliament|boutique|scarp|sneaker|clothing|stylist|vestit|\bdress\b|tendero|estilista/i, name:"stylist", desc:"un/una stylist alla moda con outfit trendy, occhiali di tendenza e un metro da sarto al collo" },
+    { k:/immobil|real ?estate|agenzia immob|compravendit|locazion/i, name:"agente immobiliare", desc:"un agente immobiliare professionale ed elegante in giacca, con un mazzo di chiavi in mano" },
+    { k:/dentist|medic|clinic|odontoiatr|fisio|salute|farmac|studio medico/i, name:"assistente sanitario", desc:"un assistente in camice, rassicurante e professionale" },
+    { k:/viagg|travel|tour|hotel|\bbnb\b|vacanz|booking|resort|agriturism/i, name:"concierge", desc:"un concierge di viaggio sorridente in divisa elegante, con cappellino da concierge e una piccola valigia accanto" },
+    { k:/digital|software|\btech\b|\bapp\b|web agency|digital studio|\bsaas\b|marketing|startup|ux|automazion|consulen/i, name:"assistente tech", desc:"un assistente moderno e smart dal look tech minimale, con occhiali eleganti e cuffie/headset al collo" }
+  ];
+  function cfgHay(cfg){
+    var parts=[cfg.brand||"", cfg.host||"", cfg.itemEmoji||""];
+    var pr=cfg.persona&&cfg.persona.role; if(pr) parts.push(pr.it||"",pr.es||"",pr.en||"");
+    var g=cfg.greeting; if(g) parts.push(g.it||"",g.es||"",g.en||"");
+    if(cfg.catLabels) for(var k in cfg.catLabels){ parts.push(k); var L=cfg.catLabels[k]; if(L) parts.push(L.it||"",L.es||"",L.en||""); }
+    (cfg.products||[]).forEach(function(p){ parts.push(p.category||""); });
+    return parts.join(" ").toLowerCase();
+  }
+  function detectArchetype(cfg){
+    // 1) prima il segnale FORTE: brand + ruolo della persona (niente rumore dei prodotti, es. un pastaio che vende anche vino)
+    var pr=cfg.persona&&cfg.persona.role;
+    var primary=((cfg.brand||"")+" "+(pr?((pr.it||"")+" "+(pr.es||"")+" "+(pr.en||"")):"")).toLowerCase();
+    for(var i=0;i<ARCHETYPES.length;i++){ try{ if(ARCHETYPES[i].k.test(primary)) return ARCHETYPES[i]; }catch(e){} }
+    // 2) fallback: tutto il contesto (categorie, saluto…)
+    var hay=cfgHay(cfg);
+    for(var j=0;j<ARCHETYPES.length;j++){ try{ if(ARCHETYPES[j].k.test(hay)) return ARCHETYPES[j]; }catch(e){} }
+    return { name:"assistente amichevole", desc:"una mascotte amichevole e professionale dal look moderno" };
+  }
+  function buildCharacterPrompts(cfg, a){
+    var brand=cfg.brand||cfg.host||"il brand";
+    var acc=cfg.accent||"";
+    var refs=acc ? (" COLORI DI RIFERIMENTO DEL BRAND: "+acc+" — usa esattamente questo colore (e affini) sulla figura, fedele all'estetica del sito.") : " Usa una palette coerente col brand.";
+    var racing=/meccanic|trainer|personal|sport|fitness|palestr/i.test(a.name||"");
+    var mood=cfg.dark
+      ? (" L'estetica è DARK e premium: abbigliamento prevalentemente SCURO (nero/antracite/blu notte) con bagliori nei colori del brand, illuminazione cinematografica, look premium e moderno."+(racing?" Linee/piping al neon e dettagli cromati (stile racing/sportivo).":""))
+      : (" Estetica pulita e luminosa: "+(acc?("usa "+acc+" come accento principale"):"usa i colori del brand")+" su una base chiara, look fresco e amichevole.");
+    var world=" Caratterizzalo con accessori e dettagli TIPICI del mestiere e dagli un volto ed espressione coerenti col carattere del cliente, così che sembri 'di casa' sul suo sito. L'abbigliamento dev'essere quello giusto per il settore, non un costume generico.";
+    var base="Personaggio 3D in stile Pixar/cartoon, mascotte ufficiale di \""+brand+"\": "+a.desc+"."+world+mood+refs+" Sfondo TRASPARENTE (PNG), niente ombra, render 3D pulito, corpo intero ben centrato nell'inquadratura. IMPORTANTISSIMO: NON scrivere NESSUN testo, lettera o logo da nessuna parte; lascia gli abiti puliti e lisci, superficie vuota e uniforme (il logo lo aggiungiamo dopo).";
+    return {
+      rest: base+" Posa RILASSATA e frontale, sorriso aperto e accogliente.",
+      point: "Genera la STESSA IDENTICA figura 3D del personaggio (stesso volto, stesso outfit, stessa inquadratura, stessa dimensione e identica posizione di corpo e piedi), sfondo trasparente senza ombra. UNICA differenza: il BRACCIO DESTRO è TESO verso DESTRA e INDICA con l'indice puntato verso destra, come per mostrare un prodotto lì accanto.",
+      pointBack: "(2° FOTOGRAMMA del movimento: parti dall'immagine 'Indica steso'.) Stesso identico personaggio (volto, outfit, colori, inquadratura, dimensione, posizione di corpo, piedi e dell'altro braccio fermo), sfondo trasparente senza ombra. UNICA differenza: prendi il braccio già teso che indica e piegalo un po' di più ritraendolo verso il petto (gomito flesso), tenendo l'indice nella stessa direzione. Muovi SOLO quel braccio: NON toccare l'altro braccio, testa, busto, gambe."
+    };
+  }
+  function liveCfg(){ try{ return JSON.parse(document.getElementById("eJson").value); }catch(e){ return (state[cur]&&state[cur].config)||{}; } }
+  function currentPrompts(){ var cfg=liveCfg(); return buildCharacterPrompts(cfg, detectArchetype(cfg)); }
+  function val(id){ var e=document.getElementById(id); return e?e.value.trim():""; }
+  function poseBlockHTML(p, curImg, prompt){
+    return '<div class="pose">'
+      + '<span class="thumb" id="thumb-'+p.key+'"'+(curImg?(' style="background-image:url(\''+curImg+'\')"'):'')+'></span>'
+      + '<div class="pose-body">'
+      +   '<div class="pose-h">'+p.label+'</div>'
+      +   '<input type="text" id="url-'+p.key+'" placeholder="URL immagine (PNG/WEBP) — incolla qui" value="'+esc(curImg)+'" oninput="onPoseUrl(\''+p.key+'\')" />'
+      +   '<div class="prompt" id="prompt-'+p.key+'">'+esc(prompt)+'</div>'
+      +   '<div class="prompt-row"><button class="btn ghost sm" type="button" onclick="copyPrompt(\''+p.key+'\',this)">📋 copia prompt</button>'
+      +     '<span class="hint" style="font-size:.72rem">salva come <code>'+esc((cur||"bot")+p.file)+'</code></span></div>'
+      + '</div></div>';
+  }
+  function renderPoses(){
+    var pr=currentPrompts();
+    var ch=(curOrigChar && typeof curOrigChar==="object") ? curOrigChar : {};
+    var html=POSES.map(function(p){ return poseBlockHTML(p, safeImg(ch[p.key]||ch.rest||""), pr[p.key]); }).join("");
+    document.getElementById("poseWrap").innerHTML=html;
+  }
+  function regenPrompts(){
+    var pr=currentPrompts();
+    POSES.forEach(function(p){ var el=document.getElementById("prompt-"+p.key); if(el) el.textContent=pr[p.key]; });
+    msg("Prompt rigenerati col brand e i colori attuali ✨","ok"); setTimeout(function(){ if(document.getElementById("eMsg").textContent.indexOf("Prompt")===0) msg(""); },2600);
+  }
+  function copyPrompt(key, btn){
+    var el=document.getElementById("prompt-"+key); if(!el) return;
+    navigator.clipboard.writeText(el.textContent).then(function(){ var t=btn.textContent; btn.textContent="copiato ✓"; setTimeout(function(){ btn.textContent=t; },1500); });
+  }
+  function onPoseUrl(key){
+    var u=safeImg(val("url-"+key)); var t=document.getElementById("thumb-"+key);
+    if(t) t.style.backgroundImage = u ? ("url('"+u+"')") : "";
+  }
+  function onNoMascot(){
+    document.getElementById("mascotStudio").classList.toggle("show", !document.getElementById("eNoMascot").checked);
   }
   function computeChar(){
     if(document.getElementById("eNoMascot").checked) return false;
-    var url=safeImg(document.getElementById("eMascot").value.trim());   // solo URL http(s)/data:image puliti
-    if(url){
-      var w=(curOrigChar&&curOrigChar.w)||1024, h=(curOrigChar&&curOrigChar.h)||1536;
-      return { rest:url, point:url, pointBack:url, face:url, w:w, h:h };
-    }
-    return curOrigChar;   // invariato
+    var r=safeImg(val("url-rest")), p=safeImg(val("url-point")), pb=safeImg(val("url-pointBack"));
+    if(!(r||p||pb)) return curOrigChar;            // niente inserito → personaggio invariato
+    var rest=r||p||pb;                              // se manca la posa base, usa la prima disponibile
+    var w=(curOrigChar&&curOrigChar.w)||1024, h=(curOrigChar&&curOrigChar.h)||1536;
+    return { rest:rest, point:(p||rest), pointBack:(pb||p||rest), face:rest, w:w, h:h };
   }
   function msg(t,cls){ var m=document.getElementById("eMsg"); m.textContent=t||""; m.className="msg "+(cls||""); }
 
