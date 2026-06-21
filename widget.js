@@ -21,7 +21,8 @@
     ["blackstardigitalstudio", "blackstar",  "#a68732", null],
     ["gasproject",             "gasproject", "#0099b8", null],
     ["ilraviolo",              "ilraviolo",  "#e8b84f", /\/bottega/i],   // Il Raviolo: SOLO sezione /bottega
-    ["mariowine",              "mariowine",  "#7b1e3b", null]
+    ["mariowine",              "mariowine",  "#7b1e3b", null],
+    ["ledivine",               "le-divine",  "#C2A19A", null]            // Le Divine: boutique abbigliamento, Comacchio
   ];
   var hostHit = null, _h = (location.hostname || "").toLowerCase();
   for (var hi = 0; hi < HOSTMAP.length; hi++) { if (_h.indexOf(HOSTMAP[hi][0]) >= 0) { hostHit = HOSTMAP[hi]; break; } }
