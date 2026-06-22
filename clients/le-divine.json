@@ -2,7 +2,7 @@
   "brand": "Le Divine",
   "host": "ledivineabbigliamento.it",
   "mode": "lead",
-  "character": false,
+  "character": { "rest": "https://ledivineabbigliamento.it/immagini/bot-1.webp", "point": "https://ledivineabbigliamento.it/immagini/bot-2.webp", "pointBack": "https://ledivineabbigliamento.it/immagini/bot-3.webp", "face": "https://ledivineabbigliamento.it/immagini/bot-1.webp", "w": 1024, "h": 1536 },
   "accent": "#C2A19A",
   "dark": false,
   "askName": true,
