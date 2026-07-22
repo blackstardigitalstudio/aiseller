@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="it"><head>
+<html lang="es"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AI Seller · Allena Kaya</title>
+<title>AI Seller · Entrena a Kaya</title>
 <script>if(window.top!==window.self){ window.top.location=window.self.location.href; }</script>
 <style>
   :root{--paper:#f4f1e9;--card:#fffdf8;--ink:#2a2620;--muted:#8a8375;--line:#e6ded0;--green:#4c7a52;--green2:#3c6342;--gold:#c8a45c;--bot:#fff;--botline:#ece3d2;--ok:#2ea06b;--bad:#d0553a;--face:url('https://aiseller.pages.dev/assets/seller-face.webp')}
@@ -64,7 +64,7 @@
   function gate(){
     var o=document.createElement('div');
     o.style.cssText='position:fixed;inset:0;background:#0b1020;display:flex;align-items:center;justify-content:center;z-index:99999;font-family:system-ui,sans-serif';
-    o.innerHTML='<div style="text-align:center;max-width:300px;width:90%;padding:0 20px"><div style="font-size:2.4rem;margin-bottom:10px">🌱</div><h2 style="color:#eaf1f9;margin:0 0 4px;font-size:1.15rem">Allena Kaya</h2><p style="color:#9fb0c7;font-size:.82rem;margin:0 0 22px">Area privata · Blackstar Digital Studio</p><input id="_pw" type="password" placeholder="Password" autocomplete="current-password" style="width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid #22304d;background:#121a30;color:#eaf1f9;font-size:1rem;outline:none;margin-bottom:8px"><div id="_err" style="color:#e0573a;font-size:.8rem;min-height:16px;margin-bottom:8px"></div><button id="_ok" style="width:100%;padding:12px;border-radius:12px;border:none;background:#e8b84f;color:#231a00;font-weight:800;font-size:1rem;cursor:pointer">Entra</button></div>';
+    o.innerHTML='<div style="text-align:center;max-width:300px;width:90%;padding:0 20px"><div style="font-size:2.4rem;margin-bottom:10px">🌱</div><h2 style="color:#eaf1f9;margin:0 0 4px;font-size:1.15rem">Entrena a Kaya</h2><p style="color:#9fb0c7;font-size:.82rem;margin:0 0 22px">Área privada · Blackstar Digital Studio</p><input id="_pw" type="password" placeholder="Contraseña" autocomplete="current-password" style="width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid #22304d;background:#121a30;color:#eaf1f9;font-size:1rem;outline:none;margin-bottom:8px"><div id="_err" style="color:#e0573a;font-size:.8rem;min-height:16px;margin-bottom:8px"></div><button id="_ok" style="width:100%;padding:12px;border-radius:12px;border:none;background:#e8b84f;color:#231a00;font-weight:800;font-size:1rem;cursor:pointer">Entrar</button></div>';
     document.body.appendChild(o);
     document.documentElement.style.visibility='visible';
     setTimeout(function(){document.getElementById('_pw').focus();},80);
@@ -72,7 +72,7 @@
       var buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(document.getElementById('_pw').value));
       var hex=Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0')}).join('');
       if(hex===H){sessionStorage.setItem(K,'1');o.remove();}
-      else{document.getElementById('_err').textContent='Password errata';document.getElementById('_pw').select();}
+      else{document.getElementById('_err').textContent='Contraseña incorrecta';document.getElementById('_pw').select();}
     }
     document.getElementById('_ok').onclick=check;
     document.getElementById('_pw').onkeydown=function(e){if(e.key==='Enter')check();};
@@ -85,52 +85,51 @@
   <div class="chat">
     <div class="chead">
       <span class="av"></span>
-      <div class="who"><strong>Kaya</strong><span><i></i> Modalità allenamento · online</span></div>
-      <button class="gear" title="Impostazioni (token)" onclick="document.getElementById('tokbar').classList.toggle('show')">⚙️</button>
+      <div class="who"><strong>Kaya</strong><span><i></i> Modo entrenamiento · en línea</span></div>
+      <button class="gear" title="Ajustes (token)" onclick="document.getElementById('tokbar').classList.toggle('show')">⚙️</button>
     </div>
     <div class="tokbar" id="tokbar">
       <span>🔑</span>
-      <input id="tok" type="password" placeholder="Token GitHub (per pubblicare)" />
-      <button class="btn sm" onclick="saveTok()">Collega</button>
+      <input id="tok" type="password" placeholder="Token GitHub (para publicar)" />
+      <button class="btn sm" onclick="saveTok()">Conectar</button>
       <span class="st" id="tokSt"></span>
     </div>
     <div id="log"></div>
     <div class="cinput">
-      <input id="ask" type="text" placeholder="Scrivi come un cliente…" autocomplete="off" />
-      <button class="send" onclick="sendAsk()" aria-label="Invia">➤</button>
+      <input id="ask" type="text" placeholder="Escribe como un cliente…" autocomplete="off" />
+      <button class="send" onclick="sendAsk()" aria-label="Enviar">➤</button>
     </div>
   </div>
 
   <div class="foot">
     <details>
-      <summary>📚 Sapere insegnato (<span id="cnt">0</span>)</summary>
+      <summary>📚 Conocimiento enseñado (<span id="cnt">0</span>)</summary>
       <div id="kbList" style="margin-top:10px"></div>
     </details>
     <div class="rowbtw" style="margin-top:12px">
-      <a class="link" id="tryLink" target="_blank">▶ Apri il bot vero</a>
-      <button class="btn" id="pub" onclick="publish()">🚀 Pubblica</button>
+      <a class="link" id="tryLink" target="_blank">▶ Abrir el bot real</a>
+      <button class="btn" id="pub" onclick="publish()">🚀 Publicar</button>
     </div>
     <div class="msg" id="msg"></div>
   </div>
 
   <div class="note">
-    📸 <b>Screenshot dei clienti:</b> non caricarli qui (dati personali, pagina pubblica). Mandali in privato, li trasformo io in sapere anonimo. · 🔑 Token: classico con scope <code>repo</code>.
+    📸 <b>Capturas de chats con clientes:</b> no las subas aquí (datos personales, página pública). Envíalas en privado, las convierto en conocimiento anónimo. · 🔑 Token: clásico con scope <code>repo</code>.
   </div>
 </div>
 
 <script>
-  var REPO="blackstardigitalstudio/aiseller", CDN="https://aiseller.pages.dev", PATH="clients/kayaman.json", LANG="it";
+  var REPO="blackstardigitalstudio/aiseller", CDN="https://aiseller.pages.dev", PATH="clients/kayaman.json", LANG="es";
   var CFG=null, KB=[], PRODUCTS=[], turns=[];
-  var STOP=["che","cosa","come","con","per","una","uno","del","della","dei","gli","the","and","you","for","con","mi","ti","si","un","è","e","a","o","in","da","di","il","la","le","lo","ho","hai","un'","al","ma"];
+  var STOP=["que","como","con","para","una","uno","del","los","las","por","cual","cómo","qué","mi","te","se","un","es","y","o","en","de","el","la","lo","al","muy","más","the","and","you","for","si","sí","tiene","hay"];
 
   function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
   function b64enc(str){ return btoa(unescape(encodeURIComponent(str))); }
   function tok(){ return localStorage.getItem("AISELLER_GH_TOKEN")||""; }
   function saveTok(){ var v=document.getElementById("tok").value.trim(); if(v) localStorage.setItem("AISELLER_GH_TOKEN",v); renderTok(); }
-  function forgetTok(){ localStorage.removeItem("AISELLER_GH_TOKEN"); document.getElementById("tok").value=""; renderTok(); }
-  function renderTok(){ var s=document.getElementById("tokSt"); if(tok()){ s.textContent="✓ collegato"; s.style.color="var(--ok)"; } else { s.textContent="incolla il token per pubblicare"; s.style.color="var(--muted)"; } }
+  function renderTok(){ var s=document.getElementById("tokSt"); if(tok()){ s.textContent="✓ conectado"; s.style.color="var(--ok)"; } else { s.textContent="pega el token para publicar"; s.style.color="var(--muted)"; } }
   function msg(t,c){ var m=document.getElementById("msg"); m.textContent=t||""; m.className="msg "+(c||""); }
-  function safetyText(){ var n=CFG&&CFG.safetyNote; if(!n) return "🌱 Ricorda: è un articolo da collezione, non destinato al consumo."; return (typeof n==="object")?(n[LANG]||n.it):n; }
+  function safetyText(){ var n=CFG&&CFG.safetyNote; if(!n) return "🌱 Recuerda: es un artículo de colección, no destinado al consumo."; return (typeof n==="object")?(n[LANG]||n.es||n.it):n; }
 
   async function load(){
     document.getElementById("tryLink").href=CDN+"/?widget=1&config="+encodeURIComponent(CDN+"/"+PATH)+"&accent=%23a8915f";
@@ -138,12 +137,12 @@
     KB=Array.isArray(CFG.knowledge)?CFG.knowledge:[];
     PRODUCTS=Array.isArray(CFG.products)?CFG.products:[];
     renderKB();
-    addBot({tag:"Kaya", text:"Ciao capo! 👋 Scrivimi una domanda come farebbe un cliente e ti mostro come rispondo. Se serve, correggimi 😊"});
+    addBot({tag:"Kaya", text:"¡Hola jefe! 👋 Escríbeme una pregunta como haría un cliente y te muestro cómo respondo. Si hace falta, corrígeme 😊"});
   }
 
-  // ---- motore di risposta (a regole, come il bot vero) ----
+  // ---- motor de respuesta (por reglas, como el bot real) ----
   function words(s){ return String(s||"").toLowerCase().split(/[^a-z0-9àáèéìíòóùúñç%]+/i).filter(w=>w.length>=3 && STOP.indexOf(w)<0); }
-  function kbAnswer(e){ var a=e.a||""; if(a&&typeof a==="object")a=a[LANG]||a.it||""; if(e.safe)a=a+"\n\n"+safetyText(); return a; }
+  function kbAnswer(e){ var a=e.a||""; if(a&&typeof a==="object")a=a[LANG]||a.es||a.it||""; if(e.safe)a=a+"\n\n"+safetyText(); return a; }
   function bestKB(low){ var best=null,score=0; KB.forEach(function(e){ var s=0;(e.keys||[]).forEach(function(k){k=String(k).toLowerCase().trim(); if(k&&low.indexOf(k)>=0)s+=2;}); if(s>score){score=s;best=e;} }); return score>=2?{e:best,i:KB.indexOf(best)}:null; }
   function bestProduct(low){ var qw=words(low); if(!qw.length)return null; var best=null,score=0; PRODUCTS.forEach(function(p){ if(p.stock===0)return; var hay=((p.name||"")+" "+((p.keys||[]).join(" "))+" "+(p.category||"")).toLowerCase(); var s=0; qw.forEach(function(w){ if(hay.indexOf(w)>=0)s++; }); if(s>score){score=s;best=p;} }); return score>=1?best:null; }
 
@@ -151,8 +150,8 @@
     var k=bestKB(low);
     if(k) return { text:kbAnswer(k.e), source:"sapere", kbi:k.i };
     var p=bestProduct(low);
-    if(p) return { text:"Ti consiglio **"+p.name+"**"+(p.price?" ("+p.price+"€)":"")+". "+String(p.description||"").slice(0,150), source:"prodotto" };
-    return { text:"Su questo non ho ancora una risposta specifica 🤔 Insegnamela: premi ✏️ Correggi e scrivi cosa dovrei dire.", source:"vuoto" };
+    if(p) return { text:"Te recomiendo **"+p.name+"**"+(p.price?" ("+p.price+"€)":"")+". "+String(p.description||"").slice(0,150), source:"prodotto" };
+    return { text:"Sobre esto todavía no tengo una respuesta específica 🤔 Enséñamela: pulsa ✏️ Corregir y escribe qué debería decir.", source:"vuoto" };
   }
 
   // ---- chat UI ----
@@ -160,9 +159,9 @@
   function addBot(o){
     var i=turns.length; turns.push(o);
     var d=document.createElement("div"); d.className="b k"; d.id="turn-"+i;
-    d.innerHTML='<span class="tag">🌿 '+(esc(o.tag||"Kaya"))+(o.source==="sapere"?" · dal sapere":o.source==="prodotto"?" · prodotto":o.source==="vuoto"?" · da insegnare":"")+'</span>'
+    d.innerHTML='<span class="tag">🌿 '+(esc(o.tag||"Kaya"))+(o.source==="sapere"?" · del conocimiento":o.source==="prodotto"?" · producto":o.source==="vuoto"?" · por enseñar":"")+'</span>'
       +'<span class="txt">'+fmt(o.text)+'</span>'
-      +(o.q!==undefined?('<span class="acts"><button class="btn gray sm" onclick="startFix('+i+',false)">✏️ Correggi</button><button class="btn gray sm" onclick="startFix('+i+',true)">➕ Aggiungi dettaglio</button></span><div class="fixin" id="fix-'+i+'" style="display:none"></div>'):'');
+      +(o.q!==undefined?('<span class="acts"><button class="btn gray sm" onclick="startFix('+i+',false)">✏️ Corregir</button><button class="btn gray sm" onclick="startFix('+i+',true)">➕ Añadir detalle</button></span><div class="fixin" id="fix-'+i+'" style="display:none"></div>'):'');
     document.getElementById("log").appendChild(d); scroll();
   }
   function fmt(t){ return esc(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/\n/g,"<br>"); }
@@ -176,23 +175,23 @@
   }
   document.addEventListener("keydown",function(e){ if(e.key==="Enter"&&document.activeElement&&document.activeElement.id==="ask") sendAsk(); });
 
-  // ---- correzione inline → diventa sapere ----
+  // ---- corrección inline → se convierte en conocimiento ----
   function startFix(i, addDetail){
     var t=turns[i]; var box=document.getElementById("fix-"+i); if(!box)return;
     var cur=(t.source==="sapere"||!addDetail)? rawText(i) : "";
     box.style.display=""; box.innerHTML="";
-    var chk='<label style="font-size:.78rem;color:var(--muted);display:flex;gap:6px;align-items:center;margin-top:2px"><input type="checkbox" id="fs-'+i+'" checked> aggiungi in fondo la nota di sicurezza (“solo da collezione”)</label>';
+    var chk='<label style="font-size:.78rem;color:var(--muted);display:flex;gap:6px;align-items:center;margin-top:2px"><input type="checkbox" id="fs-'+i+'" checked> añadir al final la nota de seguridad (“solo de colección”)</label>';
     if(addDetail){
-      box.innerHTML='<input type="text" id="fi-'+i+'" placeholder="Un dettaglio che pesa nella vendita (es. è il più venduto, sa di limone)…" />'+chk
-        +'<div class="acts"><button class="btn sm" onclick="saveFix('+i+',true)">Salva dettaglio</button><button class="btn gray sm" onclick="cancelFix('+i+')">Annulla</button></div>';
+      box.innerHTML='<input type="text" id="fi-'+i+'" placeholder="Un detalle que pesa en la venta (ej. es el más vendido, sabe a limón)…" />'+chk
+        +'<div class="acts"><button class="btn sm" onclick="saveFix('+i+',true)">Guardar detalle</button><button class="btn gray sm" onclick="cancelFix('+i+')">Cancelar</button></div>';
       document.getElementById("fi-"+i).focus();
     } else {
       box.innerHTML='<textarea id="ft-'+i+'">'+esc(cur)+'</textarea>'+chk
-        +'<div class="acts"><button class="btn sm" onclick="saveFix('+i+',false)">Salva correzione</button><button class="btn gray sm" onclick="cancelFix('+i+')">Annulla</button></div>';
+        +'<div class="acts"><button class="btn sm" onclick="saveFix('+i+',false)">Guardar corrección</button><button class="btn gray sm" onclick="cancelFix('+i+')">Cancelar</button></div>';
       var ta=document.getElementById("ft-"+i); ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length);
     }
   }
-  function rawText(i){ var t=turns[i]; if(t.source==="sapere"&&t.kbi!=null){ var a=KB[t.kbi].a; return (a&&typeof a==="object")?(a[LANG]||a.it||""):a; } return t.text.replace(/\n\n🌱[\s\S]*$/,""); }
+  function rawText(i){ var t=turns[i]; if(t.source==="sapere"&&t.kbi!=null){ var a=KB[t.kbi].a; return (a&&typeof a==="object")?(a[LANG]||a.es||a.it||""):a; } return t.text.replace(/\n\n🌱[\s\S]*$/,""); }
   function cancelFix(i){ var b=document.getElementById("fix-"+i); if(b){b.style.display="none";b.innerHTML="";} }
   function saveFix(i, addDetail){
     var t=turns[i];
@@ -201,49 +200,47 @@
     var safe = document.getElementById("fs-"+i) ? document.getElementById("fs-"+i).checked : true;
     var answer;
     if(addDetail){ answer=(rawText(i)+" "+val).trim(); } else { answer=val; }
-    // parole chiave dalla domanda del cliente che ha generato questa risposta
+    // palabras clave de la pregunta del cliente que generó esta respuesta
     var keys=[...new Set(words(t.q||""))].slice(0,6);
     if(!keys.length) keys=[ (t.q||"").toLowerCase().slice(0,20) ];
-    // se la risposta veniva già dal sapere, aggiorna quella voce; altrimenti creane una nuova
     if(t.source==="sapere" && t.kbi!=null && KB[t.kbi]){ KB[t.kbi].a=answer; KB[t.kbi].safe=safe; }
     else { KB.push({ keys:keys, a:answer, safe:safe }); t.kbi=KB.length-1; t.source="sapere"; }
-    // aggiorna la bolla mostrata
-    var d=document.getElementById("turn-"+i); if(d){ var txt=d.querySelector(".txt"); if(txt) txt.innerHTML=fmt(answer+(safe?("\n\n"+safetyText()):"")); var tag=d.querySelector(".tag"); if(tag) tag.textContent="🌿 Kaya · dal sapere"; }
+    var d=document.getElementById("turn-"+i); if(d){ var txt=d.querySelector(".txt"); if(txt) txt.innerHTML=fmt(answer+(safe?("\n\n"+safetyText()):"")); var tag=d.querySelector(".tag"); if(tag) tag.textContent="🌿 Kaya · del conocimiento"; }
     cancelFix(i); renderKB();
-    msg("Imparato ✔ (premi 🚀 Pubblica per mandarlo online)","ok");
+    msg("¡Aprendido! ✔ (pulsa 🚀 Publicar para ponerlo online)","ok");
   }
 
   function renderKB(){
     document.getElementById("cnt").textContent=KB.length;
     var el=document.getElementById("kbList");
-    if(!KB.length){ el.innerHTML='<div class="empty">Ancora niente. Fai una domanda qui sopra e correggi la risposta 👆</div>'; return; }
+    if(!KB.length){ el.innerHTML='<div class="empty">Todavía nada. Haz una pregunta arriba y corrige la respuesta 👆</div>'; return; }
     el.innerHTML=KB.map(function(e,i){
       var keys=(e.keys||[]).map(function(k){return '<span class="tagk">'+esc(k)+'</span>';}).join("");
-      var a=e.a||""; if(a&&typeof a==="object")a=a[LANG]||a.it||"";
+      var a=e.a||""; if(a&&typeof a==="object")a=a[LANG]||a.es||a.it||"";
       return '<div class="kb-item"><div class="keys">'+keys+'</div><div class="a">'+esc(a)+'</div>'
-        +'<div class="r"><button class="btn gray sm" onclick="delKB('+i+')">🗑️ Elimina</button></div></div>';
+        +'<div class="r"><button class="btn gray sm" onclick="delKB('+i+')">🗑️ Eliminar</button></div></div>';
     }).join("");
   }
-  function delKB(i){ KB.splice(i,1); renderKB(); msg("Eliminato (premi 🚀 Pubblica per confermare)","ok"); }
+  function delKB(i){ KB.splice(i,1); renderKB(); msg("Eliminado (pulsa 🚀 Publicar para confirmar)","ok"); }
 
   async function publish(){
-    if(!tok()){ msg("Incolla prima il token GitHub (in alto).","bad"); return; }
-    if(!CFG){ msg("Config non caricata, ricarica la pagina.","bad"); return; }
+    if(!tok()){ msg("Pega antes el token GitHub (arriba).","bad"); return; }
+    if(!CFG){ msg("Configuración no cargada, recarga la página.","bad"); return; }
     CFG.knowledge=KB;
-    var btn=document.getElementById("pub"); btn.disabled=true; msg("Pubblicazione…","busy");
+    var btn=document.getElementById("pub"); btn.disabled=true; msg("Publicando…","busy");
     try{
       var api="https://api.github.com/repos/"+REPO+"/contents/"+PATH;
       var g=await fetch(api,{headers:{Authorization:"Bearer "+tok(),Accept:"application/vnd.github+json"}});
       var sha=g.ok?(await g.json()).sha:undefined;
       var put=await fetch(api,{method:"PUT",headers:{Authorization:"Bearer "+tok(),Accept:"application/vnd.github+json"},
-        body:JSON.stringify({message:"allena: aggiorna sapere Kaya", content:b64enc(JSON.stringify(CFG,null,2)), sha:sha})});
+        body:JSON.stringify({message:"allena: actualiza conocimiento Kaya", content:b64enc(JSON.stringify(CFG,null,2)), sha:sha})});
       if(!put.ok){ var er=await put.json(); throw new Error(er.message||put.status); }
-      msg("✓ Pubblicato! Online in ~1 minuto (Ctrl+F5 sul bot).","ok");
-    }catch(e){ msg("Errore: "+e.message,"bad"); }
+      msg("✓ ¡Publicado! Online en ~1 minuto (Ctrl+F5 en el bot).","ok");
+    }catch(e){ msg("Error: "+e.message,"bad"); }
     btn.disabled=false;
   }
 
   document.getElementById("tok").value=tok(); renderTok(); load();
 </script>
-<footer>AI Seller · Allena Kaya — Blackstar Digital Studio · 🇮🇹 Made in Italy</footer>
+<footer>AI Seller · Entrena a Kaya — Blackstar Digital Studio · 🇮🇹 Made in Italy</footer>
 </body></html>

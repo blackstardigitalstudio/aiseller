@@ -20,27 +20,27 @@
   "knowledge": [
     {
       "keys": [
-        "limone",
-        "lemon",
-        "agrodolce",
-        "fruttato",
-        "sapore limone",
-        "gusto limone"
+        "limón",
+        "limon",
+        "sabor",
+        "aroma",
+        "agridulce",
+        "afrutado"
       ],
-      "a": "Questo ha un profumo dolce e agrodolce di limone fruttato: fresco, vivace e avvolgente 🍋 Uno dei più amati per il suo aroma.",
+      "a": "Tiene un aroma dulce y agridulce de limón afrutado: fresco, vivo y envolvente 🍋 Uno de los más queridos por su aroma.",
       "safe": true
     },
     {
       "keys": [
-        "sapore",
+        "sabor",
+        "sabe",
+        "saben",
         "gusto",
         "aroma",
-        "profumo",
-        "che sa",
-        "come sa",
-        "odore"
+        "huele",
+        "olor"
       ],
-      "a": "Ogni varietà ha il suo carattere: c'è chi profuma di agrumi freschi, chi di frutti di bosco, chi ha note dolci e resinose. Dimmi che tipo di aroma ti piace e ti oriento 😊",
+      "a": "Cada variedad tiene su carácter: hay quien huele a cítricos frescos, quien a frutos rojos, quien tiene notas dulces y resinosas. Dime qué tipo de aroma te gusta y te oriento 😊",
       "safe": true
     }
   ],
