@@ -9,13 +9,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=ABeeZee:ital@0;1&family=Alata&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet" />
   <link rel="icon" href="assets/mascot.svg" />
-  <link rel="stylesheet" href="styles.css?v=85" />
+  <link rel="stylesheet" href="styles.css?v=86" />
   <!-- ANTI-FLASH: in modalità widget nascondi SUBITO lo storefront/age-gate (prima del render) finché non arriva la config del cliente → niente lampo di Kaya -->
   <script>try{if(/[?&]widget=1/.test(location.search)){document.documentElement.className+=" is-widget";}}catch(e){}</script>
   <style>
     html.is-widget,html.is-widget body{background:transparent !important}
     html.is-widget body::before{display:none !important;background:transparent !important}
     html.is-widget #site,html.is-widget #ageGate,html.is-widget .chat-launcher,html.is-widget .promo-bar,html.is-widget #mobileBar{display:none !important;visibility:hidden !important}
+    /* Fuori dalla modalità widget (pagina demo diretta): NESSUN chatbot — solo la vetrina/prodotti. Il bot vive solo embeddato sui siti reali (widget). */
+    html:not(.is-widget) #chatLauncher,html:not(.is-widget) #chatPanel,html:not(.is-widget) #heroCta2{display:none !important;visibility:hidden !important}
   </style>
 </head>
 <body>
@@ -332,8 +334,8 @@
     </div>
   </div>
 
-  <script src="data/data.js?v=85"></script>
-  <script src="config.js?v=85"></script>
-  <script src="app.js?v=85"></script>
+  <script src="data/data.js?v=86"></script>
+  <script src="config.js?v=86"></script>
+  <script src="app.js?v=86"></script>
 </body>
 </html>

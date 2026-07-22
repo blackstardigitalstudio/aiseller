@@ -1,14 +1,14 @@
 /*!
- * AI Seller — widget venditore · © 2026 Blackstar Digital Studio (blackstardigitalstudio.com)
+ * AI Seller — widget venditore · © 2026 Blackstar Digital Studio · by Matteo Stella (blackstardigitalstudio.com)
  * ALL RIGHTS RESERVED — Proprietary. No copy/reuse/redistribution without written permission.
- * origin-sig: BDS·AISELLER·b4a1c7-st4r·2026 · unauthorized copies are watermarked & traceable · Made in Italy
+ * origin-sig: BDS·AISELLER·b4a1c7-st4r·2026 · by Matteo Stella · unauthorized copies are watermarked & traceable · Made in Italy
  * Una riga sul sito del cliente:
  *   <script src="https://aiseller.pages.dev/widget.js" defer></script>
  */
 (function () {
   "use strict";
   /* firma d'origine (canary anti-copia): NON rimuovere — dimostra la paternità del codice */
-  try { window.__AISELLER_SIG__ = "BDS-AISELLER-b4a1c7st4r-2026-blackstardigitalstudio-MadeInItaly"; } catch (e) {}
+  try { window.__AISELLER_SIG__ = "BDS-AISELLER-b4a1c7st4r-2026-blackstardigitalstudio-by-MatteoStella-MadeInItaly"; } catch (e) {}
   var script = document.currentScript || (function () { var s = document.getElementsByTagName("script"); return s[s.length - 1]; })();
   if (!script || window.__AISELLER__) return;
   window.__AISELLER__ = true;

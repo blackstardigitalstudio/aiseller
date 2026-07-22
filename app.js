@@ -1,12 +1,12 @@
 /*!
- * AI Seller — motore chatbot venditore · © 2026 Blackstar Digital Studio (blackstardigitalstudio.com)
+ * AI Seller — motore chatbot venditore · © 2026 Blackstar Digital Studio · by Matteo Stella (blackstardigitalstudio.com)
  * ALL RIGHTS RESERVED — Proprietary. No copy/reuse/redistribution without written permission.
- * origin-sig: BDS·AISELLER·b4a1c7-st4r·2026 · copie non autorizzate sono tracciabili · Made in Italy 🇮🇹
+ * origin-sig: BDS·AISELLER·b4a1c7-st4r·2026 · by Matteo Stella · copie non autorizzate sono tracciabili · Made in Italy 🇮🇹
  * Motore intelligente a regole (neuromarketing) + hook opzionale Claude API.
  */
 (function () {
   "use strict";
-  try { window.__AISELLER_ENGINE_SIG__ = "BDS-AISELLER-b4a1c7st4r-2026-blackstardigitalstudio"; } catch (e) {}
+  try { window.__AISELLER_ENGINE_SIG__ = "BDS-AISELLER-b4a1c7st4r-2026-blackstardigitalstudio-by-MatteoStella"; } catch (e) {}
   const D = window.KF_DATA, CFG = window.KF_CONFIG;
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
