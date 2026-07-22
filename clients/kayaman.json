@@ -1,6 +1,16 @@
 {
   "brand": "Kayaman's Farm",
   "host": "kayamansfarm.com",
+  "accent": "#a8915f",
+  "character": {
+    "rest": "https://aiseller.pages.dev/assets/seller.webp",
+    "point": "https://aiseller.pages.dev/assets/seller-point.webp",
+    "pointBack": "https://aiseller.pages.dev/assets/seller-point-back.webp",
+    "face": "https://aiseller.pages.dev/assets/seller-face.webp",
+    "thumb": "https://aiseller.pages.dev/assets/seller-thumb.webp",
+    "blink": "https://aiseller.pages.dev/assets/seller-blink.webp",
+    "w": 374, "h": 560
+  },
   "safetyNote": {
     "it": "🌱 Ricorda: è un articolo da collezione, non destinato al consumo.",
     "es": "🌱 Recuerda: es un artículo de colección, no destinado al consumo.",
