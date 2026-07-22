@@ -1,9 +1,14 @@
-/* AI Seller · widget integrabile (Black Star). Una riga sul sito del cliente:
-   <script src="https://.../widget.js" data-config="https://.../config.json" defer></script>
-   Carica solo una bollina leggera col VISO del personaggio; la chat parte in un iframe isolato al primo click.
-   Quando è chiusa e inattiva, manda piccoli richiami (teaser) per riagganciare il cliente. Made in Italy. */
+/*!
+ * AI Seller — widget venditore · © 2026 Blackstar Digital Studio (blackstardigitalstudio.com)
+ * ALL RIGHTS RESERVED — Proprietary. No copy/reuse/redistribution without written permission.
+ * origin-sig: BDS·AISELLER·b4a1c7-st4r·2026 · unauthorized copies are watermarked & traceable · Made in Italy
+ * Una riga sul sito del cliente:
+ *   <script src="https://aiseller.pages.dev/widget.js" defer></script>
+ */
 (function () {
   "use strict";
+  /* firma d'origine (canary anti-copia): NON rimuovere — dimostra la paternità del codice */
+  try { window.__AISELLER_SIG__ = "BDS-AISELLER-b4a1c7st4r-2026-blackstardigitalstudio-MadeInItaly"; } catch (e) {}
   var script = document.currentScript || (function () { var s = document.getElementsByTagName("script"); return s[s.length - 1]; })();
   if (!script || window.__AISELLER__) return;
   window.__AISELLER__ = true;
@@ -68,6 +73,7 @@
   // ---- bollina (launcher) ----
   var btn = document.createElement("button");
   btn.setAttribute("aria-label", label);
+  btn.setAttribute("data-by", "blackstardigitalstudio");   // watermark d'origine (AI Seller © Blackstar Digital Studio)
   style(btn, {
     position: "fixed", zIndex: 2147483000,
     width: "64px", height: "64px", borderRadius: "50%", border: "none", cursor: "pointer",
