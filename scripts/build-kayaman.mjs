@@ -77,12 +77,20 @@ const products = raw.map(mapProduct).filter(p => p.name);
 const counts = {};
 products.forEach(p => { counts[p.category] = (counts[p.category] || 0) + 1; });
 const cats = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
-const catLabels = {}, emoji = {}, categoryOptions = [];
-cats.forEach(c => {
-  catLabels[c] = { es: c, it: c, en: c };
-  emoji[c] = emojiFor(c);
-  categoryOptions.push({ es: `${c} ${emojiFor(c)}`, it: `${c} ${emojiFor(c)}`, en: `${c} ${emojiFor(c)}`, val: c });
+// catLabels + emoji per TUTTE le categorie reali (servono a mostrare l'etichetta giusta sui prodotti)
+const catLabels = {}, emoji = {};
+cats.forEach(c => { catLabels[c] = { es: c, it: c, en: c }; emoji[c] = emojiFor(c); });
+// MENU: massimo ~10 categorie, con quelle "identitarie" in testa (CBD prima di tutto); il resto si trova a testo
+const PRIMARY = ["CBD", "Flores", "Comestibles", "Papel de liar", "Grinders", "Bandejas de liar", "Filtros / Tips", "Pipas para fumar", "Bong", "Vaporizadores", "Clipper", "Mecheros", "Encendedores Zippo"];
+const ordered = [...cats].sort((a, b) => {
+  const pa = PRIMARY.indexOf(a), pb = PRIMARY.indexOf(b);
+  if (pa >= 0 && pb >= 0) return pa - pb;
+  if (pa >= 0) return -1;
+  if (pb >= 0) return 1;
+  return counts[b] - counts[a];
 });
+const menuCats = ordered.slice(0, 10);
+const categoryOptions = menuCats.map(c => ({ es: `${c} ${emojiFor(c)}`, it: `${c} ${emojiFor(c)}`, en: `${c} ${emojiFor(c)}`, val: c }));
 
 // preserva i campi statici già presenti nella config (mascotte, sapere del capo, nota sicurezza, brand...)
 let base = {};
