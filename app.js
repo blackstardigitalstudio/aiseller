@@ -928,6 +928,9 @@
     botMsg(q.q[LANG], 500).then(() => renderProfilingQuick(q));
   }
 
+  // disponibilità: mai proporre un prodotto ESAURITO (stock 0). I prodotti senza campo stock sono considerati disponibili.
+  function avail(p) { return !!p && (p.stock == null || Number(p.stock) > 0); }
+
   // Dopo la profilazione: filtra prodotti e vende con tattica
   async function recommend() {
     state.flow = "recommend";
@@ -939,7 +942,7 @@
     if (D.cbd && (state.profile.category === "CBD" || state.profile.experience === "cbd")) return recommendCBD();
     const cat = state.profile.category;
     const budget = state.profile.budget;
-    let pool = D.products.slice();
+    let pool = D.products.filter(avail);   // solo prodotti disponibili
     if (cat && cat !== "any") pool = pool.filter(p => p.category === cat);
     if (budget === "low") pool = pool.filter(p => p.price < 15);
     else if (budget === "mid") pool = pool.filter(p => p.price >= 15 && p.price <= 50);
@@ -947,7 +950,7 @@
     let budgetMissed = false;
     if (!pool.length) {
       budgetMissed = !!budget && budget !== "any";
-      pool = cat && cat !== "any" ? D.products.filter(p => p.category === cat) : D.products.slice();
+      pool = (cat && cat !== "any" ? D.products.filter(p => p.category === cat) : D.products.slice()).filter(avail);
     }
     // ordina: badge prima, poi prezzo crescente
     pool.sort((a, b) => ((b.badge ? 1 : 0) - (a.badge ? 1 : 0)) || (a.price - b.price));
@@ -1026,7 +1029,7 @@
     clearQuick();
     const sol = D.cbd.solutions[need] || D.cbd.solutions.calma;
     // rete di sicurezza: se l'id "storico" non c'è nel catalogo aggiornato, pesca un prodotto CBD reale coerente col momento
-    const cbdPool = (D.products || []).filter(p => /cbd|cosmet|crema|b[aá]lsamo|aceite|roll|sales|ritual|resina|hash|flor/i.test((p.category || "") + " " + (p.name || "")));
+    const cbdPool = (D.products || []).filter(p => avail(p) && /cbd|cosmet|crema|b[aá]lsamo|aceite|roll|sales|ritual|resina|hash|flor/i.test((p.category || "") + " " + (p.name || "")));
     const hero = prod(sol.productId) || cbdPool.find(p => p.badge) || cbdPool[0] || (D.products || [])[0];
     const cross = prod(sol.crossId) || cbdPool.find(p => hero && p.id !== hero.id) || null;
     if (!hero) return;
@@ -1772,7 +1775,7 @@ CATALOGO:\n${cat}`;
   }
   function bestProductOf(cat) {
     const inLista = (nm) => state.lista.some(i => i.name === nm);
-    const pool = (D.products || []).filter(p => p.category === cat && !inLista(p.name));
+    const pool = (D.products || []).filter(p => p.category === cat && avail(p) && !inLista(p.name));
     pool.sort((a, b) => ((b.badge ? 1 : 0) - (a.badge ? 1 : 0)));
     return pool[0] || null;
   }
