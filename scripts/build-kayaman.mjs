@@ -92,10 +92,24 @@ const ordered = [...cats].sort((a, b) => {
 const menuCats = ordered.slice(0, 10);
 const categoryOptions = menuCats.map(c => ({ es: `${c} ${emojiFor(c)}`, it: `${c} ${emojiFor(c)}`, en: `${c} ${emojiFor(c)}`, val: c }));
 
+// cross-sell "vendere insieme" — COMPLIANT: mai fiore/CBD con le cartine (implicherebbe il consumo)
+const PAIRS = {
+  "Papel de liar": "Filtros / Tips", "Filtros / Tips": "Papel de liar",
+  "Conos": "Filtros / Tips", "Bandejas de liar": "Papel de liar", "Bandejas RAW": "Papel de liar",
+  "Grinders": "Papel de liar", "Máquinas de liar": "Papel de liar", "Clipper": "Bandejas de liar",
+  "Mecheros": "Papel de liar", "Encendedores Zippo": "Ceniceros", "Bong": "Ceniceros",
+  "Pipas para fumar": "Mecheros", "CBD": "Comestibles", "Flores": "Comestibles",
+  "Comestibles": "CBD", "Vaporizadores": "E-liquids", "E-liquids": "Vaporizadores",
+  "Básculas de precisión": "Almacenamiento", "Filtros Reutilizables": "Papel de liar"
+};
+const catSet = new Set(cats);
+const upsell = {};
+for (const [k, v] of Object.entries(PAIRS)) { if (catSet.has(k) && catSet.has(v)) upsell[k] = v; }
+
 // preserva i campi statici già presenti nella config (mascotte, sapere del capo, nota sicurezza, brand...)
 let base = {};
 try { base = JSON.parse(fs.readFileSync(OUT, "utf8")); } catch (e) {}
-const out = Object.assign({}, base, { products, catLabels, categoryOptions, emoji });
+const out = Object.assign({}, base, { products, catLabels, categoryOptions, emoji, upsell });
 
 fs.writeFileSync(OUT, JSON.stringify(out, null, 2));
 console.log(`Catalogo aggiornato: ${products.length} prodotti, ${cats.length} categorie.`);

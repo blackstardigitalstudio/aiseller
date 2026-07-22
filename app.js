@@ -1706,6 +1706,7 @@ CATALOGO:\n${cat}`;
     if (p.itemEmoji) KF_DATA.itemEmoji = p.itemEmoji;                 // icona segnaposto generica del settore
     // etichetta "scelta consigliata" sulla card hero: neutra per ogni tenant (evita la "La scelta di Kaya" del config base), override via p.pick
     KF_DATA.seller = Object.assign({}, KF_DATA.seller, { pick: p.pick || { es: "Mi elección", it: "La mia scelta", en: "My pick" } });
+    if (p.upsell) KF_DATA.upsell = p.upsell;            // cross-sell shop: categoria → categoria da proporre insieme (es. Papel de liar → Filtros/Tips)
     if (p.crossSell) KF_DATA.crossSell = p.crossSell;   // mappa abbinamenti cross-sell (bottega/food): categoria → complemento + frase di vendita
     if (p.ctaAdd) KF_DATA.ctaAdd = p.ctaAdd;            // etichetta "aggiungi" delle card in modalità cross-sell
     if (p.prepInstructions) KF_DATA.prepInstructions = p.prepInstructions;   // istruzioni di cottura per prodotto (piatti pronti)
