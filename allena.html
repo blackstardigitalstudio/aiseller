@@ -46,6 +46,9 @@
   .mic.sm{width:34px;height:34px;font-size:.9rem;border-radius:50%}
   @keyframes micpulse{0%,100%{box-shadow:0 0 0 0 rgba(171,46,49,.4)}50%{box-shadow:0 0 0 6px rgba(171,46,49,0)}}
   .no-voice .mic{display:none}
+  .ios .mic{display:none}   /* su iPhone il dettato web è inaffidabile: si usa il 🎤 della tastiera */
+  .ios-hint{display:none;background:#edefe6;border:1px solid var(--line);border-radius:12px;padding:9px 12px;color:var(--ink);font-size:.8rem;line-height:1.5;margin-bottom:11px}
+  .ios .ios-hint{display:block}
 </style></head>
 <body>
 <script>
@@ -104,6 +107,8 @@
     </div>
     <div class="msgline" id="msg"></div>
   </div>
+
+  <div class="ios-hint">🎤 <b>En iPhone:</b> toca el campo de texto y pulsa el <b>micrófono del teclado</b> (abajo a la derecha) para dictar en vez de escribir.</div>
 
   <div class="note">
     📸 <b>Capturas de chats con clientes:</b> no las subas aquí (datos personales, página pública). Envíalas en privado, las convierto en conocimiento anónimo. · 🔑 Token: clásico con scope <code>repo</code>.
@@ -242,6 +247,8 @@
   }
 
   if(!Recog) document.body.classList.add("no-voice");   // niente dettato → nascondi i microfoni
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform==="MacIntel" && navigator.maxTouchPoints>1);
+  if(isIOS) document.body.classList.add("ios");          // su iPhone: microfono web nascosto + avviso "usa il 🎤 della tastiera"
   document.getElementById("tok").value=tok(); renderTok(); load();
 </script>
 </body></html>
