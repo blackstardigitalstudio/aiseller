@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="it"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Seller · Allena Kaya</title>
+<script>/* anti-clickjacking */ if(window.top!==window.self){ window.top.location=window.self.location.href; }</script>
+<style>
+  :root{--bg:#0b1020;--panel:#121a30;--panel2:#0e1526;--gold:#e8b84f;--leaf:#37e07a;--ink:#eaf1f9;--muted:#9fb0c7;--line:#22304d;--ok:#2ec1a0;--bad:#e0573a}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:linear-gradient(180deg,#0b1020,#0e1428);color:var(--ink);min-height:100vh}
+  .wrap{max-width:860px;margin:0 auto;padding:20px 16px 80px}
+  h1{font-size:1.35rem;margin:0;display:flex;align-items:center;gap:9px}
+  .sub{color:var(--muted);font-size:.86rem;margin:4px 0 18px;line-height:1.5}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:16px}
+  .card h2{margin:0 0 10px;font-size:1.05rem}
+  label{display:block;font-size:.82rem;font-weight:700;color:var(--muted);margin:12px 0 5px}
+  input[type=text],textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:10px;color:var(--ink);padding:10px 12px;font-size:.9rem;font-family:inherit}
+  textarea{min-height:90px;line-height:1.5;resize:vertical}
+  .chk{display:flex;align-items:center;gap:8px;font-size:.86rem;color:var(--ink);font-weight:600;margin-top:12px;cursor:pointer}
+  .btn{background:var(--gold);color:#231a00;border:none;border-radius:10px;padding:10px 15px;font-weight:800;cursor:pointer;font-size:.88rem}
+  .btn.ghost{background:transparent;color:var(--gold);border:1px solid var(--gold)}
+  .btn.sm{padding:6px 11px;font-size:.8rem}
+  .btn.gray{background:var(--panel2);color:var(--muted);border:1px solid var(--line)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .tokbar{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .tokbar input{flex:1;min-width:200px}
+  .st{font-size:.82rem;font-weight:700}
+  .entry{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px}
+  .entry .keys{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:7px}
+  .tag{background:rgba(232,184,79,.14);color:var(--gold);font-size:.74rem;font-weight:700;padding:2px 9px;border-radius:20px}
+  .entry .ans{font-size:.88rem;line-height:1.5;white-space:pre-wrap}
+  .entry .safe{display:inline-block;margin-top:7px;font-size:.74rem;color:var(--leaf);font-weight:700}
+  .entry .acts{display:flex;gap:8px;margin-top:10px}
+  .empty{color:var(--muted);font-size:.86rem;padding:8px 0}
+  .msg{font-size:.83rem;font-weight:700;min-height:18px;margin-top:8px}
+  .msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)} .msg.busy{color:var(--gold)}
+  .test-out{background:var(--panel2);border:1px dashed var(--line);border-radius:12px;padding:12px;margin-top:10px;font-size:.9rem;line-height:1.55;white-space:pre-wrap;min-height:20px;color:var(--ink)}
+  .test-out.miss{color:var(--muted)}
+  .hint{color:var(--muted);font-size:.78rem;line-height:1.5}
+  code{background:var(--panel2);padding:1px 6px;border-radius:5px;color:var(--gold);font-size:.85em}
+  a.link{color:var(--gold)}
+  footer{text-align:center;color:#6b7d99;margin-top:26px;font-size:.8rem}
+</style></head>
+<body>
+<script>
+(function(){
+  var H='fb4f5fdb2c2508803d16317807680280f731f5486d98933f0f5bcd05a5f9d5ec',K='_as_auth';
+  if(sessionStorage.getItem(K)==='1')return;
+  document.documentElement.style.visibility='hidden';
+  function gate(){
+    var o=document.createElement('div');
+    o.style.cssText='position:fixed;inset:0;background:#0b1020;display:flex;align-items:center;justify-content:center;z-index:99999;font-family:system-ui,sans-serif';
+    o.innerHTML='<div style="text-align:center;max-width:300px;width:90%;padding:0 20px"><div style="font-size:2.4rem;margin-bottom:10px">🌱</div><h2 style="color:#eaf1f9;margin:0 0 4px;font-size:1.15rem">Allena Kaya</h2><p style="color:#9fb0c7;font-size:.82rem;margin:0 0 22px">Area privata · Blackstar Digital Studio</p><input id="_pw" type="password" placeholder="Password" autocomplete="current-password" style="width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid #22304d;background:#121a30;color:#eaf1f9;font-size:1rem;outline:none;margin-bottom:8px"><div id="_err" style="color:#e0573a;font-size:.8rem;min-height:16px;margin-bottom:8px"></div><button id="_ok" style="width:100%;padding:12px;border-radius:12px;border:none;background:#e8b84f;color:#231a00;font-weight:800;font-size:1rem;cursor:pointer">Entra</button></div>';
+    document.body.appendChild(o);
+    document.documentElement.style.visibility='visible';
+    setTimeout(function(){document.getElementById('_pw').focus();},80);
+    async function check(){
+      var buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(document.getElementById('_pw').value));
+      var hex=Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0')}).join('');
+      if(hex===H){sessionStorage.setItem(K,'1');o.remove();}
+      else{document.getElementById('_err').textContent='Password errata';document.getElementById('_pw').select();}
+    }
+    document.getElementById('_ok').onclick=check;
+    document.getElementById('_pw').onkeydown=function(e){if(e.key==='Enter')check();};
+  }
+  document.body?gate():document.addEventListener('DOMContentLoaded',gate);
+})();
+</script>
+
+<div class="wrap">
+  <h1>🌱 Allena Kaya</h1>
+  <div class="sub">La stanza privata dove insegni al bot. Scrivi le tue chicche (sapore, aroma, dettagli) con il tuo tocco umano — la <b>nota di sicurezza</b> ("solo da collezione") la mette lui in automatico. Poi <b>Pubblica</b> e in ~1 minuto lo sanno tutti i clienti.</div>
+
+  <div class="tokbar">
+    <span style="font-size:1.1rem">🔑</span>
+    <input id="tok" type="password" placeholder="Token GitHub (serve solo per PUBBLICARE) — resta nel tuo browser" />
+    <button class="btn sm" onclick="saveTok()">Collega</button>
+    <span class="btn ghost sm" onclick="forgetTok()" style="cursor:pointer">Dimentica</span>
+    <span class="st" id="tokSt"></span>
+  </div>
+
+  <div class="card">
+    <h2>➕ Insegna una cosa nuova</h2>
+    <label>Quando un cliente scrive di… <span style="font-weight:400">(parole chiave separate da virgola, es. <code>limone, sapore, aroma</code>)</span></label>
+    <input type="text" id="fKeys" placeholder="limone, sapore, agrodolce" />
+    <label>…il bot risponde:</label>
+    <textarea id="fAns" placeholder="Es. Questo ha un profumo dolce e agrodolce di limone fruttato, fresco e avvolgente 🍋 Uno dei più amati per l'aroma."></textarea>
+    <label class="chk"><input type="checkbox" id="fSafe" checked /> Aggiungi in fondo la nota di sicurezza (“solo da collezione, non consumabile”)</label>
+    <div class="row" style="margin-top:14px">
+      <button class="btn" id="fAdd" onclick="addEntry()">Aggiungi al sapere</button>
+      <button class="btn gray sm" id="fCancel" onclick="cancelEdit()" style="display:none">Annulla modifica</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🧪 Prova qui (senza pubblicare)</h2>
+    <div class="hint">Scrivi come farebbe un cliente e vedi subito cosa risponderebbe il bot col sapere attuale.</div>
+    <input type="text" id="tIn" placeholder="es. che sapore ha?" oninput="runTest()" style="margin-top:10px" />
+    <div class="test-out miss" id="tOut">—</div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between">
+      <h2 style="margin:0">📚 Sapere del bot (<span id="cnt">0</span>)</h2>
+      <button class="btn" id="pub" onclick="publish()">🚀 Pubblica</button>
+    </div>
+    <div id="list"></div>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <div class="hint">
+    <b>Prova il bot pubblicato:</b> <a class="link" id="tryLink" target="_blank">apri Kaya ▶</a> ·
+    Il token: crea un <i>Fine-grained</i> o <i>classic</i> con permesso <code>Contents: Read and write</code> sul repo <code>aiseller</code>. Resta solo nel tuo browser.
+  </div>
+</div>
+
+<script>
+  var REPO="blackstardigitalstudio/aiseller", CDN="https://aiseller.pages.dev", PATH="clients/kayaman.json";
+  var LANG="it";
+  var CFG=null, KB=[], editIdx=-1;
+
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+  function b64enc(str){ return btoa(unescape(encodeURIComponent(str))); }
+  function tok(){ return localStorage.getItem("AISELLER_GH_TOKEN")||""; }
+  function saveTok(){ var v=document.getElementById("tok").value.trim(); if(v) localStorage.setItem("AISELLER_GH_TOKEN",v); renderTok(); }
+  function forgetTok(){ localStorage.removeItem("AISELLER_GH_TOKEN"); document.getElementById("tok").value=""; renderTok(); }
+  function renderTok(){ var s=document.getElementById("tokSt"); if(tok()){ s.textContent="✓ collegato"; s.style.color="var(--ok)"; } else { s.textContent="incolla il token per pubblicare"; s.style.color="var(--muted)"; } }
+  function msg(t,c){ var m=document.getElementById("msg"); m.textContent=t||""; m.className="msg "+(c||""); }
+
+  function safetyText(){ var n=CFG&&CFG.safetyNote; if(!n) return "🌱 Ricorda: è un articolo da collezione, non destinato al consumo."; return (typeof n==="object")?(n[LANG]||n.it):n; }
+
+  async function load(){
+    document.getElementById("tryLink").href=CDN+"/?widget=1&config="+encodeURIComponent(CDN+"/"+PATH)+"&accent=%23a8915f";
+    try{
+      var r=await fetch(CDN+"/"+PATH+"?cb="+Date.now());
+      CFG = r.ok ? await r.json() : { brand:"Kayaman's Farm" };
+    }catch(e){ CFG={ brand:"Kayaman's Farm" }; }
+    KB = Array.isArray(CFG.knowledge)?CFG.knowledge:[];
+    renderList();
+  }
+
+  function renderList(){
+    document.getElementById("cnt").textContent=KB.length;
+    var el=document.getElementById("list");
+    if(!KB.length){ el.innerHTML='<div class="empty">Ancora niente. Aggiungi la prima chicca qui sopra 👆</div>'; return; }
+    el.innerHTML=KB.map(function(e,i){
+      var keys=(e.keys||[]).map(function(k){return '<span class="tag">'+esc(k)+'</span>';}).join("");
+      var a=e.a||""; if(a&&typeof a==="object") a=a[LANG]||a.it||"";
+      return '<div class="entry"><div class="keys">'+keys+'</div>'
+        +'<div class="ans">'+esc(a)+'</div>'
+        +(e.safe?'<span class="safe">＋ nota di sicurezza</span>':'')
+        +'<div class="acts"><button class="btn gray sm" onclick="editEntry('+i+')">✏️ Modifica</button>'
+        +'<button class="btn gray sm" onclick="delEntry('+i+')">🗑️ Elimina</button></div></div>';
+    }).join("");
+  }
+
+  function addEntry(){
+    var keys=document.getElementById("fKeys").value.split(",").map(function(s){return s.trim().toLowerCase();}).filter(Boolean);
+    var a=document.getElementById("fAns").value.trim();
+    var safe=document.getElementById("fSafe").checked;
+    if(!keys.length){ msg("Metti almeno una parola chiave.","bad"); return; }
+    if(!a){ msg("Scrivi la risposta del bot.","bad"); return; }
+    var entry={ keys:keys, a:a, safe:safe };
+    if(editIdx>=0){ KB[editIdx]=entry; } else { KB.push(entry); }
+    cancelEdit(); renderList(); runTest();
+    msg("Aggiunto ✔ (ricordati di premere 🚀 Pubblica per mandarlo online)","ok");
+  }
+  function editEntry(i){
+    var e=KB[i]; editIdx=i;
+    document.getElementById("fKeys").value=(e.keys||[]).join(", ");
+    var a=e.a||""; if(a&&typeof a==="object") a=a[LANG]||a.it||"";
+    document.getElementById("fAns").value=a;
+    document.getElementById("fSafe").checked=e.safe!==false;
+    document.getElementById("fAdd").textContent="Salva modifica";
+    document.getElementById("fCancel").style.display="";
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+  function cancelEdit(){
+    editIdx=-1;
+    document.getElementById("fKeys").value=""; document.getElementById("fAns").value=""; document.getElementById("fSafe").checked=true;
+    document.getElementById("fAdd").textContent="Aggiungi al sapere";
+    document.getElementById("fCancel").style.display="none";
+  }
+  function delEntry(i){ KB.splice(i,1); renderList(); runTest(); msg("Eliminato (premi 🚀 Pubblica per confermare online)","ok"); }
+
+  // tester istantaneo: stessa logica del motore (bestKnowledge)
+  function runTest(){
+    var low=document.getElementById("tIn").value.trim().toLowerCase();
+    var out=document.getElementById("tOut");
+    if(!low){ out.textContent="—"; out.className="test-out miss"; return; }
+    var best=null,score=0;
+    KB.forEach(function(e){ var s=0; (e.keys||[]).forEach(function(k){ k=String(k).toLowerCase().trim(); if(k&&low.indexOf(k)>=0) s+=2; }); if(s>score){score=s;best=e;} });
+    if(score>=2 && best){
+      var a=best.a||""; if(a&&typeof a==="object") a=a[LANG]||a.it||"";
+      if(best.safe) a=a+"\n\n"+safetyText();
+      out.textContent=a; out.className="test-out";
+    } else {
+      out.textContent="(Nessuna voce insegnata combacia → il bot userebbe il suo flusso normale: prodotti, consigli, CBD conforme.)";
+      out.className="test-out miss";
+    }
+  }
+
+  async function publish(){
+    if(!tok()){ msg("Incolla prima il token GitHub (in alto).","bad"); return; }
+    if(!CFG){ msg("Config non caricata, ricarica la pagina.","bad"); return; }
+    CFG.knowledge=KB;
+    var btn=document.getElementById("pub"); btn.disabled=true; msg("Pubblicazione…","busy");
+    try{
+      var api="https://api.github.com/repos/"+REPO+"/contents/"+PATH;
+      var g=await fetch(api,{headers:{Authorization:"Bearer "+tok(),Accept:"application/vnd.github+json"}});
+      var sha=g.ok?(await g.json()).sha:undefined;
+      var put=await fetch(api,{method:"PUT",headers:{Authorization:"Bearer "+tok(),Accept:"application/vnd.github+json"},
+        body:JSON.stringify({message:"allena: aggiorna sapere Kaya", content:b64enc(JSON.stringify(CFG,null,2)), sha:sha})});
+      if(!put.ok){ var er=await put.json(); throw new Error(er.message||put.status); }
+      msg("✓ Pubblicato! Online in ~1 minuto (Ctrl+F5 sul bot per vederlo).","ok");
+    }catch(e){ msg("Errore: "+e.message,"bad"); }
+    btn.disabled=false;
+  }
+
+  document.getElementById("tok").value=tok(); renderTok(); load();
+</script>
+<footer>AI Seller · Allena Kaya — Blackstar Digital Studio · 🇮🇹 Made in Italy</footer>
+</body></html>

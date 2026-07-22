@@ -1127,6 +1127,23 @@
 
   // ===== COMPRENSIONE TESTO LIBERO (generica, guidata dai SERVIZI/PRODOTTI del cliente) =====
   const STOPW = ["della","delle","degli","sono","come","cosa","molto","anche","quale","quali","vorrei","posso","serve","fare","bene","questo","questa","dopo","prima","tutto","tutta","mia","mio","mie","miei","con","per","una","uno","che","non","gli","the","and","you","for","con","sul","sulla","alla","dal"];
+  // ===== SAPERE INSEGNATO DAL TITOLARE (pagina Allena) — il bot risponde con le voci che il capo gli ha dato =====
+  function bestKnowledge(low) {
+    var list = D.knowledge; if (!Array.isArray(list) || !list.length) return null;
+    var best = null, score = 0;
+    for (var i = 0; i < list.length; i++) {
+      var e = list[i], keys = e.keys || e.k || [], s = 0;
+      for (var j = 0; j < keys.length; j++) { var k = String(keys[j] || "").toLowerCase().trim(); if (k && low.indexOf(k) >= 0) s += 2; }
+      if (s > score) { score = s; best = e; }
+    }
+    return score >= 2 ? best : null;   // serve almeno una parola-chiave centrata
+  }
+  function kAnswer(e) {
+    var a = e.a || e.answer || ""; if (a && typeof a === "object") a = a[LANG] || a.it || a.es || a.en || "";
+    if (e.safe && D.safetyNote) { var n = D.safetyNote; n = (typeof n === "object") ? (n[LANG] || n.it || n.es || n.en || "") : n; if (n) a = a + "\n\n" + n; }
+    return a;
+  }
+
   function matchService(low) {
     let best = null, bestScore = 0;
     for (const p of (D.products || [])) {
@@ -1200,6 +1217,10 @@
       offerFreeQuick();
       return;
     }
+
+    // 0.6) SAPERE INSEGNATO DAL TITOLARE (pagina Allena) — priorità: risponde con ciò che il capo ha insegnato
+    var kb = bestKnowledge(low);
+    if (kb) { await botMsg(kAnswer(kb), 650); offerFreeQuick(); return; }
 
     // 0.5) EMERGENZA / panico ("non parte", "in panne", "urgente"…) → BYPASS totale: contatto umano immediato
     if (isLead() && KF_DATA.emergency !== false && isEmergency(low)) { await emergencyHandoff(raw); return; }
@@ -1663,6 +1684,8 @@ CATALOGO:\n${cat}`;
     if (p.character !== undefined) KF_DATA.character = p.character;   // {rest,point,pointBack,thumb,blink,face,finger} oppure false = nessuna mascotte
     if (p.askName !== undefined) KF_DATA.askName = p.askName;   // chiedere il nome a inizio chat (default sì)
     if (p.remember !== undefined) KF_DATA.remember = p.remember;   // memoria cliente via localStorage (default sì); false = disattiva
+    if (p.knowledge) KF_DATA.knowledge = p.knowledge;              // "sapere insegnato" dal titolare (pagina Allena): [{keys:[], a:"", safe:true}]
+    if (p.safetyNote) KF_DATA.safetyNote = p.safetyNote;          // nota di sicurezza CBD appesa alle risposte con safe:true ("solo da collezione…")
     if (p.dark !== undefined) KF_DATA.dark = p.dark;            // tema chat scuro/chiaro come il sito
     if (p.bg) KF_DATA.bg = p.bg;                                // colore di sfondo del sito → superficie chat
     if (p.accent) KF_DATA.accent = p.accent;

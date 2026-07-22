@@ -1,0 +1,21 @@
+{
+  "brand": "Kayaman's Farm",
+  "host": "kayamansfarm.com",
+  "safetyNote": {
+    "it": "🌱 Ricorda: è un articolo da collezione, non destinato al consumo.",
+    "es": "🌱 Recuerda: es un artículo de colección, no destinado al consumo.",
+    "en": "🌱 Remember: this is a collector's item, not intended for consumption."
+  },
+  "knowledge": [
+    {
+      "keys": ["limone", "lemon", "agrodolce", "fruttato", "sapore limone", "gusto limone"],
+      "a": "Questo ha un profumo dolce e agrodolce di limone fruttato: fresco, vivace e avvolgente 🍋 Uno dei più amati per il suo aroma.",
+      "safe": true
+    },
+    {
+      "keys": ["sapore", "gusto", "aroma", "profumo", "che sa", "come sa", "odore"],
+      "a": "Ogni varietà ha il suo carattere: c'è chi profuma di agrumi freschi, chi di frutti di bosco, chi ha note dolci e resinose. Dimmi che tipo di aroma ti piace e ti oriento 😊",
+      "safe": true
+    }
+  ]
+}
