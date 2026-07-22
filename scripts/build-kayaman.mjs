@@ -33,17 +33,24 @@ const HDRS = {
   "Referer": "https://kayamansfarm.com/",
   "Sec-Fetch-Mode": "cors", "Sec-Fetch-Site": "same-origin"
 };
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+async function fetchPage(page) {
+  const url = `${API}?per_page=100&page=${page}&catalog_visibility=any`;
+  let lastErr = "";
+  for (let attempt = 1; attempt <= 5; attempt++) {   // il captcha SiteGround spesso "whitelista" l'IP dopo i primi tentativi
+    try {
+      const r = await fetch(url, { headers: HDRS });
+      const text = await r.text();
+      if (/sgcaptcha|<html/i.test(text.slice(0, 200))) { lastErr = "captcha SiteGround"; await sleep(4000 * attempt); continue; }
+      return JSON.parse(text);
+    } catch (e) { lastErr = e.message; await sleep(2500 * attempt); }
+  }
+  throw new Error("Pagina " + page + " non recuperata dopo i retry (" + lastErr + "). Anti-bot SiteGround: riproverà al prossimo giro.");
+}
 async function fetchAll() {
   const all = [];
   for (let page = 1; page <= 60; page++) {
-    const url = `${API}?per_page=100&page=${page}&catalog_visibility=any`;
-    const r = await fetch(url, { headers: HDRS });
-    const text = await r.text();
-    if (/sgcaptcha|<html/i.test(text.slice(0, 200))) {
-      throw new Error("Bloccato dal captcha anti-bot di SiteGround (l'IP del runner è sfidato). Serve un'altra via (proxy/UA residenziale o endpoint diverso).");
-    }
-    let batch;
-    try { batch = JSON.parse(text); } catch (e) { if (page === 1) throw new Error("Risposta non-JSON: " + text.slice(0, 120)); break; }
+    const batch = await fetchPage(page);
     if (!Array.isArray(batch) || !batch.length) break;
     all.push(...batch);
     if (batch.length < 100) break;
