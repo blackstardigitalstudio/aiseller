@@ -21118,274 +21118,10 @@
   },
   "categoryOptions": [
     {
-      "es": "Clipper 🔥",
-      "it": "Clipper 🔥",
-      "en": "Clipper 🔥",
-      "val": "Clipper"
-    },
-    {
-      "es": "Merchan / Accesorios 🧰",
-      "it": "Merchan / Accesorios 🧰",
-      "en": "Merchan / Accesorios 🧰",
-      "val": "Merchan / Accesorios"
-    },
-    {
-      "es": "Papel de liar 📄",
-      "it": "Papel de liar 📄",
-      "en": "Papel de liar 📄",
-      "val": "Papel de liar"
-    },
-    {
-      "es": "Otras Marcas 🛍️",
-      "it": "Otras Marcas 🛍️",
-      "en": "Otras Marcas 🛍️",
-      "val": "Otras Marcas"
-    },
-    {
-      "es": "Almacenamiento 🛍️",
-      "it": "Almacenamiento 🛍️",
-      "en": "Almacenamiento 🛍️",
-      "val": "Almacenamiento"
-    },
-    {
-      "es": "Ceniceros 🧰",
-      "it": "Ceniceros 🧰",
-      "en": "Ceniceros 🧰",
-      "val": "Ceniceros"
-    },
-    {
-      "es": "Novedades 🛍️",
-      "it": "Novedades 🛍️",
-      "en": "Novedades 🛍️",
-      "val": "Novedades"
-    },
-    {
-      "es": "Bandejas RAW 📄",
-      "it": "Bandejas RAW 📄",
-      "en": "Bandejas RAW 📄",
-      "val": "Bandejas RAW"
-    },
-    {
-      "es": "Bandejas de liar 🧰",
-      "it": "Bandejas de liar 🧰",
-      "en": "Bandejas de liar 🧰",
-      "val": "Bandejas de liar"
-    },
-    {
-      "es": "Pipas para fumar 🧰",
-      "it": "Pipas para fumar 🧰",
-      "en": "Pipas para fumar 🧰",
-      "val": "Pipas para fumar"
-    },
-    {
-      "es": "4 piezas 🛍️",
-      "it": "4 piezas 🛍️",
-      "en": "4 piezas 🛍️",
-      "val": "4 piezas"
-    },
-    {
-      "es": "Metal 🛍️",
-      "it": "Metal 🛍️",
-      "en": "Metal 🛍️",
-      "val": "Metal"
-    },
-    {
       "es": "CBD 🌿",
       "it": "CBD 🌿",
       "en": "CBD 🌿",
       "val": "CBD"
-    },
-    {
-      "es": "Bong 🧰",
-      "it": "Bong 🧰",
-      "en": "Bong 🧰",
-      "val": "Bong"
-    },
-    {
-      "es": "BHO 🛍️",
-      "it": "BHO 🛍️",
-      "en": "BHO 🛍️",
-      "val": "BHO"
-    },
-    {
-      "es": "Grinders ⚙️",
-      "it": "Grinders ⚙️",
-      "en": "Grinders ⚙️",
-      "val": "Grinders"
-    },
-    {
-      "es": "Tips de cartón 🛍️",
-      "it": "Tips de cartón 🛍️",
-      "en": "Tips de cartón 🛍️",
-      "val": "Tips de cartón"
-    },
-    {
-      "es": "3 piezas 🛍️",
-      "it": "3 piezas 🛍️",
-      "en": "3 piezas 🛍️",
-      "val": "3 piezas"
-    },
-    {
-      "es": "Vaporizadores 💨",
-      "it": "Vaporizadores 💨",
-      "en": "Vaporizadores 💨",
-      "val": "Vaporizadores"
-    },
-    {
-      "es": "Básculas de precisión 🛍️",
-      "it": "Básculas de precisión 🛍️",
-      "en": "Básculas de precisión 🛍️",
-      "val": "Básculas de precisión"
-    },
-    {
-      "es": "Filtros Reutilizables 🛍️",
-      "it": "Filtros Reutilizables 🛍️",
-      "en": "Filtros Reutilizables 🛍️",
-      "val": "Filtros Reutilizables"
-    },
-    {
-      "es": "Packs 🛍️",
-      "it": "Packs 🛍️",
-      "en": "Packs 🛍️",
-      "val": "Packs"
-    },
-    {
-      "es": "Conos 🛍️",
-      "it": "Conos 🛍️",
-      "en": "Conos 🛍️",
-      "val": "Conos"
-    },
-    {
-      "es": "Filtros / Tips 🛍️",
-      "it": "Filtros / Tips 🛍️",
-      "en": "Filtros / Tips 🛍️",
-      "val": "Filtros / Tips"
-    },
-    {
-      "es": "Máquinas de liar 🛍️",
-      "it": "Máquinas de liar 🛍️",
-      "en": "Máquinas de liar 🛍️",
-      "val": "Máquinas de liar"
-    },
-    {
-      "es": "Cristal 🛍️",
-      "it": "Cristal 🛍️",
-      "en": "Cristal 🛍️",
-      "val": "Cristal"
-    },
-    {
-      "es": "Fire Flow 🛍️",
-      "it": "Fire Flow 🛍️",
-      "en": "Fire Flow 🛍️",
-      "val": "Fire Flow"
-    },
-    {
-      "es": "Encendedores Zippo 🛍️",
-      "it": "Encendedores Zippo 🛍️",
-      "en": "Encendedores Zippo 🛍️",
-      "val": "Encendedores Zippo"
-    },
-    {
-      "es": "King Palm / Blunts 📄",
-      "it": "King Palm / Blunts 📄",
-      "en": "King Palm / Blunts 📄",
-      "val": "King Palm / Blunts"
-    },
-    {
-      "es": "Filtros Preliados 🛍️",
-      "it": "Filtros Preliados 🛍️",
-      "en": "Filtros Preliados 🛍️",
-      "val": "Filtros Preliados"
-    },
-    {
-      "es": "Tapas Magnéticas 🛍️",
-      "it": "Tapas Magnéticas 🛍️",
-      "en": "Tapas Magnéticas 🛍️",
-      "val": "Tapas Magnéticas"
-    },
-    {
-      "es": "Papel RAW 📄",
-      "it": "Papel RAW 📄",
-      "en": "Papel RAW 📄",
-      "val": "Papel RAW"
-    },
-    {
-      "es": "Control de Olores 🛍️",
-      "it": "Control de Olores 🛍️",
-      "en": "Control de Olores 🛍️",
-      "val": "Control de Olores"
-    },
-    {
-      "es": "Poliresina 🌿",
-      "it": "Poliresina 🌿",
-      "en": "Poliresina 🌿",
-      "val": "Poliresina"
-    },
-    {
-      "es": "2 piezas 🛍️",
-      "it": "2 piezas 🛍️",
-      "en": "2 piezas 🛍️",
-      "val": "2 piezas"
-    },
-    {
-      "es": "Otros 🛍️",
-      "it": "Otros 🛍️",
-      "en": "Otros 🛍️",
-      "val": "Otros"
-    },
-    {
-      "es": "Papel Smoking 📄",
-      "it": "Papel Smoking 📄",
-      "en": "Papel Smoking 📄",
-      "val": "Papel Smoking"
-    },
-    {
-      "es": "Accesorios 🧰",
-      "it": "Accesorios 🧰",
-      "en": "Accesorios 🧰",
-      "val": "Accesorios"
-    },
-    {
-      "es": "Conos RAW 📄",
-      "it": "Conos RAW 📄",
-      "en": "Conos RAW 📄",
-      "val": "Conos RAW"
-    },
-    {
-      "es": "Clipper Colección 🔥",
-      "it": "Clipper Colección 🔥",
-      "en": "Clipper Colección 🔥",
-      "val": "Clipper Colección"
-    },
-    {
-      "es": "Ropa 🛍️",
-      "it": "Ropa 🛍️",
-      "en": "Ropa 🛍️",
-      "val": "Ropa"
-    },
-    {
-      "es": "Plástico 🛍️",
-      "it": "Plástico 🛍️",
-      "en": "Plástico 🛍️",
-      "val": "Plástico"
-    },
-    {
-      "es": "Cerámica 🛍️",
-      "it": "Cerámica 🛍️",
-      "en": "Cerámica 🛍️",
-      "val": "Cerámica"
-    },
-    {
-      "es": "Papel Monkey King 📄",
-      "it": "Papel Monkey King 📄",
-      "en": "Papel Monkey King 📄",
-      "val": "Papel Monkey King"
-    },
-    {
-      "es": "Tarjetas Grinder ⚙️",
-      "it": "Tarjetas Grinder ⚙️",
-      "en": "Tarjetas Grinder ⚙️",
-      "val": "Tarjetas Grinder"
     },
     {
       "es": "Flores 🌿",
@@ -21400,82 +21136,46 @@
       "val": "Comestibles"
     },
     {
-      "es": "Conos de sabores 🛍️",
-      "it": "Conos de sabores 🛍️",
-      "en": "Conos de sabores 🛍️",
-      "val": "Conos de sabores"
+      "es": "Papel de liar 📄",
+      "it": "Papel de liar 📄",
+      "en": "Papel de liar 📄",
+      "val": "Papel de liar"
     },
     {
-      "es": "Mecheros 🔥",
-      "it": "Mecheros 🔥",
-      "en": "Mecheros 🔥",
-      "val": "Mecheros"
+      "es": "Grinders ⚙️",
+      "it": "Grinders ⚙️",
+      "en": "Grinders ⚙️",
+      "val": "Grinders"
     },
     {
-      "es": "Madera 🛍️",
-      "it": "Madera 🛍️",
-      "en": "Madera 🛍️",
-      "val": "Madera"
+      "es": "Bandejas de liar 🧰",
+      "it": "Bandejas de liar 🧰",
+      "en": "Bandejas de liar 🧰",
+      "val": "Bandejas de liar"
     },
     {
-      "es": "Funda 🛍️",
-      "it": "Funda 🛍️",
-      "en": "Funda 🛍️",
-      "val": "Funda"
+      "es": "Filtros / Tips 🛍️",
+      "it": "Filtros / Tips 🛍️",
+      "en": "Filtros / Tips 🛍️",
+      "val": "Filtros / Tips"
     },
     {
-      "es": "Limpiador de Toxinas 🛍️",
-      "it": "Limpiador de Toxinas 🛍️",
-      "en": "Limpiador de Toxinas 🛍️",
-      "val": "Limpiador de Toxinas"
+      "es": "Pipas para fumar 🧰",
+      "it": "Pipas para fumar 🧰",
+      "en": "Pipas para fumar 🧰",
+      "val": "Pipas para fumar"
     },
     {
-      "es": "Cosmética de Cáñamo 🛍️",
-      "it": "Cosmética de Cáñamo 🛍️",
-      "en": "Cosmética de Cáñamo 🛍️",
-      "val": "Cosmética de Cáñamo"
+      "es": "Bong 🧰",
+      "it": "Bong 🧰",
+      "en": "Bong 🧰",
+      "val": "Bong"
     },
     {
-      "es": "Dunkees 🛍️",
-      "it": "Dunkees 🛍️",
-      "en": "Dunkees 🛍️",
-      "val": "Dunkees"
-    },
-    {
-      "es": "Aceites 🧴",
-      "it": "Aceites 🧴",
-      "en": "Aceites 🧴",
-      "val": "Aceites"
-    },
-    {
-      "es": "Ocultación 🛍️",
-      "it": "Ocultación 🛍️",
-      "en": "Ocultación 🛍️",
-      "val": "Ocultación"
-    },
-    {
-      "es": "Papel de sabores 📄",
-      "it": "Papel de sabores 📄",
-      "en": "Papel de sabores 📄",
-      "val": "Papel de sabores"
-    },
-    {
-      "es": "Cajas Sorpresa 🧰",
-      "it": "Cajas Sorpresa 🧰",
-      "en": "Cajas Sorpresa 🧰",
-      "val": "Cajas Sorpresa"
-    },
-    {
-      "es": "E-liquids 🛍️",
-      "it": "E-liquids 🛍️",
-      "en": "E-liquids 🛍️",
-      "val": "E-liquids"
-    },
-    {
-      "es": "Bandejas Ripper Seeds 🧰",
-      "it": "Bandejas Ripper Seeds 🧰",
-      "en": "Bandejas Ripper Seeds 🧰",
-      "val": "Bandejas Ripper Seeds"
+      "es": "Vaporizadores 💨",
+      "it": "Vaporizadores 💨",
+      "en": "Vaporizadores 💨",
+      "val": "Vaporizadores"
     }
   ],
   "emoji": {
