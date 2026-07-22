@@ -26,13 +26,24 @@ const keysFrom = (name, cats) => {
   return [...new Set([...cat, ...words])].slice(0, 14);
 };
 
+const HDRS = {
+  "Accept": "application/json, text/plain, */*",
+  "Accept-Language": "es-ES,es;q=0.9,en;q=0.8",
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+  "Referer": "https://kayamansfarm.com/",
+  "Sec-Fetch-Mode": "cors", "Sec-Fetch-Site": "same-origin"
+};
 async function fetchAll() {
   const all = [];
   for (let page = 1; page <= 60; page++) {
     const url = `${API}?per_page=100&page=${page}&catalog_visibility=any`;
-    const r = await fetch(url, { headers: { "Accept": "application/json", "User-Agent": "AISeller-Sync/1.0" } });
-    if (!r.ok) { if (page === 1) throw new Error("API HTTP " + r.status); break; }
-    const batch = await r.json();
+    const r = await fetch(url, { headers: HDRS });
+    const text = await r.text();
+    if (/sgcaptcha|<html/i.test(text.slice(0, 200))) {
+      throw new Error("Bloccato dal captcha anti-bot di SiteGround (l'IP del runner è sfidato). Serve un'altra via (proxy/UA residenziale o endpoint diverso).");
+    }
+    let batch;
+    try { batch = JSON.parse(text); } catch (e) { if (page === 1) throw new Error("Risposta non-JSON: " + text.slice(0, 120)); break; }
     if (!Array.isArray(batch) || !batch.length) break;
     all.push(...batch);
     if (batch.length < 100) break;
