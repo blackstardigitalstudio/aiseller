@@ -41,6 +41,11 @@
   a.link{color:var(--leaf);font-weight:600;text-decoration:none}
   .note{color:var(--muted);font-size:.76rem;line-height:1.55;margin-top:12px;padding:0 4px}
   code{background:#efe8dc;padding:1px 6px;border-radius:5px;color:var(--leaf);font-size:.85em}
+  .mic{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--line);background:#fff;font-size:1.05rem;cursor:pointer;flex:none;transition:var(--dur-fast,.15s)}
+  .mic.rec{background:var(--red);color:#fff;border-color:var(--red);animation:micpulse 1s infinite}
+  .mic.sm{width:34px;height:34px;font-size:.9rem;border-radius:50%}
+  @keyframes micpulse{0%,100%{box-shadow:0 0 0 0 rgba(171,46,49,.4)}50%{box-shadow:0 0 0 6px rgba(171,46,49,0)}}
+  .no-voice .mic{display:none}
 </style></head>
 <body>
 <script>
@@ -82,7 +87,8 @@
     </div>
     <div id="log" class="chat-body"></div>
     <form class="chat-input" onsubmit="sendAsk();return false;">
-      <input id="ask" type="text" placeholder="Escribe como un cliente…" autocomplete="off" />
+      <button type="button" class="mic" onclick="dictate('ask',this)" title="Dictar por voz" aria-label="Dictar por voz">🎤</button>
+      <input id="ask" type="text" placeholder="Escribe o dicta como un cliente…" autocomplete="off" />
       <button type="submit" class="chat-send" aria-label="Enviar">➤</button>
     </form>
   </div>
@@ -150,6 +156,22 @@
   function fmt(t){ return esc(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/\n/g,"<br>"); }
   function scroll(){ var l=document.getElementById("log"); l.scrollTop=l.scrollHeight; }
 
+  // ---- dettato vocale (browser, gratis) → riempie un campo parlando in spagnolo ----
+  var Recog = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var rec = null;
+  function dictate(targetId, btn){
+    if(!Recog){ msg("Tu navegador no permite dictado por voz. Usa Chrome (o escribe).","bad"); return; }
+    if(rec){ try{ rec.stop(); }catch(e){} return; }   // toggle: seconda pressione = stop
+    var target=document.getElementById(targetId); if(!target) return;
+    var base = target.value ? target.value.replace(/\s+$/,"")+" " : "";
+    rec = new Recog(); rec.lang="es-ES"; rec.interimResults=true; rec.continuous=false; rec.maxAlternatives=1;
+    btn.classList.add("rec");
+    rec.onresult=function(e){ var t=""; for(var i=e.resultIndex;i<e.results.length;i++) t+=e.results[i][0].transcript; target.value=base+t; target.dispatchEvent(new Event("input")); };
+    rec.onend=function(){ btn.classList.remove("rec"); rec=null; target.focus(); };
+    rec.onerror=function(ev){ btn.classList.remove("rec"); rec=null; if(ev&&ev.error==="not-allowed") msg("Permite el micrófono en el navegador para dictar 🎤","bad"); };
+    try{ rec.start(); }catch(e){ btn.classList.remove("rec"); rec=null; }
+  }
+
   function sendAsk(){
     var inp=document.getElementById("ask"); var q=inp.value.trim(); if(!q)return; inp.value="";
     addUser(q);
@@ -164,11 +186,11 @@
     var chk='<label style="display:flex;gap:6px;align-items:center;margin-top:2px"><input type="checkbox" id="fs-'+i+'" checked> añadir al final la nota de seguridad (“solo de colección”)</label>';
     if(addDetail){
       box.innerHTML='<input type="text" id="fi-'+i+'" placeholder="Un detalle que pesa en la venta (ej. es el más vendido, sabe a limón)…" />'+chk
-        +'<div class="acts"><button class="btn sm" onclick="saveFix('+i+',true)">Guardar detalle</button><button class="btn gray sm" onclick="cancelFix('+i+')">Cancelar</button></div>';
+        +'<div class="acts"><button type="button" class="mic sm" onclick="dictate(\'fi-'+i+'\',this)" title="Dictar por voz">🎤</button><button class="btn sm" onclick="saveFix('+i+',true)">Guardar detalle</button><button class="btn gray sm" onclick="cancelFix('+i+')">Cancelar</button></div>';
       document.getElementById("fi-"+i).focus();
     } else {
       box.innerHTML='<textarea id="ft-'+i+'">'+esc(cur)+'</textarea>'+chk
-        +'<div class="acts"><button class="btn sm" onclick="saveFix('+i+',false)">Guardar corrección</button><button class="btn gray sm" onclick="cancelFix('+i+')">Cancelar</button></div>';
+        +'<div class="acts"><button type="button" class="mic sm" onclick="dictate(\'ft-'+i+'\',this)" title="Dictar por voz">🎤</button><button class="btn sm" onclick="saveFix('+i+',false)">Guardar corrección</button><button class="btn gray sm" onclick="cancelFix('+i+')">Cancelar</button></div>';
       var ta=document.getElementById("ft-"+i); ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length);
     }
   }
@@ -219,6 +241,7 @@
     btn.disabled=false;
   }
 
+  if(!Recog) document.body.classList.add("no-voice");   // niente dettato → nascondi i microfoni
   document.getElementById("tok").value=tok(); renderTok(); load();
 </script>
 </body></html>
