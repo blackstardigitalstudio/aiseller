@@ -1025,7 +1025,10 @@
   async function presentCBD(need) {
     clearQuick();
     const sol = D.cbd.solutions[need] || D.cbd.solutions.calma;
-    const hero = prod(sol.productId), cross = prod(sol.crossId);
+    // rete di sicurezza: se l'id "storico" non c'è nel catalogo aggiornato, pesca un prodotto CBD reale coerente col momento
+    const cbdPool = (D.products || []).filter(p => /cbd|cosmet|crema|b[aá]lsamo|aceite|roll|sales|ritual|resina|hash|flor/i.test((p.category || "") + " " + (p.name || "")));
+    const hero = prod(sol.productId) || cbdPool.find(p => p.badge) || cbdPool[0] || (D.products || [])[0];
+    const cross = prod(sol.crossId) || cbdPool.find(p => hero && p.id !== hero.id) || null;
     if (!hero) return;
     // problema→soluzione in UN messaggio + il prodotto consigliato
     await botMsg(sol.pitch[LANG], 900);

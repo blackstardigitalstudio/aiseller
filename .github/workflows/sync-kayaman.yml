@@ -1,0 +1,28 @@
+name: Sync Kayaman catalog
+
+# Ogni 6 ore (e a mano) rilegge TUTTO il catalogo dall'API pubblica WooCommerce di kayamansfarm.com,
+# aggiorna clients/kayaman.json e committa. Il commit fa partire il deploy su Cloudflare.
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Rigenera catalogo Kayaman dall'API WooCommerce
+        run: node scripts/build-kayaman.mjs
+      - name: Commit se cambiato (→ fa partire il deploy)
+        run: |
+          git config user.name "AI Seller Bot"
+          git config user.email "bot@blackstardigitalstudio.com"
+          git add clients/kayaman.json
+          git diff --cached --quiet || (git commit -m "auto-sync catalogo Kayaman" && git push)
