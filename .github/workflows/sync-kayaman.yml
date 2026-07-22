@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   sync:
@@ -20,9 +21,17 @@ jobs:
           node-version: "20"
       - name: Rigenera catalogo Kayaman dall'API WooCommerce
         run: node scripts/build-kayaman.mjs
-      - name: Commit se cambiato (→ fa partire il deploy)
+      - name: Commit + lancia il deploy se cambiato
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "AI Seller Bot"
           git config user.email "bot@blackstardigitalstudio.com"
           git add clients/kayaman.json
-          git diff --cached --quiet || (git commit -m "auto-sync catalogo Kayaman" && git push)
+          if git diff --cached --quiet; then
+            echo "Nessun cambiamento nel catalogo."
+          else
+            git commit -m "auto-sync catalogo Kayaman"
+            git push
+            gh workflow run "Deploy to Cloudflare Pages" --ref main
+          fi
