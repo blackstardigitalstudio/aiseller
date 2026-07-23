@@ -46,6 +46,24 @@
   ],
   "products": [
     {
+      "id": 29257,
+      "name": "Pack RAW Canarias Amarillo",
+      "category": "Packs",
+      "price": 30,
+      "currency": "EUR",
+      "description": "Pack amarillo edición Canarias sobre bandeja RAW: papeles Monkey King I Love Canarias, conos POPZ Banana Rama, King Palm, mechero, grinder y cenicero.",
+      "imageUrl": "https://i0.wp.com/kayamansfarm.com/wp-content/uploads/2026/07/pack-raw-canarias.jpg?fit=825%2C1100&ssl=1",
+      "badge": "",
+      "keys": [
+        "packs",
+        "pack",
+        "raw",
+        "canarias",
+        "amarillo"
+      ],
+      "stock": 99
+    },
+    {
       "id": 28575,
       "name": "Apple Fritz 10% CBD – 2 g – Broccoli Collection",
       "category": "CBD",
