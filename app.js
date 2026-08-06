@@ -369,7 +369,7 @@
     const row = state.cart.find(r => r.id === id);
     if (row) row.qty += qty; else state.cart.push({ id, qty });
     renderCart();
-    if (!opts.silent) { toast(t("added", LANG)); pingSound(); cartBump(); if (state.chatOpen) { sellerReact(); showThumb(); } onAdded(prod(id)); }
+    if (!opts.silent) { pfEvent("cart_add", (prod(id) || {}).name); toast(t("added", LANG)); pingSound(); cartBump(); if (state.chatOpen) { sellerReact(); showThumb(); } onAdded(prod(id)); }
   }
   function cartBump() {
     const c = $("#cartCount");
@@ -459,6 +459,7 @@
     startSellerLife();
     if (!$("#chatBody").dataset.started) {
       $("#chatBody").dataset.started = "1";
+      pfEvent("chat_open");   // Filo B: un'apertura di conversazione → dashboard "Aperture"
       startConversation();
     }
     $("#chatInput").focus();
@@ -679,6 +680,7 @@
   function safeImg(u) { u = String(u == null ? "" : u); return (/^https?:\/\//i.test(u) || /^data:image\//i.test(u)) && !/["'<>\s]/.test(u) ? u : ""; }
   function productCard(p, isPick) {
     const lead = isLead();
+    pfEvent("product_view", p && p.name);   // Filo B: prodotto mostrato → classifica "Prodotti più guardati"
     const el = document.createElement("div");
     el.className = "msg-product" + (isPick ? " kaya-pick" : "");
     if (isPick) el.setAttribute("data-pick", (D.seller && D.seller.pick && (D.seller.pick[LANG] || D.seller.pick.es)) || "👉");
@@ -1630,6 +1632,7 @@ CATALOGO:\n${cat}`;
     $("#overlay").onclick = closeCart;
     $("#checkoutBtn").onclick = () => {
       if (!state.cart.length) { toast(t("emptyCart", LANG)); return; }
+      pfEvent("checkout");   // Filo B: checkout → funnel shop
       const msg = t("checkoutMsg", LANG).replace("{t}", money(cartTotal()));
       $("#chatBody").dataset.started = "1"; // contesto post-acquisto: niente intro vendite
       state.flow = "free";
@@ -1693,6 +1696,7 @@ CATALOGO:\n${cat}`;
     if (p.catLabels) KF_DATA.catLabels = p.catLabels;
     if (p.mode) KF_DATA.mode = p.mode;           // "lead" = servizi/prenotazione, "shop" = e-commerce
     if (p.lead) KF_DATA.lead = p.lead;           // { whatsapp, phone, bookText, cta }
+    if (p.platform) KF_DATA.platform = p.platform;   // Filo B: {base, tenant} → invio eventi a Plataforma /api/events (dashboard Resultados). Assente = bot non collegato.
     if (p.character !== undefined) KF_DATA.character = p.character;   // {rest,point,pointBack,thumb,blink,face,finger} oppure false = nessuna mascotte
     if (p.askName !== undefined) KF_DATA.askName = p.askName;   // chiedere il nome a inizio chat (default sì)
     if (p.remember !== undefined) KF_DATA.remember = p.remember;   // memoria cliente via localStorage (default sì); false = disattiva
@@ -1744,16 +1748,33 @@ CATALOGO:\n${cat}`;
     if (L.phone) return "tel:" + L.phone.replace(/[^0-9+]/g, "");
     return null;
   }
+  // Filo B — invia un evento comportamentale alla Plataforma (dashboard "Resultados").
+  // Fira SOLO se il tenant ha il blocco platform in config (gli altri bot restano invariati).
+  // Endpoint pubblico, CORS aperto, nessun dato personale. Tipi validi lato Worker:
+  // chat_open, product_view, cart_add, checkout, click_whatsapp, click_book.
+  function pfEvent(type, label) {
+    try {
+      const P = window.KF_DATA && KF_DATA.platform;
+      if (!P || !P.base || !P.tenant || !type) return;
+      fetch(P.base.replace(/\/+$/, "") + "/api/events", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ tenant: P.tenant, type: type, label: label ? String(label).slice(0, 80) : "" }),
+        keepalive: true, mode: "cors", credentials: "omit"
+      }).catch(() => {});
+    } catch (e) {}
+  }
   // contatto diretto WhatsApp/telefono (emergenze o "parla subito con un umano") + evento lead
   function openWhats(serviceName) {
     const u = bookUrl(serviceName); if (!u) return;
+    pfEvent("click_whatsapp", serviceName);
     try { parent.postMessage({ aiseller: "lead", service: serviceName || "", brand: KF_DATA._brand || "" }, "*"); } catch (e) {}
     window.open(u, "_blank");
   }
   // PRENOTAZIONE: se il cliente ha un software di booking (lead.url) apre QUELLO; altrimenti WhatsApp/telefono
   function openBooking(serviceName) {
     const L = KF_DATA.lead || {};
-    if (L.url) { openLink(L.url, serviceName || "prenotazione"); return; }
+    if (L.url) { pfEvent("click_book", serviceName); openLink(L.url, serviceName || "prenotazione"); return; }
     openWhats(serviceName);
   }
   // apre DIRETTAMENTE una pagina (link del servizio/opzione) invece della prenotazione WhatsApp — e traccia l'evento
