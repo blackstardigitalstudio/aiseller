@@ -156,7 +156,8 @@
     $("#totalLabel").textContent = t("total", LANG);
     $("#checkoutBtn").textContent = t("checkout", LANG);
     $("#chatTitle").textContent = t("chatTitle", LANG);
-    $("#chatOnline").textContent = t("online", LANG);
+    // Trasparenza AI Act: etichetta discreta e fissa "assistente automatico" (l'utente sa che non è una persona)
+    $("#chatOnline").textContent = t("online", LANG) + " · " + ({ es: "asistente virtual automático", it: "assistente virtuale automatico", en: "automated virtual assistant" }[LANG] || "asistente virtual automático");
     $("#chatInput").placeholder = t("chatPlaceholder", LANG);
     $("#exitTitle").textContent = D.reengage.exitIntent.title[LANG];
     $("#exitBody").textContent = D.reengage.exitIntent.body[LANG];
