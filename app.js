@@ -1118,15 +1118,16 @@
       return;
     }
     if (isLead()) {
-      // SERVIZI/prenotazione: il CONTATTO è l'azione primaria → primo bottone, etichetta chiara verso WhatsApp
-      var hasWa = !!(KF_DATA.lead && KF_DATA.lead.whatsapp);
-      var leadCta = (KF_DATA.lead && KF_DATA.lead.cta && KF_DATA.lead.cta[LANG])
-        || (hasWa ? { es: "💬 Escríbenos por WhatsApp", en: "💬 Message us on WhatsApp", it: "💬 Scrivici su WhatsApp" }[LANG]
-                  : { es: "Reservar", en: "Book", it: "Prenota un appuntamento" }[LANG]);
-      quickReplies([
-        { label: leadCta, onClick: () => openBooking("") },   // azione primaria PRIMA (era seconda → poche conversioni)
-        { label: { es: "Ver otros servicios", en: "See other services", it: "Vedi altri servizi" }[LANG], onClick: () => showCategoryMenu() }
-      ]);
+      // SERVIZI: l'azione primaria è la PRENOTAZIONE (software di booking se lead.url, altrimenti WhatsApp)
+      var L = KF_DATA.lead || {};
+      var leadCta = (L.cta && L.cta[LANG])
+        || (L.url ? { es: "📅 Reservar cita online", en: "📅 Book online", it: "📅 Prenota online" }[LANG]
+             : L.whatsapp ? { es: "💬 Escríbenos por WhatsApp", en: "💬 Message us on WhatsApp", it: "💬 Scrivici su WhatsApp" }[LANG]
+                          : { es: "Reservar", en: "Book", it: "Prenota un appuntamento" }[LANG]);
+      var leadOpts = [{ label: leadCta, onClick: () => openBooking("") }];   // azione primaria PRIMA
+      if (L.url && L.whatsapp) leadOpts.push({ label: { es: "💬 O escríbenos por WhatsApp", en: "💬 Or message us", it: "💬 O scrivici su WhatsApp" }[LANG], onClick: () => openWhats("") });
+      leadOpts.push({ label: { es: "Ver otros servicios", en: "See other services", it: "Vedi altri servizi" }[LANG], onClick: () => showCategoryMenu() });
+      quickReplies(leadOpts);
       return;
     }
     const opts = [{ es: "Ver más opciones", en: "See more options", it: "Vedi altre opzioni" }];
@@ -1187,7 +1188,7 @@
       en: ["Got it, this needs sorting NOW — no pointless questions 🔧 Let me connect you right away 👇", "Understood, this is urgent 🚨 Skipping the rest: talk to us now 👇", "Relax, we're on it instantly 🔧 No long chats — here's how to reach us now 👇"]
     }[LANG]), 650);
     const call = callUrl();
-    const btns = [{ label: tline({ it: "💬 Scrivici ora su WhatsApp", es: "💬 Escríbenos ya por WhatsApp", en: "💬 Message us now" }), onClick: () => openBooking(raw) }];
+    const btns = [{ label: tline({ it: "💬 Scrivici ora su WhatsApp", es: "💬 Escríbenos ya por WhatsApp", en: "💬 Message us now" }), onClick: () => openWhats(raw) }];   // emergenza → SEMPRE contatto umano, mai il software di booking
     if (call) btns.unshift({ label: tline({ it: "📞 Chiama ora", es: "📞 Llamar ahora", en: "📞 Call now" }), onClick: () => { try { parent.postMessage({ aiseller: "lead", service: "EMERGENZA", brand: KF_DATA._brand || "" }, "*"); } catch (e) {} window.open(call, "_self"); } });
     quickReplies(btns);
   }
@@ -1742,11 +1743,17 @@ CATALOGO:\n${cat}`;
     if (L.phone) return "tel:" + L.phone.replace(/[^0-9+]/g, "");
     return null;
   }
-  // apre la prenotazione WhatsApp E segnala l'evento "lead" al sito ospite (tracciamento, separato dal WhatsApp del sito)
-  function openBooking(serviceName) {
+  // contatto diretto WhatsApp/telefono (emergenze o "parla subito con un umano") + evento lead
+  function openWhats(serviceName) {
     const u = bookUrl(serviceName); if (!u) return;
     try { parent.postMessage({ aiseller: "lead", service: serviceName || "", brand: KF_DATA._brand || "" }, "*"); } catch (e) {}
     window.open(u, "_blank");
+  }
+  // PRENOTAZIONE: se il cliente ha un software di booking (lead.url) apre QUELLO; altrimenti WhatsApp/telefono
+  function openBooking(serviceName) {
+    const L = KF_DATA.lead || {};
+    if (L.url) { openLink(L.url, serviceName || "prenotazione"); return; }
+    openWhats(serviceName);
   }
   // apre DIRETTAMENTE una pagina (link del servizio/opzione) invece della prenotazione WhatsApp — e traccia l'evento
   function openLink(url, label) {
