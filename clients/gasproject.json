@@ -698,5 +698,6 @@
   "platform": {
     "base": "https://plataforma.blackstardigitalstudio.workers.dev",
     "tenant": "gas-project"
-  }
+  },
+  "demoRatings": false
 }

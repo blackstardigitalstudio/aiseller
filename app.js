@@ -22,6 +22,9 @@
   const t = (key, lang) => (D.ui[key] && D.ui[key][lang]) || (D.ui[key] && D.ui[key].es) || key;
   // rating stabile per prodotto (deterministico dall'id) — prova sociale
   function prodRating(p) {
+    // recensioni VERE se il tenant le fornisce (p.rating = {stars,count}); con demoRatings:false niente stelle/venduti inventati
+    if (p.rating && p.rating.stars) return { stars: +p.rating.stars, count: +p.rating.count || 0, sold: 0 };
+    if (window.KF_DATA && KF_DATA.demoRatings === false) return null;
     const stars = Math.round((4.2 + ((p.id * 7) % 9) / 10) * 10) / 10; // 4.2..5.0
     const count = 24 + (p.id * 53) % 420;
     const sold = 3 + (p.id * 17) % 28;
@@ -332,8 +335,8 @@
     const badge = p.badge ? `<span class="card-badge badge-${esc(String(p.badge).replace(/[^a-zA-Z0-9]/g, ""))}">${esc(p.badge)}</span>` : "";
     const low = p.stock <= 6 ? `<span class="card-stock">${t("onlyLeft", LANG).replace("{n}", p.stock)}</span>` : "";
     const rt = prodRating(p);
-    const rating = `<div class="card-rating">${starsHTML(rt.stars)}<b>${rt.stars.toFixed(1)}</b><span class="rev">(${rt.count})</span></div>`;
-    const urgency = (p.badge === "Bestseller" || p.badge === "Oferta")
+    const rating = rt ? `<div class="card-rating">${starsHTML(rt.stars)}<b>${rt.stars.toFixed(1)}</b><span class="rev">(${rt.count})</span></div>` : "";
+    const urgency = rt && rt.sold && (p.badge === "Bestseller" || p.badge === "Oferta")
       ? `<div class="card-urgency">🔥 ${rt.sold} ${D.marketing.soldToday[LANG] || D.marketing.soldToday.es}</div>` : "";
     return `<div class="card">
       <div class="card-img" ${img}>${ph}${badge}${low}</div>
@@ -697,7 +700,7 @@
       : ((KF_DATA.lead && KF_DATA.lead.cta && (KF_DATA.lead.cta[LANG] || KF_DATA.lead.cta.it)) || "Prenota");
     el.innerHTML = `<div class="mp-img" ${bg}>${ph}</div>
       <div class="mp-info"><div class="mp-name">${esc(p.name)}</div>
-      <div class="mp-rating">${starsHTML(rt.stars)}<span class="rev">${rt.stars.toFixed(1)} (${rt.count})</span></div>
+      ${rt ? `<div class="mp-rating">${starsHTML(rt.stars)}<span class="rev">${rt.stars.toFixed(1)} (${rt.count})</span></div>` : ""}
       ${priceOrBadge}</div>
       <button class="mp-add">${esc(btnLabel)}</button>`;
     el.querySelector(".mp-add").onclick = (e) => {
@@ -1700,6 +1703,7 @@ CATALOGO:\n${cat}`;
     if (p.character !== undefined) KF_DATA.character = p.character;   // {rest,point,pointBack,thumb,blink,face,finger} oppure false = nessuna mascotte
     if (p.askName !== undefined) KF_DATA.askName = p.askName;   // chiedere il nome a inizio chat (default sì)
     if (p.remember !== undefined) KF_DATA.remember = p.remember;   // memoria cliente via localStorage (default sì); false = disattiva
+    if (p.demoRatings !== undefined) KF_DATA.demoRatings = p.demoRatings;   // false = niente stelle/recensioni/venduti dimostrativi (solo dati veri)
     if (p.knowledge) KF_DATA.knowledge = p.knowledge;              // "sapere insegnato" dal titolare (pagina Allena): [{keys:[], a:"", safe:true}]
     if (p.safetyNote) KF_DATA.safetyNote = p.safetyNote;          // nota di sicurezza CBD appesa alle risposte con safe:true ("solo da collezione…")
     if (p.dark !== undefined) KF_DATA.dark = p.dark;            // tema chat scuro/chiaro come il sito
