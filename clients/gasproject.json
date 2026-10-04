@@ -106,12 +106,6 @@
           "val": "Tagliando"
         },
         {
-          "it": "Taratura ADAS (dopo parabrezza)",
-          "es": "Calibración ADAS",
-          "en": "ADAS calibration",
-          "val": "ADAS"
-        },
-        {
           "it": "Più potenza / preparazione",
           "es": "Más potencia / preparación",
           "en": "More power / tuning",
@@ -136,9 +130,9 @@
           "val": "Clima"
         },
         {
-          "it": "✨ Detailing / estetica",
-          "es": "✨ Detailing / estética",
-          "en": "✨ Detailing",
+          "it": "✨ Detailing Hub / oscuramento vetri",
+          "es": "✨ Detailing Hub / tintado de lunas",
+          "en": "✨ Detailing Hub / window tinting",
           "val": "Detailing"
         },
         {
@@ -161,11 +155,6 @@
       "es": "Mecánica",
       "en": "Service"
     },
-    "ADAS": {
-      "it": "Tarature ADAS",
-      "es": "ADAS",
-      "en": "ADAS"
-    },
     "Sportive": {
       "it": "Preparazioni Sportive",
       "es": "Preparación",
@@ -187,9 +176,9 @@
       "en": "Bike"
     },
     "Detailing": {
-      "it": "Detailing & Estetica",
-      "es": "Detailing",
-      "en": "Detailing"
+      "it": "Detailing Hub",
+      "es": "Detailing Hub",
+      "en": "Detailing Hub"
     },
     "Clima": {
       "it": "Climatizzatore",
@@ -295,30 +284,11 @@
       ]
     },
     {
-      "id": 7005,
-      "name": "Taratura & Calibrazione ADAS",
-      "category": "ADAS",
-      "price": 0,
-      "description": "Calibrazione telecamere, radar anticollisione, sensori sterzo. Indispensabile dopo parabrezza o sospensioni. Strumentazione certificata.",
-      "imageUrl": "",
-      "badge": "",
-      "stock": 99,
-      "keys": [
-        "\\badas\\b",
-        "telecamer",
-        "\\bradar\\b",
-        "parabrezza",
-        "sensor",
-        "calibraz",
-        "taratura"
-      ]
-    },
-    {
       "id": 7006,
       "name": "Preparazioni Sportive",
       "category": "Sportive",
       "price": 0,
-      "description": "Assetti racing, freni Brembo, filtri sportivi, scarichi performance. Trasformiamo la tua auto in una belva.",
+      "description": "Preparazione motore, assetto sportivo, scarichi, impianti frenanti maggiorati e aspetto esteriore. Ti diciamo sempre cosa resta in regola per la strada.",
       "imageUrl": "",
       "badge": "Racing 🏁",
       "stock": 99,
@@ -476,9 +446,9 @@
       "name": "Oscuramento Vetri",
       "category": "Detailing",
       "price": 0,
-      "description": "Vuoi più privacy e meno caldo in abitacolo, con un look deciso? Vetri oscurati con pellicole a norma. Da 200€.",
+      "description": "D'estate in macchina è un forno? Pellicole omologate con certificato su vetri posteriori e lunotto: meno caldo, meno UV, più privacy. Da 200€.",
       "imageUrl": "",
-      "badge": "Molto richiesto",
+      "badge": "Il più richiesto",
       "stock": 99,
       "keys": [
         "oscuramento vetri",
@@ -526,22 +496,6 @@
         "idrorepellente",
         "protezione vernice",
         "sigillante"
-      ]
-    },
-    {
-      "id": 7019,
-      "name": "Oscuramento Fari",
-      "category": "Detailing",
-      "price": 0,
-      "description": "Vuoi un frontale più aggressivo e personale? Oscuriamo i fari a regola d'arte. Da 100€.",
-      "imageUrl": "",
-      "badge": "",
-      "stock": 99,
-      "keys": [
-        "oscuramento fari",
-        "fari",
-        "fanali",
-        "fari neri"
       ]
     },
     {
@@ -701,6 +655,41 @@
         "batterie",
         "carica batteria",
         "spenta"
+      ]
+    },
+    {
+      "id": 7029,
+      "name": "Volanti: ripristino e sostituzione",
+      "category": "Detailing",
+      "price": 0,
+      "description": "Volante consumato o lucido? Lo ripristiniamo in pelle o alcantara, oppure lo sostituiamo con un volante modificato in carbonio. Su preventivo.",
+      "imageUrl": "",
+      "badge": "",
+      "stock": 99,
+      "keys": [
+        "volante",
+        "volanti",
+        "alcantara",
+        "carbonio",
+        "rifacimento volante"
+      ]
+    },
+    {
+      "id": 7030,
+      "name": "Wrapping componenti interni",
+      "category": "Detailing",
+      "price": 0,
+      "description": "Plastiche graffiate o finiture che non ti piacciono? Rivestiamo modanature, consolle e pannelli: carbonio, lucido, opaco. Su preventivo.",
+      "imageUrl": "",
+      "badge": "",
+      "stock": 99,
+      "keys": [
+        "interni",
+        "modanature",
+        "consolle",
+        "cruscotto",
+        "effetto carbonio",
+        "wrapping interni"
       ]
     }
   ],
