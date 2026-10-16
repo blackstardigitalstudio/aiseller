@@ -55,7 +55,9 @@
       "@keyframes aiseller-pop{0%{transform:scale(0);opacity:0}60%{transform:scale(1.14)}100%{transform:scale(1);opacity:1}}" +
       "@keyframes aiseller-bounce{0%,100%{transform:translateY(0)}25%{transform:translateY(-13px)}45%{transform:translateY(0)}63%{transform:translateY(-6px)}82%{transform:translateY(0)}}" +
       "@keyframes aiseller-wiggle{0%,100%{transform:rotate(0)}15%{transform:rotate(-11deg)}30%{transform:rotate(9deg)}45%{transform:rotate(-6deg)}62%{transform:rotate(4deg)}80%{transform:rotate(-2deg)}}" +
-      "@keyframes aiseller-ring{0%{transform:scale(.82);opacity:.28}70%{opacity:0}100%{transform:scale(2);opacity:0}}";
+      "@keyframes aiseller-ring{0%{transform:scale(.82);opacity:.28}70%{opacity:0}100%{transform:scale(2);opacity:0}}" +
+      // il sito può nascondere la pallina (es. mentre è aperta la prenotazione): html.bsbk-open / html.aiseller-hide
+      "html.bsbk-open [data-aiseller-ui],html.aiseller-hide [data-aiseller-ui]{display:none!important}";
     (document.head || document.documentElement).appendChild(s);
   })();
 
@@ -73,7 +75,8 @@
   // ---- bollina (launcher) ----
   var btn = document.createElement("button");
   btn.setAttribute("aria-label", label);
-  btn.setAttribute("data-by", "blackstardigitalstudio");   // watermark d'origine (AI Seller © Blackstar Digital Studio)
+  btn.setAttribute("data-by", "blackstardigitalstudio");
+  btn.setAttribute("data-aiseller-ui", "");   // watermark d'origine (AI Seller © Blackstar Digital Studio)
   style(btn, {
     position: "fixed", zIndex: 2147483000,
     width: "64px", height: "64px", borderRadius: "50%", border: "none", cursor: "pointer",
@@ -187,6 +190,7 @@
     teaserEl = document.createElement("div");
     teaserEl.textContent = text;
     teaserEl.setAttribute("role", "button");
+    teaserEl.setAttribute("data-aiseller-ui", "");
     style(teaserEl, {
       position: "fixed", zIndex: 2147483000, bottom: (curBottom + 8) + "px", maxWidth: "240px",
       background: "#fff", color: "#1a1a1a", padding: "11px 14px", borderRadius: "16px",
@@ -268,6 +272,39 @@
     }
   }
 
+  // ---- NON COPRIRE I BOTTONI DEL SITO: se scorrendo la pallina finisce sopra un bottone o un link,
+  // diventa trasparente e lascia passare il tocco; torna normale appena il bottone è passato ----
+  var CTA = "a,button,input,select,textarea,label,[role=button]", faded = false, raf = 0;
+  function overCta() {
+    var r = btn.getBoundingClientRect();
+    if (!r.width) return false;
+    var pts = [[.5, .5], [.2, .2], [.8, .2], [.2, .8], [.8, .8]];
+    for (var p = 0; p < pts.length; p++) {
+      var els = document.elementsFromPoint(r.left + r.width * pts[p][0], r.top + r.height * pts[p][1]) || [];
+      for (var i = 0; i < els.length; i++) {
+        var el = els[i];
+        if (el === btn || btn.contains(el) || el === ring || el === teaserEl || el === frame) continue;
+        var c = el.closest && el.closest(CTA);
+        if (c && getComputedStyle(c).position !== "fixed") return true;
+        break;
+      }
+    }
+    return false;
+  }
+  function checkCta() {
+    raf = 0;
+    if (open) return;
+    var hit = overCta();
+    if (hit === faded) return;
+    faded = hit;
+    btn.style.opacity = hit ? ".35" : "";
+    btn.style.pointerEvents = hit ? "none" : "";
+    btn.style.transform = hit ? "scale(.8)" : "";
+    if (ring) ring.style.visibility = hit ? "hidden" : "";
+    if (hit) hideTeaser();
+  }
+  function queueCta() { if (!raf) raf = requestAnimationFrame(checkCta); }
+
   function mount() {
     // anello pulsante DIETRO la pallina (alone "sono attivo")
     ring = document.createElement("span");
@@ -275,6 +312,7 @@
       position: "fixed", zIndex: 2147482999, width: "64px", height: "64px", borderRadius: "50%",
       background: color, opacity: "0", pointerEvents: "none", animation: "aiseller-ring 3.6s ease-out infinite"
     });
+    ring.setAttribute("data-aiseller-ui", "");
     document.body.appendChild(ring);
     document.body.appendChild(btn);
     applyPos();
@@ -284,6 +322,10 @@
     startAttention();
     avoidCollision();
     setTimeout(avoidCollision, 1500);   // ricontrolla: alcuni widget (WhatsApp ecc.) si caricano in ritardo
+    btn.style.transition = (btn.style.transition ? btn.style.transition + "," : "") + "opacity .2s";
+    window.addEventListener("scroll", queueCta, { passive: true });
+    window.addEventListener("resize", queueCta);
+    setTimeout(queueCta, 700);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount); else mount();
 })();
